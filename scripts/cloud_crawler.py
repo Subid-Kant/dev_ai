@@ -72,15 +72,9 @@ def continuous_learning_cycle():
             time.sleep(2) # Respect rate limits
 
 if __name__ == "__main__":
-    print("Cloud Crawler background agent started.")
-    print("This script is designed to run 24/7 on a cloud instance.")
-    
-    while True:
-        try:
-            continuous_learning_cycle()
-            print("Cycle complete. Sleeping for 1 hour to respect API rate limits and save resources...")
-            time.sleep(3600) # Sleep for an hour
-        except Exception as e:
-            print(f"Agent encountered an error: {e}")
-            print("Retrying in 5 minutes...")
-            time.sleep(300)
+    print("Cloud Crawler background agent started via GitHub Actions.")
+    try:
+        continuous_learning_cycle()
+        print("Cycle complete. Database updated successfully.")
+    except Exception as e:
+        print(f"Agent encountered an error: {e}")

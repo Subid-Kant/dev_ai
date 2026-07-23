@@ -1,0 +1,38 @@
+name: Continuous Background Crawler
+
+on:
+  schedule:
+    # Run every 6 hours automatically (100% free)
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+    # Allows you to trigger it manually from GitHub
+
+jobs:
+  crawl_and_learn:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run Crawler Agent
+        run: |
+          python scripts/cloud_crawler.py
+
+      - name: Commit & Push New Knowledge
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action Bot"
+          git add data/chroma_db/
+          # Only commit if there are changes to the DB
+          git diff --quiet && git diff --staged --quiet || git commit -m "Auto-update AI Knowledge Base via Background Crawler"
+          git push
