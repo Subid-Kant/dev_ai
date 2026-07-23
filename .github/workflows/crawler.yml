@@ -7,6 +7,9 @@ on:
   workflow_dispatch:
     # Allows you to trigger it manually from GitHub
 
+permissions:
+  contents: write   # grants GITHUB_TOKEN push access
+
 jobs:
   crawl_and_learn:
     runs-on: ubuntu-latest
@@ -32,7 +35,9 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action Bot"
-          git add data/chroma_db/
-          # Only commit if there are changes to the DB
+          # data/chroma_db: vector DB used for RAG at inference time
+          # knowledge/: raw text files build_corpus.py turns into training data
+          # data/crawled_urls.json: dedup manifest so we don't re-ingest the same URLs
+          git add data/chroma_db/ knowledge/ data/crawled_urls.json
           git diff --quiet && git diff --staged --quiet || git commit -m "Auto-update AI Knowledge Base via Background Crawler"
           git push
