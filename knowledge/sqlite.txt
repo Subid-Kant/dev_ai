@@ -1,0 +1,175 @@
+Q: What is SQLite and how does its architecture differ from Client/Server databases like PostgreSQL?
+A: SQLite is a C-language library that implements a small, fast, self-contained, high-reliability, full-featured, SQL database engine. It is the most widely deployed database in the world (used in every Android/iOS device, Mac, Windows 10, browsers).
+
+Key Differences:
+1. Serverless: SQLite is NOT a separate process. It is a library linked directly into your application. There is no network overhead, no daemon to configure, no user management.
+2. File-Based: An entire SQLite database (definitions, tables, indices, and data) is stored as a single cross-platform file on the host machine.
+3. Dynamic Typing (Manifest Typing): Unlike strict SQL DBs, SQLite allows you to store any datatype in any column (with the exception of INTEGER PRIMARY KEY). The type is associated with the value itself, not its container.
+
+Use Cases:
+- Perfect for: Mobile apps, desktop apps, embedded devices, local testing, single-user desktop software, medium-traffic websites (< 100k visits/day).
+- Bad for: High-concurrency multi-user environments (like a major SaaS backend), terabyte-scale datasets.
+
+---
+
+Q: Explain Concurrency and Locking in SQLite. What is WAL mode?
+A: By default, SQLite handles concurrency using database-level locking on the single database file.
+
+Default Rollback Journal Mode (Legacy):
+- Readers: Multiple processes can read at the same time.
+- Writers: Only ONE process can write at a time. When a process wants to write, it locks the ENTIRE file, preventing ANY other process from reading or writing until the write completes.
+- Result: High read concurrency, terrible write concurrency. Writers block readers, and readers block writers.
+
+WAL Mode (Write-Ahead Logging):
+Introduced in SQLite 3.7.0, WAL mode drastically improves concurrency.
+- How it works: Instead of modifying the DB file directly, writes are appended to a separate `-wal` file. Reads can happen simultaneously from the main DB file and the WAL file.
+- Benefit: Writers do NOT block readers, and readers do NOT block writers. (However, writers still block other writers).
+- Checkpointing: Periodically, the WAL file is merged back into the main DB file automatically.
+
+How to enable WAL mode:
+```sql
+-- Execute this once on the database connection
+PRAGMA journal_mode=WAL;
+```
+Always enable WAL mode for web applications or multi-threaded environments.
+
+---
+
+Q: What are SQLite PRAGMAs and which ones are essential for performance?
+A: PRAGMAs are special commands used to modify the operation of the SQLite library or to query the database for internal data.
+
+Essential Performance PRAGMAs:
+```sql
+-- 1. Enable WAL mode for vastly better concurrency (Writers don't block readers)
+PRAGMA journal_mode = WAL;
+
+-- 2. Synchronous mode
+-- OFF (0): Fastest, but OS crash corrupts DB.
+-- NORMAL (1): Excellent speed, safe in WAL mode against OS crashes.
+-- FULL (2): Safest, default, but slower. Waits for disk sync on every commit.
+PRAGMA synchronous = NORMAL;
+
+-- 3. Increase cache size (Keep more data in RAM)
+-- Negative number means kilobytes. -64000 = ~64MB cache.
+PRAGMA cache_size = -64000;
+
+-- 4. Store temporary tables in memory instead of disk
+PRAGMA temp_store = MEMORY;
+
+-- 5. Set busy timeout (Crucial for concurrent writes)
+-- If another process is writing, wait up to 5000ms instead of failing instantly with SQLITE_BUSY
+PRAGMA busy_timeout = 5000;
+```
+
+---
+
+Q: How does SQLite handle data types and constraints?
+A: SQLite uses a dynamic typing system called "Manifest Typing".
+
+Storage Classes (The actual types stored on disk):
+1. NULL
+2. INTEGER (1, 2, 3, 4, 6, or 8 bytes depending on magnitude)
+3. REAL (8-byte IEEE floating point)
+4. TEXT (UTF-8, UTF-16)
+5. BLOB (Raw binary data)
+
+Type Affinity:
+When you declare a column type (e.g., `VARCHAR(100)`), SQLite maps it to one of the storage classes (TEXT). However, it does not strictly enforce it unless you use STRICT tables (introduced in SQLite 3.37.0).
+
+STRICT Tables (Modern Best Practice):
+If you want PostgreSQL-like strict type checking, append `STRICT` to the table creation.
+```sql
+CREATE TABLE users (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    age INTEGER,
+    -- Without STRICT, you could insert 'Hello' into age!
+) STRICT;
+```
+
+Booleans and Dates:
+- SQLite does not have a boolean class. It uses INTEGER (0 for false, 1 for true).
+- SQLite does not have a dedicated date/time class. Dates are stored as TEXT (ISO8601 strings, e.g., '2023-10-27 12:00:00'), REAL (Julian days), or INTEGER (Unix Time). SQLite has built-in functions to parse and manipulate these formats.
+```sql
+SELECT datetime('now', '+1 day');
+```
+
+
+============================================================
+SOURCE: SQLite Expert
+============================================================
+
+
+Q: How do you use SQLite effectively in production apps?
+A:
+SQLite is NOT just for development! WhatsApp, Firefox, iOS, Android all use SQLite.
+
+Best practices:
+import sqlite3
+from contextlib import contextmanager
+
+@contextmanager
+def get_db(path: str):
+    conn = sqlite3.connect(path, check_same_thread=False)
+    conn.row_factory = sqlite3.Row  # Access columns by name
+    conn.execute("PRAGMA journal_mode=WAL")   # WAL mode: concurrent reads+writes
+    conn.execute("PRAGMA synchronous=NORMAL") # Faster, still safe
+    conn.execute("PRAGMA cache_size=-64000")  # 64MB cache
+    conn.execute("PRAGMA temp_store=MEMORY")  # Temp tables in RAM
+    conn.execute("PRAGMA foreign_keys=ON")    # Enforce FK constraints
+    try:
+        yield conn
+        conn.commit()
+    except:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+# Full-text search with FTS5
+CREATE VIRTUAL TABLE posts_fts USING fts5(title, content, content=posts, content_rowid=id);
+CREATE TRIGGER posts_ai AFTER INSERT ON posts BEGIN
+    INSERT INTO posts_fts(rowid, title, content) VALUES (new.id, new.title, new.content);
+END;
+SELECT * FROM posts JOIN posts_fts ON posts.id = posts_fts.rowid
+WHERE posts_fts MATCH 'python AND async';
+
+
+============================================================
+SOURCE: SQLite Expert
+============================================================
+
+
+Q: How do you use SQLite effectively in production apps?
+A:
+SQLite is NOT just for development! WhatsApp, Firefox, iOS, Android all use SQLite.
+
+Best practices:
+import sqlite3
+from contextlib import contextmanager
+
+@contextmanager
+def get_db(path: str):
+    conn = sqlite3.connect(path, check_same_thread=False)
+    conn.row_factory = sqlite3.Row  # Access columns by name
+    conn.execute("PRAGMA journal_mode=WAL")   # WAL mode: concurrent reads+writes
+    conn.execute("PRAGMA synchronous=NORMAL") # Faster, still safe
+    conn.execute("PRAGMA cache_size=-64000")  # 64MB cache
+    conn.execute("PRAGMA temp_store=MEMORY")  # Temp tables in RAM
+    conn.execute("PRAGMA foreign_keys=ON")    # Enforce FK constraints
+    try:
+        yield conn
+        conn.commit()
+    except:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+# Full-text search with FTS5
+CREATE VIRTUAL TABLE posts_fts USING fts5(title, content, content=posts, content_rowid=id);
+CREATE TRIGGER posts_ai AFTER INSERT ON posts BEGIN
+    INSERT INTO posts_fts(rowid, title, content) VALUES (new.id, new.title, new.content);
+END;
+SELECT * FROM posts JOIN posts_fts ON posts.id = posts_fts.rowid
+WHERE posts_fts MATCH 'python AND async';

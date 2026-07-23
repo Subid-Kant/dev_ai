@@ -1,0 +1,287 @@
+Q: Explain the difference between a Process and a Thread in Operating Systems.
+A: Processes and Threads are the fundamental units of execution in an operating system.
+
+Process:
+- A program in execution. It is the unit of resource allocation.
+- Isolation: Each process has its own isolated memory space (Heap, Stack, Data, Code). One process crashing does not affect others.
+- Overhead: Heavyweight. Context switching between processes is expensive because it requires saving/loading entirely different memory maps (flushing the Translation Lookaside Buffer - TLB).
+- Communication: Requires Inter-Process Communication (IPC) like pipes, sockets, shared memory, or message queues.
+
+Thread:
+- A single execution sequence within a process. It is the unit of CPU scheduling.
+- Shared Memory: All threads within a process share the same memory space (Heap, Data, Code), but each thread has its own Stack and PC (Program Counter) register.
+- Overhead: Lightweight. Context switching is faster because the memory map remains the same.
+- Communication: Easy, as they share memory. However, this introduces synchronization issues (race conditions). One thread crashing with a segfault will crash the entire process and all other threads.
+
+---
+
+Q: What is Virtual Memory and Paging? How does it prevent processes from crashing each other?
+A: Virtual Memory is a memory management technique that gives each process the illusion that it has a massive, contiguous block of RAM all to itself, isolated from all other processes.
+
+How it works (Paging):
+1. The OS and CPU divide both Virtual Memory and Physical RAM into fixed-size blocks called "Pages" (typically 4KB).
+2. When a process tries to access a memory address, it uses a Virtual Address.
+3. The Memory Management Unit (MMU) on the CPU translates this Virtual Address into a Physical Address using a Page Table maintained by the OS.
+4. If process A and process B both access virtual address `0x1234`, the MMU translates process A's request to physical frame 10, and process B's request to physical frame 50. They never overlap.
+
+Page Faults:
+If a process requests a page that is currently not in Physical RAM (perhaps it was swapped out to the hard drive), the MMU triggers a Page Fault interrupt. The OS pauses the process, fetches the page from disk into RAM, updates the Page Table, and resumes the process.
+
+Thrashing:
+If the system doesn't have enough RAM, it constantly swaps pages in and out of the hard drive. Since disks are 100,000x slower than RAM, CPU utilization drops to near zero as the system spends all its time swapping. This is called Thrashing.
+
+---
+
+Q: Explain Race Conditions, Mutexes, Semaphores, and Deadlocks.
+A: These concepts relate to synchronization when multiple threads access shared resources.
+
+Race Condition:
+Occurs when the timing or order of thread execution affects the correctness of a program. Example: Two threads simultaneously try to increment a shared counter (`x = x + 1`). Both read `x=5`, both compute `6`, both write `6`. The counter only incremented once instead of twice.
+
+Mutex (Mutual Exclusion Lock):
+A lock that guarantees only ONE thread can access a critical section of code at a time.
+- Ownership: The thread that locks the mutex MUST be the one to unlock it.
+```c
+pthread_mutex_lock(&lock);
+x = x + 1; // Critical section
+pthread_mutex_unlock(&lock);
+```
+
+Semaphore:
+A signaling mechanism (an integer counter) that allows a specific number of threads to access a resource.
+- Binary Semaphore: Max value 1. Used similarly to a mutex, but any thread can signal (increment) it, making it useful for thread signaling (e.g., Thread A waits for Thread B to finish a task).
+- Counting Semaphore: Max value N. Used to limit access to a pool of resources (e.g., allowing exactly 5 threads to use 5 database connections).
+
+Deadlock:
+A state where two or more threads are blocked forever, waiting for each other.
+Conditions for deadlock (Coffman conditions):
+1. Mutual Exclusion: Resources cannot be shared.
+2. Hold and Wait: A thread holding a resource waits for another.
+3. No Preemption: Resources cannot be forcibly taken away.
+4. Circular Wait: T1 waits for T2, T2 waits for T1.
+Prevention: The most common way to prevent deadlocks in software is to enforce a strict ordering on lock acquisition (always acquire lock A before lock B).
+
+
+============================================================
+SOURCE: OS Expert Q&A
+============================================================
+
+
+OPERATING SYSTEMS — COMPREHENSIVE GUIDE
+
+=== PROCESSES AND THREADS ===
+Q: What is the difference between a process and a thread?
+A:
+Process: Independent program with its own memory space (heap, stack, code, data).
+Thread: Lightweight unit within a process that shares memory with siblings.
+
+Process advantages: Isolation (crash doesn't affect others), security
+Thread advantages: Faster creation, shared memory = no IPC overhead, context switch is cheaper
+
+Creating threads in Linux (pthreads):
+pthread_t thread;
+pthread_create(&thread, NULL, worker_function, arg);
+pthread_join(thread, NULL); // Wait for completion
+
+=== SCHEDULING ALGORITHMS ===
+FCFS (First Come First Serve): Simple, convoy effect problem
+SJF (Shortest Job First): Optimal average wait, but starvation
+Round Robin: Fair, each process gets a time quantum (typically 10-100ms)
+Priority Scheduling: Higher priority runs first, lower may starve
+Multilevel Queue: Different queues for different process types
+
+Modern OS use Completely Fair Scheduler (CFS) in Linux:
+- Tracks virtual runtime (vruntime) per process
+- Process with smallest vruntime gets CPU next
+- Red-black tree for O(log n) next-process lookup
+
+=== MEMORY MANAGEMENT ===
+Virtual Memory: Each process sees its own address space (typically 0 to 2^48)
+Physical Memory: Actual RAM, shared via page table mappings
+
+Page Fault: CPU tries to access unmapped virtual page → OS traps → loads page from disk or allocates new frame
+
+Memory Allocation Algorithms:
+- First Fit: Allocate first free block large enough
+- Best Fit: Smallest sufficient block (minimizes waste, slow)
+- Buddy System: Split/merge power-of-2 blocks (Linux kernel uses this)
+
+=== DEADLOCK ===
+Four Conditions (Coffman):
+1. Mutual Exclusion: Resources non-shareable
+2. Hold and Wait: Process holds resource while waiting for another
+3. No Preemption: Resources cannot be forcibly taken
+4. Circular Wait: P1 waits for P2, P2 waits for P3, P3 waits for P1
+
+Prevention: Deny at least one condition
+Avoidance: Banker's Algorithm — only grant if safe state remains
+Detection: Allow deadlocks, detect and recover (kill process, rollback)
+
+=== FILE SYSTEMS ===
+Inode (Linux): Metadata structure containing:
+- File type, permissions, owner, size, timestamps
+- Pointers to data blocks (direct, indirect, double-indirect)
+- Does NOT contain file name (that's in directory entries)
+
+ext4 Features:
+- Journaling: Write intent to journal before actual write (crash recovery)
+- Extents: Contiguous block ranges instead of block lists
+- Delayed allocation: Buffer writes, allocate blocks efficiently
+
+=== INTER-PROCESS COMMUNICATION ===
+Pipes: Unidirectional byte stream between related processes
+Named Pipes (FIFOs): Like pipes but can be used by unrelated processes
+Message Queues: Discrete messages, not streams
+Shared Memory: Fastest IPC, processes share a memory segment
+Semaphores: Synchronization primitives (binary = mutex, counting)
+Sockets: Network IPC (also works for local via Unix domain sockets)
+
+=== SYNCHRONIZATION ===
+Race Condition: Two threads access shared data concurrently, outcome depends on scheduling
+
+Mutex (Mutual Exclusion Lock):
+pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_lock(&lock);
+// Critical section
+pthread_mutex_unlock(&lock);
+
+Semaphore: Counter-based synchronization
+sem_t sem;
+sem_init(&sem, 0, 1); // Binary semaphore
+sem_wait(&sem);        // P() - decrement, block if 0
+sem_post(&sem);        // V() - increment, wake waiter
+
+Monitor: High-level synchronization (Java synchronized, Python with)
+Condition Variable: Allow threads to wait for a condition inside a mutex
+
+
+============================================================
+SOURCE: OS Deep Dive Expert
+============================================================
+
+
+Q: How does virtual memory work at a hardware level?
+A:
+Virtual Memory Components:
+1. MMU (Memory Management Unit) — hardware unit in CPU
+2. TLB (Translation Lookaside Buffer) — cache of recent virtual→physical mappings
+3. Page Table — data structure mapping virtual pages to physical frames
+
+Address Translation:
+Virtual address: [VPN | Page Offset]  (e.g., 48-bit: 36-bit VPN + 12-bit offset)
+Physical address: [PFN | Page Offset]
+
+Process:
+1. CPU generates virtual address
+2. MMU looks up VPN in TLB (if HIT → fast, get PFN)
+3. TLB MISS → walk page table in memory (slow, 4+ memory accesses)
+4. On TLB miss: x86 hardware walks the 4-level page table automatically
+5. Page Fault: page not in RAM → OS loads from disk → update page table → retry
+
+Copy-on-Write (COW) — How fork() is fast:
+After fork(), parent and child share same physical pages (mapped read-only)
+When either writes → page fault → OS copies page → both get their own copy
+99% of forked processes exec() immediately → no copying needed!
+
+Q: How does the Linux kernel scheduler work?
+A:
+CFS (Completely Fair Scheduler) — Linux since 2.6.23:
+
+Key concept: vruntime (virtual runtime)
+- Each task accumulates vruntime as it runs
+- Task with SMALLEST vruntime runs next
+- Nice value scales vruntime accumulation (lower priority = faster accumulation)
+
+Data structure: Red-Black tree (self-balancing BST)
+- O(log n) insert/delete
+- Leftmost node = smallest vruntime = next to run
+
+Time slice: Not fixed! Calculated as:
+timeslice = (sched_latency / n_tasks) * (weight / total_weight)
+sched_latency default = 6ms (every task runs at least once per 6ms)
+
+Multicore scheduling:
+- Per-CPU run queues (no global lock = scalable)
+- Load balancing via work stealing (idle CPU pulls tasks from busy CPUs)
+- NUMA awareness: prefer to schedule on same NUMA node as task's memory
+
+Q: What happens when you type a command in the terminal?
+A:
+1. Shell (bash/zsh) reads input: ls -la /home
+2. Shell forks() a child process (vfork on Linux for efficiency)
+3. Child calls execve("/bin/ls", ["ls", "-la", "/home"], env)
+   - execve replaces child's memory with ls binary
+   - Loads ELF binary headers
+   - Dynamic linker (ld.so) resolves shared library symbols
+4. Shell waits via waitpid() or puts in background
+5. ls opens /home via openat() syscall → VFS → ext4 filesystem
+6. ls reads directory entries via getdents64() syscall
+7. ls writes output to stdout (fd=1) via write() syscall
+8. Terminal emulator receives output bytes via pty master
+9. ls exits → kernel sends SIGCHLD to shell → shell resumes
+
+
+============================================================
+SOURCE: OS Deep Dive Expert
+============================================================
+
+
+Q: How does virtual memory work at a hardware level?
+A:
+Virtual Memory Components:
+1. MMU (Memory Management Unit) — hardware unit in CPU
+2. TLB (Translation Lookaside Buffer) — cache of recent virtual→physical mappings
+3. Page Table — data structure mapping virtual pages to physical frames
+
+Address Translation:
+Virtual address: [VPN | Page Offset]  (e.g., 48-bit: 36-bit VPN + 12-bit offset)
+Physical address: [PFN | Page Offset]
+
+Process:
+1. CPU generates virtual address
+2. MMU looks up VPN in TLB (if HIT → fast, get PFN)
+3. TLB MISS → walk page table in memory (slow, 4+ memory accesses)
+4. On TLB miss: x86 hardware walks the 4-level page table automatically
+5. Page Fault: page not in RAM → OS loads from disk → update page table → retry
+
+Copy-on-Write (COW) — How fork() is fast:
+After fork(), parent and child share same physical pages (mapped read-only)
+When either writes → page fault → OS copies page → both get their own copy
+99% of forked processes exec() immediately → no copying needed!
+
+Q: How does the Linux kernel scheduler work?
+A:
+CFS (Completely Fair Scheduler) — Linux since 2.6.23:
+
+Key concept: vruntime (virtual runtime)
+- Each task accumulates vruntime as it runs
+- Task with SMALLEST vruntime runs next
+- Nice value scales vruntime accumulation (lower priority = faster accumulation)
+
+Data structure: Red-Black tree (self-balancing BST)
+- O(log n) insert/delete
+- Leftmost node = smallest vruntime = next to run
+
+Time slice: Not fixed! Calculated as:
+timeslice = (sched_latency / n_tasks) * (weight / total_weight)
+sched_latency default = 6ms (every task runs at least once per 6ms)
+
+Multicore scheduling:
+- Per-CPU run queues (no global lock = scalable)
+- Load balancing via work stealing (idle CPU pulls tasks from busy CPUs)
+- NUMA awareness: prefer to schedule on same NUMA node as task's memory
+
+Q: What happens when you type a command in the terminal?
+A:
+1. Shell (bash/zsh) reads input: ls -la /home
+2. Shell forks() a child process (vfork on Linux for efficiency)
+3. Child calls execve("/bin/ls", ["ls", "-la", "/home"], env)
+   - execve replaces child's memory with ls binary
+   - Loads ELF binary headers
+   - Dynamic linker (ld.so) resolves shared library symbols
+4. Shell waits via waitpid() or puts in background
+5. ls opens /home via openat() syscall → VFS → ext4 filesystem
+6. ls reads directory entries via getdents64() syscall
+7. ls writes output to stdout (fd=1) via write() syscall
+8. Terminal emulator receives output bytes via pty master
+9. ls exits → kernel sends SIGCHLD to shell → shell resumes

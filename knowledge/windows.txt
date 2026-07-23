@@ -1,0 +1,138 @@
+Q: Explain the .NET Architecture (CLR, MSIL, Garbage Collection).
+A: .NET is a cross-platform, open-source framework developed by Microsoft for building applications.
+
+Architecture:
+1. Source Code (C#, F#, VB.NET) is compiled into Microsoft Intermediate Language (MSIL or IL). This is CPU-independent.
+2. Common Language Runtime (CLR): The execution engine of .NET. When the application runs, the CLR's Just-In-Time (JIT) compiler compiles the MSIL into native machine code optimized for the specific hardware.
+3. Base Class Library (BCL): The standard library of types and utilities (collections, I/O, networking) available to all .NET languages.
+
+Garbage Collection (GC) in .NET:
+- Works on a Generational model (Gen 0, Gen 1, Gen 2), similar to Java.
+- Gen 0: Newly allocated objects. GC occurs frequently and is very fast.
+- Gen 1: Objects that survived a Gen 0 GC. Serves as a buffer.
+- Gen 2: Long-lived objects (e.g., static data, caches). A Gen 2 GC (Full GC) is expensive and can pause the application.
+- Large Object Heap (LOH): Objects larger than 85,000 bytes go straight to the LOH (part of Gen 2). The LOH is usually not compacted (to avoid moving massive blocks of memory), which can lead to fragmentation.
+
+---
+
+Q: What is the difference between Value Types and Reference Types in C#?
+A: C# explicitly divides data types based on how they are stored in memory.
+
+Value Types (Structs, Enums, int, double, bool):
+- Stored on the Stack (if a local variable) or inline within an object on the heap (if a class field).
+- Contain their data directly.
+- Assignment copies the value.
+```csharp
+int a = 5;
+int b = a; // b is a copy. Changing b does not affect a.
+```
+
+Reference Types (Classes, Interfaces, Arrays, Delegates, strings):
+- Stored on the Heap. The variable itself is a pointer (reference) stored on the Stack, pointing to the heap memory.
+- Assignment copies the reference, not the data.
+```csharp
+MyClass obj1 = new MyClass { Value = 5 };
+MyClass obj2 = obj1; 
+obj2.Value = 10; // obj1.Value is also 10, because both point to the same memory.
+```
+
+*Note on Strings: Strings are reference types, but they are IMMUTABLE. Modifying a string creates a completely new string object on the heap.
+
+---
+
+Q: Explain ASP.NET Core Architecture and Dependency Injection.
+A: ASP.NET Core is a cross-platform, high-performance, open-source framework for building modern web applications and APIs.
+
+Key Components:
+- Kestrel: The default, cross-platform web server. Extremely fast. Usually placed behind a reverse proxy like IIS or Nginx.
+- Middleware Pipeline: The request/response pipeline. Middleware components are chained together. A request flows through the middleware in order, and the response flows back in reverse order. Order matters! (e.g., UseAuthentication() must come before UseAuthorization()).
+
+Dependency Injection (DI):
+ASP.NET Core has a built-in DI container (IServiceCollection). You register services at startup, and the framework injects them into constructors (e.g., in Controllers).
+
+Service Lifetimes:
+1. Transient: A new instance is created EVERY time it is requested. Good for lightweight, stateless services.
+2. Scoped: A new instance is created ONCE per HTTP request. All classes asking for the service during that request get the same instance. Essential for Entity Framework Core Database Contexts (DbContext).
+3. Singleton: A single instance is created the first time it is requested, and every subsequent request uses that same instance. Good for caches or configuration.
+
+```csharp
+// Program.cs (.NET 6+)
+var builder = WebApplication.CreateBuilder(args);
+
+// Register services
+builder.Services.AddControllers();
+builder.Services.AddScoped<IUserService, UserService>(); // Scoped registration
+builder.Services.AddDbContext<AppDbContext>(options => 
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+
+var app = builder.Build();
+
+// Middleware pipeline
+app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
+
+app.Run();
+```
+
+---
+
+Q: How does Entity Framework Core (EF Core) work? What is AsNoTracking?
+A: EF Core is an Object-Relational Mapper (ORM) for .NET. It allows developers to work with a database using .NET objects, eliminating the need for most data-access code.
+
+Core Concepts:
+- DbContext: Represents a session with the database. Manages connections and transactions.
+- DbSet<T>: Represents a table in the database.
+- LINQ to Entities: You write queries using C# LINQ, and EF Core translates them into SQL.
+
+Migrations:
+Code-First approach: You define your C# classes, and EF Core generates the SQL scripts to create/update the database schema.
+`dotnet ef migrations add InitialCreate`
+`dotnet ef database update`
+
+AsNoTracking() Performance Optimization:
+By default, when you query data, EF Core stores a snapshot of the objects in its "Change Tracker". If you modify the object and call `SaveChanges()`, EF Core knows exactly what SQL UPDATE statement to generate.
+Tracking consumes significant memory and CPU.
+If you are querying data ONLY to display it (e.g., returning JSON from a REST API) and have no intention of updating it, use `.AsNoTracking()`.
+
+```csharp
+// WITH Tracking (Slower, uses more memory. Use when you need to update the data).
+var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == 1);
+user.Name = "New Name";
+await _context.SaveChangesAsync(); // EF Core automatically issues an UPDATE
+
+// WITHOUT Tracking (Faster, read-only).
+var users = await _context.Users.AsNoTracking().ToListAsync();
+return Ok(users);
+```
+
+---
+
+Q: Explain asynchronous programming in C# (async/await). What is Task.Run?
+A: C# introduced the `async` and `await` keywords to make asynchronous programming easier and avoid blocking threads, which is crucial for scalability in ASP.NET Core and responsiveness in UI apps (WPF/WinUI).
+
+How it works:
+When a thread hits an `await` on an I/O bound operation (like a DB query or HTTP request), the thread is NOT blocked. The thread is released back to the Thread Pool to serve other requests. When the I/O operation completes, a thread from the pool picks up the execution where it left off.
+
+```csharp
+public async Task<User> GetUserAsync(int id)
+{
+    // The executing thread is freed while waiting for the database network response!
+    var user = await _dbContext.Users.FindAsync(id);
+    return user;
+}
+```
+
+Task.Run vs async/await:
+- `await` is for I/O-Bound work (Network, Disk). It does NOT create a new thread. It frees the current thread.
+- `Task.Run` is for CPU-Bound work (Heavy calculations, image processing). It queues the work to a background thread from the Thread Pool.
+
+```csharp
+// DO NOT use Task.Run for I/O in ASP.NET Core!
+// Bad: Consumes 2 threads instead of 1, reducing scalability.
+var user = await Task.Run(() => _dbContext.Users.Find(1));
+
+// Good for CPU-bound work in a UI app to keep the UI responsive:
+await Task.Run(() => PerformIntensiveCalculation());
+```

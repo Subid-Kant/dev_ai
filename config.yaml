@@ -1,0 +1,81 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# DEV AI — Configuration
+# ═══════════════════════════════════════════════════════════════════════════════
+
+model:
+  # Architecture (Llama-style modern Transformer)
+  vocab_size: 32000          # BPE vocabulary
+  context_length: 2048       # Max tokens per context window
+  n_layers: 24               # Transformer blocks
+  n_heads: 16                # Attention heads
+  n_kv_heads: 8              # Key/Value heads (Grouped Query Attention)
+  embed_dim: 1024            # Model dimension
+  ffn_dim: 2816              # SwiGLU FFN intermediate dim
+  dropout: 0.1               # Dropout rate
+  tie_weights: true          # Tie input/output embeddings
+  # Total params: ~350M
+
+training:
+  # --- Kaggle settings (T4 x2, 32GB VRAM) ---
+  batch_size: 1              # Per-GPU batch size (MUST be small to fit in 15GB VRAM)
+  gradient_accumulation: 4   # Effective batch = batch_size * grad_accum * n_gpus (1 * 4 * 2 = 8)
+  learning_rate: 3.0e-4      # Peak LR (cosine schedule)
+  min_lr: 3.0e-5             # Min LR at end of cosine schedule
+  warmup_steps: 100          # Linear warmup
+  max_steps: 1000            # Total training steps
+  weight_decay: 0.1
+  grad_clip: 1.0
+  eval_interval: 500         # Steps between evaluations
+  save_interval: 1000        # Steps between checkpoints
+  mixed_precision: true      # fp16 / bf16
+  gradient_checkpointing: true  # Save VRAM at cost of ~30% speed
+
+  # Data
+  train_split: 0.95          # 95% train, 5% validation
+
+tokenizer:
+  vocab_size: 32000
+  min_frequency: 2           # Min token frequency to include
+  special_tokens:
+    - "<|pad|>"              # id=0
+    - "<|unk|>"              # id=1
+    - "<|bos|>"              # id=2  begin-of-sequence
+    - "<|eos|>"              # id=3  end-of-sequence
+    - "<|topic:python|>"     # id=4
+    - "<|topic:android|>"    # id=5
+    - "<|topic:ios|>"        # id=6
+    - "<|topic:windows|>"    # id=7
+    - "<|topic:mac|>"        # id=8
+    - "<|topic:fullstack|>"  # id=9
+    - "<|topic:networks|>"   # id=10
+    - "<|topic:dbms|>"       # id=11
+    - "<|topic:sql|>"        # id=12
+    - "<|topic:sqlite|>"     # id=13
+    - "<|topic:os|>"         # id=14
+    - "<|topic:java|>"       # id=15
+    - "<|topic:general|>"    # id=16
+    - "<|q|>"                # id=17 question start
+    - "<|a|>"                # id=18 answer start
+    - "<|code|>"             # id=19 code block start
+    - "<|/code|>"            # id=20 code block end
+
+inference:
+  temperature: 0.7           # Sampling temperature
+  top_p: 0.9                 # Nucleus sampling
+  top_k: 50                  # Top-k sampling
+  max_new_tokens: 512        # Max tokens to generate
+  repetition_penalty: 1.1    # Penalize repeated tokens
+  retrieval_top_k: 5         # BM25 chunks to retrieve
+
+server:
+  host: "0.0.0.0"
+  port: 8080
+  workers: 1
+
+paths:
+  knowledge_dir: "knowledge"
+  corpus_file: "data/corpus.txt"
+  tokenizer_file: "data/tokenizer.json"
+  checkpoint_dir: "data/checkpoints"
+  best_model: "data/checkpoints/model_best.pt"
+  latest_model: "data/checkpoints/model_latest.pt"

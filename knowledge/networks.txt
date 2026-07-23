@@ -1,0 +1,2721 @@
+Q: Explain the OSI Model and the TCP/IP Model. What happens when you type a URL into a browser?
+A: The OSI (Open Systems Interconnection) model is a conceptual framework that standardizes the functions of a communication system into 7 layers. TCP/IP is the practical 4-layer model actually used on the internet.
+
+OSI 7 Layers vs TCP/IP 4 Layers:
+7. Application (HTTP, DNS, SMTP)  \
+6. Presentation (SSL/TLS, JPEG)    }-> TCP/IP Application Layer
+5. Session (Sockets)              /
+4. Transport (TCP, UDP)            -> TCP/IP Transport Layer
+3. Network (IP, ICMP, Routing)     -> TCP/IP Internet Layer
+2. Data Link (Ethernet, MAC)      \
+1. Physical (Cables, Radio waves)  }-> TCP/IP Network Access / Link Layer
+
+What happens when you type `https://www.example.com` into a browser?
+1. DNS Resolution:
+   - Browser checks its cache. If not found, checks OS cache, then Router cache.
+   - If not found, OS sends a UDP request to the configured DNS Server (e.g., 8.8.8.8).
+   - DNS server resolves `www.example.com` to an IP address (e.g., 93.184.216.34) using iterative queries (Root -> TLD (.com) -> Authoritative server).
+2. TCP 3-Way Handshake:
+   - Browser initiates a TCP connection to the IP on port 443 (HTTPS).
+   - Client sends SYN. Server replies SYN-ACK. Client replies ACK. (Connection established).
+3. TLS Handshake (for HTTPS):
+   - Client and server negotiate encryption algorithms.
+   - Server sends its SSL certificate (containing public key).
+   - Client verifies certificate against trusted Certificate Authorities (CAs).
+   - Symmetric session keys are generated for encrypted communication.
+4. HTTP Request & Response:
+   - Browser sends encrypted HTTP GET request.
+   - Server processes it and returns an encrypted HTTP Response (HTML content).
+5. Rendering: Browser parses HTML, fetches CSS/JS/Images, and renders the page.
+6. Connection Teardown: TCP connection is eventually closed via 4-way FIN handshake.
+
+---
+
+Q: Explain the difference between TCP and UDP. When should you use which?
+A: TCP (Transmission Control Protocol) and UDP (User Datagram Protocol) are the two primary transport layer protocols.
+
+TCP (Connection-Oriented, Reliable):
+- Characteristics: Requires 3-way handshake. Guarantees delivery (acknowledgments, retransmissions). Guarantees order (sequence numbers). Performs flow control and congestion control.
+- Speed: Slower due to overhead.
+- State: Stateful.
+- Use Cases: Web browsing (HTTP), Email (SMTP), File transfer (FTP), SSH, Database connections. Any application where missing data corrupts the file.
+
+UDP (Connectionless, Unreliable):
+- Characteristics: Fire and forget. No handshake, no guarantees of delivery, no ordering guarantees. Packets (datagrams) can arrive out of order or be dropped.
+- Speed: Very fast. Minimal header overhead (8 bytes vs TCP's 20 bytes).
+- State: Stateless.
+- Use Cases: Live video streaming (Twitch/YouTube Live), VoIP (Zoom/Skype calls), Online multiplayer gaming, DNS queries. Any application where a dropped frame is better than a delayed frame.
+
+```python
+# Simple UDP Client/Server in Python
+import socket
+
+# Server
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # SOCK_DGRAM = UDP
+sock.bind(("0.0.0.0", 5005))
+while True:
+    data, addr = sock.recvfrom(1024)
+    print("Received:", data.decode())
+
+# Client
+client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+client.sendto(b"Hello UDP!", ("127.0.0.0", 5005))
+```
+
+---
+
+Q: Explain HTTP/1.1 vs HTTP/2 vs HTTP/3.
+A: HTTP has evolved to reduce latency and improve web performance.
+
+HTTP/1.1 (1997):
+- Text-based protocol.
+- Keep-Alive: Reuses a single TCP connection for multiple requests (avoids repeated 3-way handshakes).
+- Head-of-Line (HoL) Blocking: Requests on a connection must be answered in order. If request 1 takes 5 seconds, request 2 must wait, even if it's tiny.
+- Workaround: Browsers open multiple TCP connections per domain (usually 6). Domain sharding.
+
+HTTP/2 (2015):
+- Binary protocol: Parses faster, less error-prone.
+- Multiplexing: Sends multiple requests and responses in parallel over a SINGLE TCP connection. Solves HTTP-level HoL blocking.
+- Header Compression (HPACK): Compresses repetitive headers to save bandwidth.
+- Server Push: Server can send CSS/JS before the browser asks for it (mostly deprecated now).
+- Problem: Still uses TCP. If a single packet is lost, TCP pauses all streams to wait for retransmission (TCP-level HoL blocking).
+
+HTTP/3 (2022+):
+- Replaces TCP with QUIC (built on top of UDP).
+- QUIC handles multiplexing, reliability, and security (TLS 1.3 is built-in).
+- Solves TCP HoL blocking: If a packet for Stream A is lost, only Stream A pauses. Stream B continues uninterrupted.
+- 0-RTT: Clients can resume previous sessions with zero round-trip delay for handshakes.
+- Highly resistant to network changes (e.g., switching from WiFi to Cellular doesn't break the connection, because QUIC uses connection IDs, not IP/Port pairs).
+
+---
+
+Q: How do WebSockets work? How are they different from HTTP Long Polling and Server-Sent Events (SSE)?
+A: Traditional HTTP is unidirectional (Client asks, Server responds) and stateless. Modern web apps need real-time bi-directional data (chat apps, stock tickers).
+
+1. HTTP Long Polling:
+Client makes an HTTP request. Server holds the request open until data is available. Server responds, connection closes. Client immediately opens a new request.
+- Pros: Works everywhere, bypasses strict firewalls.
+- Cons: High overhead (HTTP headers on every request), latency.
+
+2. Server-Sent Events (SSE):
+Client requests an SSE endpoint. Server holds the connection open and pushes a continuous stream of text events (text/event-stream) to the client.
+- Pros: Built on standard HTTP, native browser API (`EventSource`), automatic reconnection.
+- Cons: Unidirectional (Server -> Client only). Client cannot send data through the same stream (must use standard HTTP POST).
+- Best for: News feeds, live scores, AI token streaming.
+
+3. WebSockets:
+Upgrades an HTTP connection to a persistent, bi-directional, full-duplex TCP socket.
+Handshake: Client sends HTTP GET with `Upgrade: websocket`. Server responds `101 Switching Protocols`.
+- Pros: Extremely low latency, low overhead, true bi-directional binary/text communication.
+- Cons: Stateful (requires load balancers that support sticky sessions or external pub/sub like Redis), more complex to scale.
+- Best for: Chat applications, multiplayer browser games, collaborative editing (Figma).
+
+```javascript
+// Node.js WebSocket Server (using 'ws' library)
+const WebSocket = require('ws');
+const wss = new WebSocket.Server({ port: 8080 });
+
+wss.on('connection', function connection(ws) {
+  ws.on('message', function incoming(message) {
+    console.log('received: %s', message);
+    // Broadcast to everyone else
+    wss.clients.forEach(client => {
+      if (client !== ws && client.readyState === WebSocket.OPEN) {
+        client.send(message.toString());
+      }
+    });
+  });
+  ws.send('Welcome to the WebSocket server!');
+});
+
+// Browser Client
+const socket = new WebSocket('ws://localhost:8080');
+socket.onmessage = (event) => console.log('Message from server:', event.data);
+socket.send('Hello from client!');
+```
+
+
+============================================================
+SOURCE: Networks Expert Q&A
+============================================================
+
+
+COMPUTER NETWORKS — COMPREHENSIVE GUIDE
+
+=== OSI MODEL (7 Layers) ===
+Layer 7 - Application:  HTTP, FTP, SMTP, DNS, WebSocket
+Layer 6 - Presentation: SSL/TLS, encryption, compression
+Layer 5 - Session:      Session management, authentication
+Layer 4 - Transport:    TCP, UDP, ports, segmentation
+Layer 3 - Network:      IP addressing, routing, subnetting
+Layer 2 - Data Link:    MAC addresses, Ethernet, switches
+Layer 1 - Physical:     Cables, signals, bits
+
+=== TCP vs UDP ===
+TCP (Transmission Control Protocol):
+- Connection-oriented (3-way handshake: SYN, SYN-ACK, ACK)
+- Reliable: guaranteed delivery, ordering, error checking
+- Flow control and congestion control
+- Use: HTTP, HTTPS, FTP, SSH, email
+- Slower but reliable
+
+UDP (User Datagram Protocol):
+- Connectionless, no handshake
+- No guaranteed delivery or ordering
+- Lower latency, higher throughput
+- Use: DNS, video streaming, VoIP, gaming, WebRTC
+
+=== HTTP METHODS & STATUS CODES ===
+GET     - Retrieve resource (safe, idempotent)
+POST    - Create resource
+PUT     - Replace entire resource (idempotent)
+PATCH   - Partial update
+DELETE  - Remove resource
+HEAD    - Like GET but no body
+OPTIONS - Check allowed methods (CORS preflight)
+
+200 OK, 201 Created, 204 No Content
+301 Moved Permanently, 302 Found, 304 Not Modified
+400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found, 409 Conflict, 422 Unprocessable Entity, 429 Too Many Requests
+500 Internal Server Error, 502 Bad Gateway, 503 Service Unavailable, 504 Gateway Timeout
+
+=== REST API DESIGN ===
+Q: What are REST API best practices?
+A:
+Use nouns, not verbs: /users not /getUsers
+Versioning: /api/v1/users
+Pagination: GET /users?page=1&limit=20
+Filtering: GET /users?role=admin&active=true
+Sorting: GET /users?sort=-created_at (descending)
+HATEOAS: Include links in responses
+
+Response format:
+{
+  "data": { ... },
+  "meta": { "total": 100, "page": 1, "per_page": 20 },
+  "links": { "self": "/api/v1/users?page=1", "next": "/api/v1/users?page=2" }
+}
+
+Error format:
+{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid email format",
+    "details": [{ "field": "email", "issue": "Must be valid email" }]
+  }
+}
+
+=== DNS RESOLUTION ===
+1. Browser checks local cache
+2. OS checks /etc/hosts
+3. OS queries local DNS resolver (usually ISP)
+4. Recursive query: Root DNS → TLD server (.com) → Authoritative DNS
+5. IP address returned and cached with TTL
+
+=== WEBSOCKETS ===
+// Server (Node.js)
+const WebSocket = require('ws');
+const wss = new WebSocket.Server({ port: 8080 });
+
+wss.on('connection', (ws) => {
+    ws.on('message', (data) => {
+        // Broadcast to all clients
+        wss.clients.forEach(client => {
+            if (client.readyState === WebSocket.OPEN) {
+                client.send(data.toString());
+            }
+        });
+    });
+});
+
+// Client (JavaScript)
+const ws = new WebSocket('ws://localhost:8080');
+ws.onopen = () => ws.send(JSON.stringify({ type: 'hello' }));
+ws.onmessage = (e) => console.log(JSON.parse(e.data));
+
+=== HTTPS AND TLS HANDSHAKE ===
+1. Client Hello: supported TLS versions, cipher suites
+2. Server Hello: chosen version, cipher, certificate
+3. Client verifies certificate against CA
+4. Key exchange (Diffie-Hellman or RSA)
+5. Session keys derived
+6. Secure communication begins
+
+=== LOAD BALANCING ALGORITHMS ===
+Round Robin: Requests distributed evenly in order
+Least Connections: Send to server with fewest active connections
+IP Hash: Same client always goes to same server (session stickiness)
+Weighted: Servers with more capacity get more traffic
+
+
+============================================================
+SOURCE: Networks Deep Dive Expert
+============================================================
+
+
+Q: Explain the full HTTP/2 and HTTP/3 improvements over HTTP/1.1?
+A:
+HTTP/1.1 Problems:
+- Head-of-line blocking: requests queued on same TCP connection
+- No header compression: redundant headers sent every request
+- Only text protocol: inefficient binary parsing
+
+HTTP/2 Solutions (2015):
+- Multiplexing: multiple streams on ONE TCP connection (no head-of-line blocking at HTTP layer)
+- Header compression (HPACK): reference tables for repeated headers
+- Server push: server can proactively send resources
+- Binary protocol: frames instead of text
+- Stream prioritization
+
+HTTP/3 Solutions (2022):
+- Runs on QUIC protocol (built on UDP) instead of TCP
+- Eliminates TCP head-of-line blocking entirely (each stream independent)
+- Built-in TLS 1.3 (0-RTT connection resumption for returning clients)
+- Connection migration: switch networks (WiFi→4G) without dropping connection
+- Faster connection setup: 0-RTT vs 3-way handshake + TLS handshake
+
+Q: How do you implement rate limiting in an API gateway?
+A:
+// Token Bucket Algorithm in Redis
+class RateLimiter:
+    def __init__(self, redis_client, max_requests=100, window_seconds=60):
+        self.redis = redis_client
+        self.max_requests = max_requests
+        self.window = window_seconds
+
+    def is_allowed(self, identifier: str) -> tuple[bool, dict]:
+        key = f"rate:{identifier}"
+        pipe = self.redis.pipeline()
+        now = time.time()
+        window_start = now - self.window
+
+        pipe.zremrangebyscore(key, 0, window_start)  # Remove old entries
+        pipe.zadd(key, {str(now): now})              # Add current request
+        pipe.zcard(key)                               # Count requests
+        pipe.expire(key, self.window)                 # Set expiry
+        results = pipe.execute()
+
+        count = results[2]
+        remaining = max(0, self.max_requests - count)
+        reset_at = now + self.window
+
+        return count <= self.max_requests, {
+            "X-RateLimit-Limit": str(self.max_requests),
+            "X-RateLimit-Remaining": str(remaining),
+            "X-RateLimit-Reset": str(int(reset_at)),
+        }
+
+Q: How does a CDN work and how should you configure caching headers?
+A:
+CDN (Content Delivery Network) flow:
+1. User requests resource from edge node (closest geographically)
+2. Edge node checks local cache: HIT → return immediately
+3. Cache MISS → edge fetches from origin server
+4. Edge caches response based on Cache-Control headers
+5. Future requests for same resource served from edge
+
+Cache-Control headers:
+Cache-Control: public, max-age=31536000, immutable
+  - public: can be cached by CDN and browsers
+  - max-age=31536000: cache for 1 year (use with content hashing!)
+  - immutable: browser won't revalidate even on reload
+
+Cache-Control: private, no-cache
+  - private: only browser cache, NOT CDN
+  - no-cache: must revalidate with server before serving
+
+Cache-Control: no-store
+  - Never cache (sensitive data: banking, auth tokens)
+
+ETag pattern (conditional requests):
+Server sends: ETag: "abc123"
+Browser sends on next request: If-None-Match: "abc123"
+Server returns 304 Not Modified if unchanged (no body = less bandwidth)
+
+
+============================================================
+SOURCE: HTTP Overview
+============================================================
+
+Overview of HTTP - HTTP | MDN
+
+ Skip to main content
+
+ Skip to search
+
+ Toggle sidebar
+
+ Web
+
+ HTTP
+
+ Guides
+
+ Overview of HTTP
+
+ Theme
+
+ OS default
+
+ Light
+
+ Dark
+
+ English (US)
+
+ Remember language
+
+ Learn more
+
+ Deutsch
+
+ English (US)
+
+ Español
+
+ Français
+
+ 日本語
+
+ 한국어
+
+ Português (do Brasil)
+
+ Русский
+
+ 中文 (简体)
+
+ Overview of HTTP
+
+ HTTP is a protocol for fetching resources such as HTML documents.
+It is the foundation of any data exchange on the Web and it is a client-server protocol, which means requests are initiated by the recipient, usually the Web browser.
+A complete document is typically constructed from resources such as text content, layout instructions, images, videos, scripts, and more.
+
+Clients and servers communicate by exchanging individual messages (as opposed to a stream of data).
+The messages sent by the client are called requests and the messages sent by the server as an answer are called responses.
+
+Designed in the early 1990s, HTTP is an extensible protocol which has evolved over time.
+It is an application layer protocol that is sent over TCP, or over a TLS-encrypted TCP connection, though any reliable transport protocol could theoretically be used.
+Due to its extensibility, it is used to not only fetch hypertext documents, but also images and videos or to post content to servers, like with HTML form results.
+HTTP can also be used to fetch parts of documents to update Web pages on demand.
+
+ Components of HTTP-based systems
+ HTTP is a client-server protocol: requests are sent by one entity, the user-agent (or a proxy on behalf of it).
+Most of the time the user-agent is a Web browser, but it can be anything, for example, a robot that crawls the Web to populate and maintain a search engine index.
+Each individual request is sent to a server, which handles it and provides an answer called the response.
+Between the client and the server there are numerous entities, collectively called proxies, which perform different operations and act as gateways or caches, for example.
+
+In reality, there are more computers between a browser and the server handling the request: there are routers, modems, and more.
+Thanks to the layered design of the Web, these are hidden in the network and transport layers.
+HTTP is on top, at the application layer.
+Although important for diagnosing network problems, the underlying layers are mostly irrelevant to the description of HTTP.
+ 
+ Client: the user-agent
+ The user-agent is any tool that acts on behalf of the user.
+This role is primarily performed by the Web browser, but it may also be performed by programs used by engineers and Web developers to debug their applications.
+The browser is always the entity initiating the request.
+It is never the server (though some mechanisms have been added over the years to simulate server-initiated messages).
+To display a Web page, the browser sends an original request to fetch the HTML document that represents the page.
+It then parses this file, making additional requests corresponding to execution scripts, layout information (CSS) to display, and sub-resources contained within the page (usually images and videos).
+The Web browser then combines these resources to present the complete document, the Web page.
+Scripts executed by the browser can fetch more resources in later phases and the browser updates the Web page accordingly.
+A Web page is a hypertext document.
+This means some parts of the displayed content are links, which can be activated (usually by a click of the mouse) to fetch a new Web page, allowing the user to direct their user-agent and navigate through the Web.
+The browser translates these directions into HTTP requests, and further interprets the HTTP responses to present the user with a clear response.
+ 
+ The Web server
+ On the opposite side of the communication channel is the server, which serves the document as requested by the client.
+A server appears as only a single machine virtually; but it may actually be a collection of servers sharing the load (load balancing), or other software (such as caches, a database server, or e-commerce servers), totally or partially generating the document on demand.
+A server is not necessarily a single machine, but several server software instances can be hosted on the same machine.
+With HTTP/1.1 and the Host header, they may even share the same IP address.
+ 
+ Proxies
+ Between the Web browser and the server, numerous computers and machines relay the HTTP messages.
+Due to the layered structure of the Web stack, most of these operate at the transport, network or physical levels, becoming transparent at the HTTP layer and potentially having a significant impact on performance.
+Those operating at the application layers are generally called proxies.
+These can be transparent, forwarding on the requests they receive without altering them in any way, or non-transparent, in which case they will change the request in some way before passing it along to the server.
+Proxies may perform numerous functions:
+
+caching (the cache can be public or private, like the browser cache)
+filtering (like an antivirus scan or parental controls)
+load balancing (to allow multiple servers to serve different requests)
+authentication (to control access to different resources)
+logging (allowing the storage of historical information)
+
+ Basic aspects of HTTP
+
+ HTTP is simple
+ HTTP is generally designed to be human-readable, even with the added complexity introduced in HTTP/2 by encapsulating HTTP messages into frames.
+HTTP messages can be read and understood by humans, providing easier testing for developers, and reduced complexity for newcomers.
+ 
+ HTTP is extensible
+ Introduced in HTTP/1.0, HTTP headers make this protocol easy to extend and experiment with.
+New functionality can even be introduced by an agreement between a client and a server about a new header's semantics.
+ 
+ HTTP is stateless, but not sessionless
+ HTTP is stateless: there is no link between two requests being successively carried out on the same connection.
+This immediately has the prospect of being problematic for users attempting to interact with certain pages coherently, for example, using e-commerce shopping baskets.
+But while the core of HTTP itself is stateless, HTTP cookies allow the use of stateful sessions.
+Using header extensibility, HTTP Cookies are added to the workflow, allowing session creation on each HTTP request to share the same context, or the same state.
+ 
+ HTTP and connections
+ A connection is controlled at the transport layer, and therefore fundamentally out of scope for HTTP.
+HTTP doesn't require the underlying transport protocol to be connection-based; it only requires it to be reliable, or not lose messages (at minimum, presenting an error in such cases).
+Among the two most common transport protocols on the Internet, TCP is reliable and UDP isn't.
+HTTP therefore relies on the TCP standard, which is connection-based.
+Before a client and server can exchange an HTTP request/response pair, they must establish a TCP connection, a process which requires several round-trips.
+The default behavior of HTTP/1.0 is to open a separate TCP connection for each HTTP request/response pair.
+This is less efficient than sharing a single TCP connection when multiple requests are sent in close succession.
+In order to mitigate this flaw, HTTP/1.1 introduced pipelining (which proved difficult to implement) and persistent connections: the underlying TCP connection can be partially controlled using the Connection header.
+HTTP/2 went a step further by multiplexing messages over a single connection, helping keep the connection warm and more efficient.
+Experiments are in progress to design a better transport protocol more suited to HTTP.
+For example, Google is experimenting with QUIC which builds on UDP to provide a more reliable and efficient transport protocol.
+ 
+ What can be controlled by HTTP
+ This extensible nature of HTTP has, over time, allowed for more control and functionality of the Web.
+Cache and authentication methods were functions handled early in HTTP history.
+The ability to relax the origin constraint, by contrast, was only added in the 2010s.
+Here is a list of common features controllable with HTTP:
+
+Caching:
+How documents are cached can be controlled by HTTP.
+The server can instruct proxies and clients about what to cache and for how long.
+The client can instruct intermediate cache proxies to ignore the stored document.
+Relaxing the origin constraint:
+To prevent snooping and other privacy invasions, Web browsers enforce strict separation between websites.
+Only pages from the same origin can access all the information of a Web page.
+Though such a constraint is a burden to the server, HTTP headers can relax this strict separation on the server side, allowing a document to become a patchwork of information sourced from different domains; there could even be security-related reasons to do so.
+Authentication:
+Some pages may be protected so that only specific users can access them.
+Basic authentication may be provided by HTTP, either using the WWW-Authenticate and similar headers, or by setting a specific session using HTTP cookies.
+Proxy and tunneling:
+Servers or clients are often located on intranets and hide their true IP address from other computers.
+HTTP requests then go through proxies to cross this network barrier.
+Not all proxies are HTTP proxies.
+The SOCKS protocol, for example, operates at a lower level.
+Other protocols, like FTP, can be handled by these proxies.
+Sessions:
+Using HTTP cookies allows you to link requests with the state of the server.
+This creates sessions, despite basic HTTP being a state-less protocol.
+This is useful not only for e-commerce shopping baskets, but also for any site allowing user configuration of the output.
+
+ HTTP flow
+ When a client wants to communicate with a server, either the final server or an intermediate proxy, it performs the following steps:
+
+Open a TCP connection: The TCP connection is used to send a request, or several, and receive an answer.
+The client may open a new connection, reuse an existing connection, or open several TCP connections to the servers.
+
+Send an HTTP message: HTTP messages (before HTTP/2) are human-readable.
+With HTTP/2, these messages are encapsulated in frames, making them impossible to read directly, but the principle remains the same.
+For example:
+httpGET / HTTP/1.1
+Host: developer.mozilla.org
+Accept-Language: fr
+
+Read the response sent by the server, such as:
+httpHTTP/1.1 200 OK
+Date: Sat, 09 Oct 2010 14:28:02 GMT
+Server: Apache
+Last-Modified: Tue, 01 Dec 2009 20:18:22 GMT
+ETag: "51142bc1-7449-479b075b2891b"
+Accept-Ranges: bytes
+Content-Length: 29769
+Content-Type: text/html
+
+<!doctype html>… (here come the 29769 bytes of the requested web page)
+
+Close or reuse the connection for further requests.
+
+If HTTP pipelining is activated, several requests can be sent without waiting for the first response to be fully received.
+HTTP pipelining has proven difficult to implement in existing networks, where old pieces of software coexist with modern versions.
+HTTP pipelining has been superseded in HTTP/2 with more robust multiplexing requests within a frame.
+ 
+ HTTP Messages
+ HTTP messages, as defined in HTTP/1.1 and earlier, are human-readable.
+In HTTP/2, these messages are embedded into a binary structure, a frame, allowing optimizations like compression of headers and multiplexing.
+Even if only part of the original HTTP message is sent in this version of HTTP, the semantics of each message is unchanged and the client reconstitutes (virtually) the original HTTP/1.1 request.
+It is therefore useful to comprehend HTTP/2 messages in the HTTP/1.1 format.
+There are two types of HTTP messages, requests and responses, each with its own format.
+ 
+ Requests
+ An example HTTP request:
+
+Requests consist of the following elements:
+
+An HTTP method, usually a verb like GET, POST, or a noun like OPTIONS or HEAD that defines the operation the client wants to perform.
+Typically, a client wants to fetch a resource (using GET) or post the value of an HTML form (using POST), though more operations may be needed in other cases.
+The path of the resource to fetch; the URL of the resource stripped from elements that are obvious from the context, for example without the protocol (http://), the domain (here, developer.mozilla.org), or the TCP port (here, 80).
+The version of the HTTP protocol.
+Optional headers that convey additional information for the servers.
+A body, for some methods like POST, similar to those in responses, which contain the resource sent.
+
+ Responses
+ An example response:
+
+Responses consist of the following elements:
+
+The version of the HTTP protocol they follow.
+A status code, indicating if the request was successful or not, and why.
+A status message, a non-authoritative short description of the status code.
+HTTP headers, like those for requests.
+Optionally, a body containing the fetched resource.
+
+ APIs based on HTTP
+ The most commonly used API based on HTTP is the Fetch API, which can be used to make HTTP requests from JavaScript. The Fetch API replaces the XMLHttpRequest API.
+Another API, server-sent events, is a one-way service that allows a server to send events to the client, using HTTP as a transport mechanism.
+Using the EventSource interface, the client opens a connection and establishes event handlers.
+The client browser automatically converts the messages that arrive on the HTTP stream into appropriate Event objects. Then it delivers them to the event handlers that have been registered for the events' type if known, or to the onmessage event handler if no type-specific event handler was established.
+ 
+ Conclusion
+ HTTP is an extensible protocol that is easy to use.
+The client-server structure, combined with the ability to add headers, allows HTTP to advance along with the extended capabilities of the Web.
+Though HTTP/2 adds some complexity by embedding HTTP messages in frames to improve performance, the basic structure of messages has stayed the same since HTTP/1.0.
+Session flow remains basic, allowing it to be investigated and debugged with a HTTP network monitor.
+ 
+ See also
+ 
+Evolution of HTTP
+Glossary terms:
+
+HTTP
+HTTP/2
+QUIC
+
+ Help improve MDN
+
+ Was this page helpful to you?
+
+ Yes
+
+ No
+
+ Learn how to contribute 
+ This page was last modified on Jan 26, 2026 by MDN contributors.
+ 
+ View this page on GitHub • Report a problem with this content
+
+============================================================
+SOURCE: TLS
+============================================================
+
+Transport Layer Security (TLS) - Security | MDN
+
+ Skip to main content
+
+ Skip to search
+
+ Toggle sidebar
+
+ Web
+
+ Security
+
+ Defenses
+
+ Transport Layer Security
+
+ Theme
+
+ OS default
+
+ Light
+
+ Dark
+
+ English (US)
+
+ Remember language
+
+ Learn more
+
+ Deutsch
+
+ English (US)
+
+ 日本語
+
+ 한국어
+
+ 中文 (简体)
+
+ Transport Layer Security (TLS)
+
+ Transport Layer Security (TLS) is a protocol which enables a client to communicate securely with a server across an untrusted network. Most notably it's used to secure HTTP connections on the web: the resulting protocol is called HTTPS.
+TLS secures a network connection in three ways:
+
+Encryption: the data exchanged between client and server is encrypted while in transit, so it can't be read by any attackers.
+Integrity: an attacker can't secretly modify data (without detection) while it is in transit between client and server.
+Authentication: client and server are each able to prove to the other party that they are the entity they claim to be. On the web, servers usually authenticate themselves to clients, but clients don't usually authenticate themselves to servers.
+
+In particular, HTTPS is the defense against a manipulator in the middle (MITM) attack, in which the attacker inserts themselves between the user's browser and the server they are connecting to, and can read and modify the traffic exchanged.
+Browsers consider pages delivered over HTTPS as providing a secure context. Many powerful web APIs are only available to code running in a secure context.
+All websites should serve all their pages and subresources over HTTPS, and implement server authentication.
+
+ TLS handshake
+ When a client connects to a server using TLS, an initial handshake sets the security parameters for the protocol:
+
+Client and server agree on which version of TLS to use. The current version of TLS is 1.3 (RFC 8446), and this is the most widely-used version. TLS 1.2 is still used by some websites, and TLS 1.1 and 1.0 should no longer be used.
+Client and server agree on the cipher suite that they will use: this defines the algorithms that they will use for key agreement, authentication, encryption, and message authentication.
+Optionally, client and server authenticate each other. Client authentication, in which the client proves who they are to the server, is rare on the web outside some specialized applications. However, server authentication, in which the server proves who they are to the client, is a fundamental part of web security.
+Client and server agree on a secret key that they will use to encrypt and decrypt messages.
+
+After the handshake, client and server use the secret key to encrypt and decrypt any messages, including HTTP headers as well as bodies.
+ 
+ Configuring TLS
+ Choosing the right TLS server configuration has a big impact on the security of the connection. In particular, it determines the TLS version and cryptographic algorithms that will be used. If you need to configure your own server, consult a resource such as Mozilla's TLS Recommended Configurations.
+Mozilla also provides a TLS configuration generator that will generate configuration files for a wide range of web servers.
+ 
+ Server authentication
+ To support server authentication, your website must have a digital certificate, which contains a digitally signed copy of the public key which is the counterpart of the website's private key. This binds the website's keys to their domain name, so the browser knows that it really is connecting to, for example, "https://example.com".
+Let's Encrypt is a widely used nonprofit Certification Authority which issues free TLS certificates.
+Modern web hosting services support HTTPS for you, either by default or through a configuration setting. In this situation, the hosting service is likely to manage your certificate and configure the server on your behalf.
+ 
+ Mixed content
+ A website should use HTTPS not only for the main document, but also for all subresources that it loads, such as scripts, stylesheets, images, and fonts. If a website loads the main document over HTTPS but then loads any of its subresources over HTTP, this is called mixed content.
+For example, if a document served from https://example.org includes the following content, then it will constitute mixed content:
+html<img src="http://example.org/my-image.png" />
+
+Mixed content is unsafe because the subresources don't get the protection that HTTPS offers, so an attacker can not only read them but potentially also modify them. This can undermine the integrity of the page as a whole! For example, we could imagine an attacker modifying a script to behave harmfully. Other resources are less dangerous than scripts, but still potentially dangerous: for example, an attacker could modify images so as to confuse or mislead users.
+For this reason, browsers don't allow secure pages to load insecure subresources. Instead, depending on the type of subresource, they either upgrade the load request to use HTTPS, or block the request entirely.
+If it's not possible for you to update your code to load resources from HTTPS URLs (for example, because your HTML has been archived), your server can set a content security policy that contains the upgrade-insecure-requests directive, and the browser will automatically upgrade these requests to HTTPS.
+See Mixed content for more details.
+ 
+ Upgrading HTTP connections
+ Even if a site is only served over HTTPS, users may still request it over HTTP: for example, by typing http://example.org into the address bar. To enable the site to work in cases like this, listen for HTTP requests and use a 301 Moved Permanently response to redirect to the HTTPS version.
+However, this gives attackers the opportunity to intercept the initial exchange, and then prevent the upgrade to HTTPS from happening. This is sometimes called an SSL stripping attack (SSL is the precursor to TLS).
+To reduce the risk of this attack, the server should also send the Strict-Transport-Security HTTP response header (also known as HSTS): this informs clients that the site wishes them to use HTTPS, and will cause the browser to connect using HTTPS directly for any subsequent visits, even those made using HTTP URLs.
+With HSTS, SSL stripping is prevented except for the first time the browser tries to connect to your site (or, since HSTS has an expiry, the first time after an HSTS record in the browser has expired). To protect the site even on first connection or HSTS record expiry, Chrome maintains a list of domains called the HSTS preload list: if a domain is on this list, then Chrome will always upgrade HTTP requests to HTTPS, effectively behaving as if the server has already sent the HSTS header. Safari and Firefox have similar behavior, using a list that is derived from the Chrome list.
+ 
+ See also
+ 
+Testing HTTPS/TLS configurations:
+
+Mozilla HTTP Observatory
+SSL Labs
+
+Recommended TLS configurations:
+
+Mozilla recommended configurations
+Cipherlist.eu recommended TLS configurations
+
+ Help improve MDN
+
+ Was this page helpful to you?
+
+ Yes
+
+ No
+
+ Learn how to contribute 
+ This page was last modified on Feb 28, 2026 by MDN contributors.
+ 
+ View this page on GitHub • Report a problem with this content
+
+============================================================
+SOURCE: HTTP Auth
+============================================================
+
+HTTP authentication - HTTP | MDN
+
+ Skip to main content
+
+ Skip to search
+
+ Toggle sidebar
+
+ Web
+
+ HTTP
+
+ Guides
+
+ HTTP authentication
+
+ Theme
+
+ OS default
+
+ Light
+
+ Dark
+
+ English (US)
+
+ Remember language
+
+ Learn more
+
+ Deutsch
+
+ English (US)
+
+ Español
+
+ Français
+
+ 日本語
+
+ 한국어
+
+ Português (do Brasil)
+
+ Русский
+
+ 中文 (简体)
+
+ HTTP authentication
+
+ HTTP provides a general framework for access control and authentication.
+This page is an introduction to the HTTP framework for authentication, and shows how to restrict access to your server using the HTTP "Basic" scheme.
+
+ The general HTTP authentication framework
+ RFC 7235 defines the HTTP authentication framework, which can be used by a server to challenge a client request, and by a client to provide authentication information.
+The challenge and response flow works like this:
+
+The server responds to a client with a 401 (Unauthorized) response status and provides information on how to authorize with a WWW-Authenticate response header containing at least one challenge.
+A client that wants to authenticate itself with the server can then do so by including an Authorization request header with the credentials.
+Usually a client will present a password prompt to the user and will then issue the request including the correct Authorization header.
+
+The general message flow above is the same for most (if not all) authentication schemes.
+The actual information in the headers and the way it is encoded does change!
+
+Warning:
+The "Basic" authentication scheme used in the diagram above sends the credentials encoded but not encrypted.
+This would be completely insecure unless the exchange was over a secure connection (HTTPS/TLS).
+
+ Proxy authentication
+ The same challenge and response mechanism can be used for proxy authentication.
+As both resource authentication and proxy authentication can coexist, a different set of headers and status codes is needed. In the case of proxies, the challenging status code is 407 (Proxy Authentication Required), the Proxy-Authenticate response header contains at least one challenge applicable to the proxy, and the Proxy-Authorization request header is used for providing the credentials to the proxy server.
+ 
+ Access forbidden
+ If a (proxy) server receives invalid credentials, it should respond with a 401 Unauthorized or with a 407 Proxy Authentication Required, and the user may send a new request or replace the Authorization header field.
+If a (proxy) server receives valid credentials that are inadequate to access a given resource, the server should respond with the 403 Forbidden status code. Unlike 401 Unauthorized or 407 Proxy Authentication Required, authentication is impossible for this user and browsers will not propose a new attempt.
+In all cases, the server may prefer returning a 404 Not Found status code, to hide the existence of the page to a user without adequate privileges or not correctly authenticated.
+ 
+ Authentication of cross-origin images
+ A potential security hole (that has since been fixed in browsers) was authentication of cross-site images.
+From Firefox 59 onwards, image resources loaded from different origins to the current document are no longer able to trigger HTTP authentication dialogs (Firefox bug 1423146), preventing user credentials being stolen if attackers were able to embed an arbitrary image into a third-party page.
+ 
+ Character encoding of HTTP authentication
+ Browsers use utf-8 encoding for usernames and passwords.
+Firefox once used ISO-8859-1, but changed to utf-8 for parity with other browsers and to avoid potential problems as described in Firefox bug 1419658.
+ 
+ WWW-Authenticate and Proxy-Authenticate headers
+ The WWW-Authenticate and Proxy-Authenticate response headers define the authentication method that should be used to gain access to a resource. They must specify which authentication scheme is used, so that the client that wishes to authorize knows how to provide the credentials.
+The syntax for these headers is the following:
+httpWWW-Authenticate: <type> realm=<realm>
+Proxy-Authenticate: <type> realm=<realm>
+
+Here, <type> is the authentication scheme ("Basic" is the most common scheme and introduced below). The realm is used to describe the protected area or to indicate the scope of protection. This could be a message like "Access to the staging site" or similar, so that the user knows to which space they are trying to get access to.
+ 
+ Authorization and Proxy-Authorization headers
+ The Authorization and Proxy-Authorization request headers contain the credentials to authenticate a user agent with a (proxy) server. Here, the <type> is needed again followed by the credentials, which can be encoded or encrypted depending on which authentication scheme is used.
+httpAuthorization: <type> <credentials>
+Proxy-Authorization: <type> <credentials>
+
+ Authentication schemes
+ The general HTTP authentication framework is the base for a number of authentication schemes.
+IANA maintains a list of authentication schemes, but there are other schemes offered by host services, such as Amazon AWS.
+Some common authentication schemes include:
+
+Basic
+
+See RFC 7617, base64-encoded credentials. More information below.
+
+Bearer
+
+See RFC 6750, bearer tokens to access OAuth 2.0-protected resources
+
+Digest
+
+See RFC 7616. Firefox 93 and later support the SHA-256 algorithm. Previous versions only support MD5 hashing (not recommended).
+
+HOBA
+
+See RFC 7486, Section 3, HTTP Origin-Bound Authentication, digital-signature-based
+
+Mutual
+
+See RFC 8120
+
+Negotiate / NTLM
+
+See RFC4599
+
+VAPID
+
+See RFC 8292
+
+SCRAM
+
+See RFC 7804
+
+AWS4-HMAC-SHA256
+
+See AWS docs. This scheme is used for AWS3 server authentication.
+
+Schemes can differ in security strength and in their availability in client or server software.
+The "Basic" authentication scheme offers very poor security, but is widely supported and easy to set up.
+It is introduced in more detail below.
+ 
+ Basic authentication scheme
+ The "Basic" HTTP authentication scheme is defined in RFC 7617, which transmits credentials as user ID/password pairs, encoded using base64.
+ 
+ Security of basic authentication
+ As the user ID and password are passed over the network as clear text (it is base64 encoded, but base64 is a reversible encoding), the basic authentication scheme is not secure.
+HTTPS/TLS should be used with basic authentication to prevent credential interception.
+In addition, sites that use HTTP Basic Auth are particularly vulnerable to Cross-Site Request Forgery (CSRF) attacks because the user credentials are sent in all requests regardless of origin (this differs cookie-based credential mechanisms, because cookies are commonly blocked in cross site requests).
+Sites should always use the POST requests when changing data, and include CSRF tokens.
+Without these security enhancements, basic authentication should not be used to protect sensitive or valuable information.
+ 
+ Restricting access with Apache and basic authentication
+ To password-protect a directory on an Apache server, you will need a .htaccess and a .htpasswd file.
+The .htaccess file typically looks like this:
+apacheconfAuthType Basic
+AuthName "Access to the staging site"
+AuthUserFile /path/to/.htpasswd
+Require valid-user
+
+The .htaccess file references a .htpasswd file in which each line consists of a username and a password separated by a colon (:). You cannot see the actual passwords as they are hashed (using MD5-based hashing, in this case). Note that you can name your .htpasswd file differently if you like, but keep in mind this file shouldn't be accessible to anyone. (Apache is usually configured to prevent access to .ht* files).
+apacheconfaladdin:$apr1$ZjTqBB3f$IF9gdYAGlMrs2fuINjHsz.
+user2:$apr1$O04r.y2H$/vEkesPhVInBByJUkXitA/
+
+ Restricting access with Nginx and basic authentication
+ For Nginx, you will need to specify a location that you are going to protect and the auth_basic directive that provides the name to the password-protected area.
+The auth_basic_user_file directive then points to a .htpasswd file containing the encrypted user credentials, just like in the Apache example above.
+apacheconflocation /status {
+ auth_basic "Access to the staging site";
+ auth_basic_user_file /etc/apache2/.htpasswd;
+}
+
+ Access using credentials in the URL
+ Historically some sites would allow you to login using an encoded URL containing the username and the password as shown:
+https://username:password@www.example.com/
+
+This syntax is no longer allowed in modern browsers; the username and password are stripped from the request before it is sent.
+ 
+ See also
+ 
+WWW-Authenticate
+Authorization
+Proxy-Authorization
+Proxy-Authenticate
+401, 403, 407
+HTTP Security Best Practices
+
+ Help improve MDN
+
+ Was this page helpful to you?
+
+ Yes
+
+ No
+
+ Learn how to contribute 
+ This page was last modified on Aug 1, 2025 by MDN contributors.
+ 
+ View this page on GitHub • Report a problem with this content
+
+============================================================
+SOURCE: HTTP Caching
+============================================================
+
+HTTP caching - HTTP | MDN
+
+ Skip to main content
+
+ Skip to search
+
+ Toggle sidebar
+
+ Web
+
+ HTTP
+
+ Guides
+
+ HTTP caching
+
+ Theme
+
+ OS default
+
+ Light
+
+ Dark
+
+ English (US)
+
+ Remember language
+
+ Learn more
+
+ Deutsch
+
+ English (US)
+
+ Español
+
+ Français
+
+ 日本語
+
+ 한국어
+
+ Português (do Brasil)
+
+ Русский
+
+ 中文 (简体)
+
+ 正體中文 (繁體)
+
+ HTTP caching
+
+ The HTTP cache stores a response associated with a request and reuses the stored response for subsequent requests.
+There are several advantages to reusability. First, since there is no need to deliver the request to the origin server, then the closer the client and cache are, the faster the response will be. The most typical example is when the browser itself stores a cache for browser requests.
+Also, when a response is reusable, the origin server does not need to process the request — so it does not need to parse and route the request, restore the session based on the cookie, query the DB for results, or render the template engine. That reduces the load on the server.
+Proper operation of the cache is critical to the health of the system.
+
+ Types of caches
+ In the HTTP Caching spec, there are two main types of caches: private caches and shared caches.
+ 
+ Private caches
+ A private cache is a cache tied to a specific client — typically a browser cache. Since the stored response is not shared with other clients, a private cache can store a personalized response for that user.
+On the other hand, if personalized contents are stored in a cache other than a private cache, then other users may be able to retrieve those contents — which may cause unintentional information leakage.
+If a response contains personalized content and you want to store the response only in the private cache, you must specify a private directive.
+httpCache-Control: private
+
+Personalized contents are usually controlled by cookies, but the presence of a cookie does not always indicate that it is private, and thus a cookie alone does not make the response private.
+ 
+ Shared cache
+ The shared cache is located between the client and the server and can store responses that can be shared among users. And shared caches can be further sub-classified into proxy caches and managed caches.
+Proxy caches
+In addition to the function of access control, some proxies implement caching to reduce traffic out of the network. This is usually not managed by the service developer, so it must be controlled by appropriate HTTP headers and so on. However, in the past, outdated proxy-cache implementations — such as implementations that do not properly understand the HTTP Caching standard — have often caused problems for developers.
+Kitchen-sink headers like the following are used to try to work around "old and not updated proxy cache" implementations that do not understand current HTTP Caching spec directives like no-store.
+httpCache-Control: no-store, no-cache, max-age=0, must-revalidate, proxy-revalidate
+
+However, in recent years, as HTTPS has become more common and client/server communication has become encrypted, proxy caches in the path can only tunnel a response and can't behave as a cache, in many cases. So in that scenario, there is no need to worry about outdated proxy cache implementations that cannot even see the response.
+On the other hand, if a TLS bridge proxy decrypts all communications in a person-in-the-middle manner by installing a certificate from a CA (certificate authority) managed by the organization on the PC, and performs access control, etc. — it is possible to see the contents of the response and cache it. However, since CT (certificate transparency) has become widespread in recent years, and some browsers only allow certificates issued with an SCT (signed certificate timestamp), this method requires the application of an enterprise policy. In such a controlled environment, there is no need to worry about the proxy cache being "out of date and not updated".
+Managed caches
+Managed caches are explicitly deployed by service developers to offload the origin server and to deliver content efficiently. Examples include reverse proxies, CDNs, and service workers in combination with the Cache API.
+The characteristics of managed caches vary depending on the product deployed. In most cases, you can control the cache's behavior through the Cache-Control header and your own configuration files or dashboards.
+For example, the HTTP Caching specification essentially does not define a way to explicitly delete a cache — but with a managed cache, the stored response can be deleted at any time through dashboard operations, API calls, restarts, and so on. That allows for a more proactive caching strategy.
+It is also possible to ignore the standard HTTP Caching spec protocols in favor of explicit manipulation. For example, the following can be specified to opt-out of a private cache or proxy cache, while using your own strategy to cache only in a managed cache.
+httpCache-Control: no-store
+
+For example, Varnish Cache uses VCL (Varnish Configuration Language, a type of DSL) logic to handle cache storage, while service workers in combination with the Cache API allow you to create that logic in JavaScript.
+That means if a managed cache intentionally ignores a no-store directive, there is no need to perceive it as being "non-compliant" with the standard. What you should do is, avoid using kitchen-sink headers, but carefully read the documentation of whatever managed-cache mechanism you're using, and ensure you're controlling the cache properly in the ways provided by the mechanism you've chosen to use.
+Note that some CDNs provide their own headers that are effective only for that CDN (for example, Surrogate-Control). Currently, work is underway to define a CDN-Cache-Control header to standardize those.
+
+ Heuristic caching
+ HTTP is designed to cache as much as possible, so even if no Cache-Control is given, responses will get stored and reused if certain conditions are met. This is called heuristic caching.
+For example, take the following response. This response was last updated 1 year ago.
+httpHTTP/1.1 200 OK
+Content-Type: text/html
+Content-Length: 1024
+Date: Tue, 22 Feb 2022 22:22:22 GMT
+Last-Modified: Tue, 22 Feb 2021 22:22:22 GMT
+
+<!doctype html>
+…
+
+It is heuristically known that content which has not been updated for a full year will not be updated for some time after that. Therefore, the client stores this response (despite the lack of max-age) and reuses it for a while. How long to reuse is up to the implementation, but the specification recommends about 10% (in this case 0.1 year) of the time after storing.
+Heuristic caching is a workaround that came before Cache-Control support became widely adopted, and basically all responses should explicitly specify a Cache-Control header.
+ 
+ Fresh and stale based on age
+ Stored HTTP responses have two states: fresh and stale. The fresh state usually indicates that the response is still valid and can be reused, while the stale state means that the cached response has already expired.
+The criterion for determining when a response is fresh and when it is stale is age. In HTTP, age is the time elapsed since the response was generated. This is similar to the TTL in other caching mechanisms.
+Take the following example response (604800 seconds is one week):
+httpHTTP/1.1 200 OK
+Content-Type: text/html
+Content-Length: 1024
+Date: Tue, 22 Feb 2022 22:22:22 GMT
+Cache-Control: max-age=604800
+
+<!doctype html>
+…
+
+The cache that stored the example response calculates the time elapsed since the response was generated and uses the result as the response's age.
+For the example response, the meaning of max-age is the following:
+
+If the age of the response is less than one week, the response is fresh.
+If the age of the response is more than one week, the response is stale.
+
+As long as the stored response remains fresh, it will be used to fulfill client requests.
+When a response is stored in a shared cache, it is possible to tell the client the age of the response. Continuing with the example, if the shared cache stored the response for one day, the shared cache would send the following response to subsequent client requests.
+httpHTTP/1.1 200 OK
+Content-Type: text/html
+Content-Length: 1024
+Date: Tue, 22 Feb 2022 22:22:22 GMT
+Cache-Control: max-age=604800
+Age: 86400
+
+<!doctype html>
+…
+
+The client which receives that response will find it to be fresh for the remaining 518400 seconds, the difference between the response's max-age and Age.
+ 
+ Expires or max-age
+ In HTTP/1.0, freshness used to be specified by the Expires header.
+The Expires header specifies the lifetime of the cache using an explicit time rather than by specifying an elapsed time.
+httpExpires: Tue, 28 Feb 2022 22:22:22 GMT
+
+However, the time format is difficult to parse, many implementation bugs were found, and it is possible to induce problems by intentionally shifting the system clock; therefore, max-age — for specifying an elapsed time — was adopted for Cache-Control in HTTP/1.1.
+If both Expires and Cache-Control: max-age are available, max-age is defined to be preferred. So it is not necessary to provide Expires now that HTTP/1.1 is widely used.
+ 
+ Vary
+ The way that responses are distinguished from one another is essentially based on their URLs:
+
+URL
+Response body
+
+https://example.com/index.html
+<!doctype html>...
+
+https://example.com/style.css
+body { ...
+
+https://example.com/script.js
+function main () { ...
+
+But the contents of responses are not always the same, even if they have the same URL. Especially when content negotiation is performed, the response from the server can depend on the values of the Accept, Accept-Language, and Accept-Encoding request headers.
+For example, for English content returned with an Accept-Language: en header and cached, it is undesirable to then reuse that cached response for requests that have an Accept-Language: ja request header. In this case, you can cause the responses to be cached separately — based on language — by adding Accept-Language to the value of the Vary header.
+httpVary: Accept-Language
+
+That causes the cache to be keyed based on a composite of the response URL and the Accept-Language request header — rather than being based just on the response URL.
+
+URL
+Accept-Language
+Response body
+
+https://example.com/index.html
+ja-JP
+<!doctype html>...
+
+https://example.com/index.html
+en-US
+<!doctype html>...
+
+https://example.com/style.css
+ja-JP
+body { ...
+
+https://example.com/script.js
+ja-JP
+function main () { ...
+
+Also, if you are providing content optimization (for example, for responsive design) based on the user agent, you may be tempted to include User-Agent in the value of the Vary header. However, the User-Agent request header generally has a very large number of variations, which drastically reduces the chance that the cache will be reused. So if possible, instead consider a way to vary behavior based on feature detection rather than based on the User-Agent request header.
+For applications that employ cookies to prevent others from reusing cached personalized content, you should specify Cache-Control: private instead of specifying a cookie for Vary.
+ 
+ Validation
+ Stale responses are not immediately discarded. HTTP has a mechanism to transform a stale response into a fresh one by asking the origin server. This is called validation, or sometimes, revalidation.
+Validation is done by using a conditional request that includes an If-Modified-Since or If-None-Match request header.
+ 
+ If-Modified-Since
+ The following response was generated at 22:22:22 and has a max-age of 1 hour, so you know that it is fresh until 23:22:22.
+httpHTTP/1.1 200 OK
+Content-Type: text/html
+Content-Length: 1024
+Date: Tue, 22 Feb 2022 22:22:22 GMT
+Last-Modified: Tue, 22 Feb 2022 22:00:00 GMT
+Cache-Control: max-age=3600
+
+<!doctype html>
+…
+
+At 23:22:22, the response becomes stale and the cache cannot be reused. So the request below shows a client sending a request with an If-Modified-Since request header, to ask the server if there have been any changes made since the specified time.
+httpGET /index.html HTTP/1.1
+Host: example.com
+Accept: text/html
+If-Modified-Since: Tue, 22 Feb 2022 22:00:00 GMT
+
+The server will respond with 304 Not Modified if the content has not changed since the specified time.
+Since this response only indicates "no change", there is no response body — there's just a status code — so the transfer size is extremely small.
+httpHTTP/1.1 304 Not Modified
+Content-Type: text/html
+Date: Tue, 22 Feb 2022 23:22:22 GMT
+Last-Modified: Tue, 22 Feb 2022 22:00:00 GMT
+Cache-Control: max-age=3600
+
+Upon receiving that response, the client reverts the stored stale response back to being fresh and can reuse it during the remaining 1 hour.
+The server can obtain the modification time from the operating-system file system, which is relatively easy to do for the case of serving static files. However, there are some problems; for example, the time format is complex and difficult to parse, and distributed servers have difficulty synchronizing file-update times.
+To solve such problems, the ETag response header was standardized as an alternative.
+ 
+ ETag/If-None-Match
+ The value of the ETag response header is an arbitrary value generated by the server. There are no restrictions on how the server must generate the value, so servers are free to set the value based on whatever means they choose — such as a hash of the body contents or a version number.
+As an example, if a hash value is used for the ETag header and the hash value of the index.html resource is 33a64df5, the response will be as follows:
+httpHTTP/1.1 200 OK
+Content-Type: text/html
+Content-Length: 1024
+Date: Tue, 22 Feb 2022 22:22:22 GMT
+ETag: "33a64df5"
+Cache-Control: max-age=3600
+
+<!doctype html>
+…
+
+If that response is stale, the client takes the value of the ETag response header for the cached response, and puts it into the If-None-Match request header, to ask the server if the resource has been modified:
+httpGET /index.html HTTP/1.1
+Host: example.com
+Accept: text/html
+If-None-Match: "33a64df5"
+
+The server will return 304 Not Modified if the value of the ETag header it determines for the requested resource is the same as the If-None-Match value in the request.
+But if the server determines the requested resource should now have a different ETag value, the server will instead respond with a 200 OK and the latest version of the resource.
+
+Note:
+RFC9110 prefers that servers send both ETag and Last-Modified for a 200 response if possible.
+During cache revalidation, if both If-Modified-Since and If-None-Match are present, then If-None-Match takes precedence for the validator.
+If you are only considering caching, you may think that Last-Modified is unnecessary.
+However, Last-Modified is not just useful for caching; it is a standard HTTP header that is also used by content-management (CMS) systems to display the last-modified time, by crawlers to adjust crawl frequency, and for other various purposes.
+So considering the overall HTTP ecosystem, it is better to provide both ETag and Last-Modified.
+
+ Force Revalidation
+ If you do not want a response to be reused, but instead want to always fetch the latest content from the server, you can use the no-cache directive to force validation.
+By adding Cache-Control: no-cache to the response along with Last-Modified and ETag — as shown below — the client will receive a 200 OK response if the requested resource has been updated, or will otherwise receive a 304 Not Modified response if the requested resource has not been updated.
+httpHTTP/1.1 200 OK
+Content-Type: text/html
+Content-Length: 1024
+Date: Tue, 22 Feb 2022 22:22:22 GMT
+Last-Modified: Tue, 22 Feb 2022 22:00:00 GMT
+ETag: "deadbeef"
+Cache-Control: no-cache
+
+<!doctype html>
+…
+
+Note:
+The no-cache directive (or equivalent, such as max-age=0, must-revalidate) does not guarantee revalidation for history navigations — such as those made using the Back button.
+If the back/forward cache (bfcache) is used, the browser restores a snapshot of the page without revalidating.
+Even when bfcache is not used, the browser may still serve the cached response without revalidating.
+This is allowed by the specification because history navigations are usually treated as restoring a snapshot of a historical session and not a new request for a previously visited page.
+
+It is often stated that the combination of max-age=0 and must-revalidate has the same meaning as no-cache.
+httpCache-Control: max-age=0, must-revalidate
+
+max-age=0 means that the response is immediately stale, and must-revalidate means that it must not be reused without revalidation once it is stale — so, in combination, the semantics seem to be the same as no-cache.
+However, that usage of max-age=0 is a remnant of the fact that many implementations prior to HTTP/1.1 were unable to handle the no-cache directive — and so to deal with that limitation, max-age=0 was used as a workaround.
+But now that HTTP/1.1-conformant servers are widely deployed, there's no reason to ever use that max-age=0 and must-revalidate combination — you should instead just use no-cache.
+ 
+ Don't cache
+ The no-cache directive does not prevent the storing of responses but instead prevents the reuse of responses without revalidation.
+If you don't want a response stored in any cache, use no-store.
+httpCache-Control: no-store
+
+However, in general, a "do not cache" requirement in practice amounts to the following set of circumstances:
+
+Don't want the response stored by anyone other than the specific client, for privacy reasons.
+Want to provide up-to-date information always.
+Don't know what could happen in outdated implementations.
+
+Under that set of circumstances, no-store is not always the most-appropriate directive.
+The following sections look at the circumstances in more detail.
+ 
+ Do not share with others
+ It would be problematic if a response with personalized content is unexpectedly visible to other users of a cache.
+In such a case, using the private directive will cause the personalized response to only be stored with the specific client and not be leaked to any other user of the cache.
+httpCache-Control: private
+
+In such a case, even if no-store is given, private must also be given.
+ 
+ Provide up-to-date content every time
+ The no-store directive prevents a response from being stored, but does not delete any already-stored response for the same URL.
+In other words, if there is an old response already stored for a particular URL, returning no-store will not prevent the old response from being reused.
+However, a no-cache directive will force the client to send a validation request before reusing any stored response.
+httpCache-Control: no-cache
+
+If the server does not support conditional requests, you can force the client to access the server every time and always get the latest response with 200 OK.
+ 
+ Dealing with outdated implementations
+ As a workaround for outdated implementations that ignore no-store, you may see kitchen-sink headers such as the following being used.
+httpCache-Control: no-store, no-cache, max-age=0, must-revalidate, proxy-revalidate
+
+It is recommended to use no-cache as an alternative for dealing with such outdated implementations, and it is not a problem if no-cache is given from the beginning, since the server will always receive the request.
+If it is the shared cache that you are concerned about, you can make sure to prevent unintended caching by also adding private:
+httpCache-Control: no-cache, private
+
+ What's lost by no-store
+ You may think adding no-store would be the right way to opt-out of caching.
+However, it's not recommended to grant no-store liberally, because you lose many advantages that HTTP and browsers have, including the browser's back/forward cache.
+Therefore, to get the advantages of the full feature set of the web platform, prefer the use of no-cache in combination with private.
+ 
+ Reload and force reload
+ Validation can be performed for requests as well as responses.
+The reload and force reload actions are common examples of validation performed from the browser side.
+ 
+ Reload
+ For recovering from window corruption or updating to the latest version of the resource, browsers provide a reload function for users.
+A simplified view of the HTTP request sent during a browser reload looks as follows:
+httpGET / HTTP/1.1
+Host: example.com
+Cache-Control: max-age=0
+If-None-Match: "deadbeef"
+If-Modified-Since: Tue, 22 Feb 2022 20:20:20 GMT
+
+(The requests from Chrome, Edge, and Firefox look very much like the above; the requests from Safari will look a bit different.)
+The max-age=0 directive in the request specifies "reuse of responses with an age of 0 or less" — so, in effect, intermediately stored responses are not reused.
+As a result, a request is validated by If-None-Match and If-Modified-Since.
+That behavior is also defined in the Fetch standard and can be reproduced in JavaScript by calling fetch() with the cache mode set to no-cache (note that reload is not the right mode for this case):
+js// Note: "reload" is not the right mode for a normal reload; "no-cache" is
+fetch("/", { cache: "no-cache" });
+
+ Force reload
+ Browsers use max-age=0 during reloads for backward-compatibility reasons — because many outdated implementations prior to HTTP/1.1 did not understand no-cache. But no-cache is fine now in this use case, and force reload is an additional way to bypass cached responses.
+The HTTP Request during a browser force reload looks as follows:
+httpGET / HTTP/1.1
+Host: example.com
+Pragma: no-cache
+Cache-Control: no-cache
+
+(The requests from Chrome, Edge, and Firefox look very much like the above; the requests from Safari will look a bit different.)
+Since that's not a conditional request with no-cache, you can be sure you'll get a 200 OK from the origin server.
+That behavior is also defined in the Fetch standard and can be reproduced in JavaScript by calling fetch() with the cache mode set to reload (note that it's not force-reload):
+js// Note: "reload" — rather than "no-cache" — is the right mode for a "force reload"
+fetch("/", { cache: "reload" });
+
+ Avoiding revalidation
+ Content that never changes should be given a long max-age by using cache busting — that is, by including a version number, hash value, etc., in the request URL.
+However, when the user reloads, a revalidation request is sent even though the server knows that the content is immutable.
+To prevent that, the immutable directive can be used to explicitly indicate that revalidation is not required because the content never changes.
+httpCache-Control: max-age=31536000, immutable
+
+That prevents unnecessary revalidation during reloads.
+Note that, instead of implementing that directive, Chrome has changed its implementation so that revalidation is not performed during reloads for subresources.
+ 
+ Deleting stored responses
+ There is no way to delete responses on an intermediate server that have been stored with a long max-age.
+Imagine that the following response from https://example.com/ was stored.
+httpHTTP/1.1 200 OK
+Content-Type: text/html
+Content-Length: 1024
+Cache-Control: max-age=31536000
+
+<!doctype html>
+…
+
+You may want to overwrite that response once it expired on the server, but there is nothing the server can do once the response is stored — since no more requests reach the server due to caching.
+One of the methods mentioned in the specification is to send a request for the same URL with an unsafe method such as POST, but for many clients that is difficult to do.
+The Clear-Site-Data: cache header and directive value can be used to clear browser caches — but has no effect on intermediate caches.
+Otherwise responses will remain in the browser cache until max-age expires, unless the user manually performs a reload, force-reload, or clear-history action.
+Caching reduces access to the server, which means that the server loses control of that URL. If the server does not want to lose control of a URL — for example, in the case that a resource is frequently updated — you should add no-cache so that the server will always receive requests and send the intended responses.
+ 
+ Request collapse
+ The shared cache is primarily located before the origin server and is intended to reduce traffic to the origin server.
+Thus, if multiple identical requests arrive at a shared cache at the same time, the intermediate cache will forward a single request on behalf of itself to the origin, which can then reuse the result for all clients. This is called request collapse.
+Request collapse occurs when requests are arriving at the same time, so even if max-age=0 or no-cache is given in the response, it will be reused.
+If the response is personalized to a particular user and you do not want it to be shared in collapse, you should add the private directive:
+
+ Common caching patterns
+ There are many directives in the Cache-Control spec, and it may be difficult to understand all of them. But most websites can be covered by a combination of a handful of patterns.
+This section describes the common patterns in designing caches.
+ 
+ Default settings
+ As mentioned above, the default behavior for caching (that is, for a response without Cache-Control) is not simply "don't cache" but implicit caching according to so-called "heuristic caching".
+To avoid that heuristic caching, it's preferable to explicitly give all responses a default Cache-Control header.
+To ensure that by default the latest versions of resources will always be transferred, it's common practice to make the default Cache-Control value include no-cache:
+httpCache-Control: no-cache
+
+In addition, if the service implements cookies or other login methods, and the content is personalized for each user, private must be given too, to prevent sharing with other users:
+httpCache-Control: no-cache, private
+
+ Cache Busting
+ The resources that work best with caching are static immutable files whose contents never change. And for resources that do change, it is a common best practice to change the URL each time the content changes, so that the URL unit can be cached for a longer period.
+As an example, consider the following HTML:
+html<script src="bundle.js"></script>
+<link rel="stylesheet" href="build.css" />
+<body>
+ hello
+</body>
+
+In modern web development, JavaScript and CSS resources are frequently updated as development progresses. Also, if the versions of JavaScript and CSS resources that a client uses are out of sync, the display will break.
+So the HTML above makes it difficult to cache bundle.js and build.css with max-age.
+Therefore, you can serve the JavaScript and CSS with URLs that include a changing part based on a version number or hash value. Some of the ways to do that are shown below.
+# version in filename
+bundle.v123.js
+
+# version in query
+bundle.js?v=123
+
+# hash in filename
+bundle.YsAIAAAA-QG4G6kCMAMBAAAAAAAoK.js
+
+# hash in query
+bundle.js?v=YsAIAAAA-QG4G6kCMAMBAAAAAAAoK
+
+Since the cache distinguishes resources from one another based on their URLs, the cache will not be reused again if the URL changes when a resource is updated.
+html<script src="bundle.v123.js"></script>
+<link rel="stylesheet" href="build.v123.css" />
+<body>
+ hello
+</body>
+
+With that design, both JavaScript and CSS resources can be cached for a long time. So how long should max-age be set to? The QPACK specification provides an answer to that question.
+QPACK is a standard for compressing HTTP header fields, with tables of commonly-used field values defined.
+Some commonly-used cache-header values are shown below.
+36 cache-control max-age=0
+37 cache-control max-age=604800
+38 cache-control max-age=2592000
+39 cache-control no-cache
+40 cache-control no-store
+41 cache-control public, max-age=31536000
+
+If you select one of those numbered options, you can compress values in 1 byte when transferred via HTTP3.
+Numbers 37, 38, and 41 are for periods of one week, one month, and one year.
+Because the cache removes old entries when new entries are saved, the probability that a stored response still exists after one week is not that high — even if max-age is set to 1 week. Therefore, in practice, it does not make much difference which one you choose.
+Note that number 41 has the longest max-age (1 year), but with public.
+The public value has the effect of making the response storable even if the Authorization header is present.
+
+Note:
+The public directive should only be used if there is a need to store the response when the Authorization header is set.
+It is not required otherwise, because a response will be stored in the shared cache as long as max-age is given.
+
+So if the response is personalized with basic authentication, the presence of public may cause problems. If you are concerned about that, you can choose the second-longest value, 38 (1 month).
+http# response for bundle.v123.js
+
+# If you never personalize responses via Authorization
+Cache-Control: public, max-age=31536000
+
+# If you can't be certain
+Cache-Control: max-age=2592000
+
+ Validation
+ Don't forget to set the Last-Modified and ETag headers, so that you don't have to re-transmit a resource when reloading. It's easy to generate those headers for pre-built static files.
+The ETag value here may be a hash of the file.
+http# response for bundle.v123.js
+Last-Modified: Tue, 22 Feb 2022 20:20:20 GMT
+ETag: "YsAIAAAA-QG4G6kCMAMBAAAAAAAoK"
+
+In addition, immutable can be added to prevent validation on reload.
+The combined result is shown below.
+http# bundle.v123.js
+HTTP/1.1 200 OK
+Content-Type: text/javascript
+Content-Length: 1024
+Cache-Control: public, max-age=31536000, immutable
+Last-Modified: Tue, 22 Feb 2022 20:20:20 GMT
+ETag: "YsAIAAAA-QG4G6kCMAMBAAAAAAAoK"
+
+Cache busting is a technique to make a response cacheable over a long period by changing the URL when the content changes. The technique can be applied to all subresources, such as images.
+
+Note:
+When evaluating the use of immutable and QPACK:
+If you're concerned that immutable changes the predefined value provided by QPACK, consider that
+in this case, the immutable part can be encoded separately by splitting the Cache-Control value into two lines — though this is dependent on the encoding algorithm a particular QPACK implementation uses.
+
+httpCache-Control: public, max-age=31536000
+Cache-Control: immutable
+
+ Main resources
+ Unlike subresources, main resources cannot be cache busted because their URLs can't be decorated in the same way that subresource URLs can be.
+If the following HTML itself is stored, the latest version cannot be displayed even if the content is updated on the server side.
+html<script src="bundle.v123.js"></script>
+<link rel="stylesheet" href="build.v123.css" />
+<body>
+ hello
+</body>
+
+For that case, no-cache would be appropriate — rather than no-store — since we don't want to store HTML, but instead just want it to always be up-to-date.
+Furthermore, adding Last-Modified and ETag will allow clients to send conditional requests, and a 304 Not Modified can be returned if there have been no updates to the HTML:
+httpHTTP/1.1 200 OK
+Content-Type: text/html
+Content-Length: 1024
+Cache-Control: no-cache
+Last-Modified: Tue, 22 Feb 2022 20:20:20 GMT
+ETag: "AAPuIbAOdvAGEETbgAAAAAAABAAE"
+
+That setting is appropriate for non-personalized HTML, but for a response that gets personalized using cookies — for example, after a login — don't forget to also specify private:
+httpHTTP/1.1 200 OK
+Content-Type: text/html
+Content-Length: 1024
+Cache-Control: no-cache, private
+Last-Modified: Tue, 22 Feb 2022 20:20:20 GMT
+ETag: "AAPuIbAOdvAGEETbgAAAAAAABAAE"
+Set-Cookie: __Host-SID=AHNtAyt3fvJrUL5g5tnGwER; Secure; Path=/; HttpOnly
+
+The same can be used for favicon.ico, manifest.json, .well-known, and API endpoints whose URLs cannot be changed using cache busting.
+Most web content can be covered by a combination of the two patterns described above.
+ 
+ More about managed caches
+ With the method described in previous sections, subresources can be cached for a long time by using cache busting, but main resources (which are usually HTML documents) can't be.
+Caching main resources is difficult because, using just standard directives from the HTTP Caching specification, there's no way to actively delete cache contents when content is updated on the server.
+However, it is possible by deploying a managed cache such as a CDN or service worker.
+For example, a CDN that allows cache purging via an API or dashboard operation would allow for a more aggressive caching strategy by storing the main resource and explicitly purging the relevant cache only when an update occurs on the server.
+A service worker could do the same if it could delete the contents in the Cache API when an update occurs on the server.
+For more information, see the documentation for your CDN, and consult the service worker documentation.
+ 
+ See also
+ 
+Cache-Control HTTP header
+RFC 9111: Hypertext Transfer Protocol (HTTP/1.1): Caching
+Caching Tutorial - Mark Nottingham
+
+ Help improve MDN
+
+ Was this page helpful to you?
+
+ Yes
+
+ No
+
+ Learn how to contribute 
+ This page was last modified on Jul 14, 2026 by MDN contributors.
+ 
+ View this page on GitHub • Report a problem with this content
+
+============================================================
+SOURCE: CORS
+============================================================
+
+Cross-Origin Resource Sharing (CORS) - HTTP | MDN
+
+ Skip to main content
+
+ Skip to search
+
+ Toggle sidebar
+
+ Web
+
+ HTTP
+
+ Guides
+
+ Cross-Origin Resource Sharing (CORS)
+
+ Theme
+
+ OS default
+
+ Light
+
+ Dark
+
+ English (US)
+
+ Remember language
+
+ Learn more
+
+ Deutsch
+
+ English (US)
+
+ Español
+
+ Français
+
+ 日本語
+
+ 한국어
+
+ Português (do Brasil)
+
+ Русский
+
+ 中文 (简体)
+
+ 正體中文 (繁體)
+
+ Cross-Origin Resource Sharing (CORS)
+
+ Baseline
+ 
+ Widely available
+
+ This feature is well established and works across many devices and browser versions. It’s been available across browsers since July 2015.
+
+ Learn more
+
+ See full compatibility
+
+ Cross-Origin Resource Sharing (CORS) is an HTTP-header based mechanism that allows a server to indicate any origins (domain, scheme, or port) other than its own from which a browser should permit loading resources. CORS also relies on a mechanism by which browsers make a "preflight" request to the server hosting the cross-origin resource, in order to check that the server will permit the actual request. In that preflight, the browser sends headers that indicate the HTTP method and headers that will be used in the actual request.
+An example of a cross-origin request: the front-end JavaScript code served from https://domain-a.com uses fetch() to make a request for https://domain-b.com/data.json.
+For security reasons, browsers restrict cross-origin HTTP requests initiated from scripts. For example, fetch() and XMLHttpRequest follow the same-origin policy. This means that a web application using those APIs can only request resources from the same origin the application was loaded from unless the response from other origins includes the right CORS headers.
+
+The CORS mechanism supports secure cross-origin requests and data transfers between browsers and servers. Browsers use CORS in APIs such as fetch() or XMLHttpRequest to mitigate the risks of cross-origin HTTP requests.
+
+ What requests use CORS?
+ This cross-origin sharing standard can enable cross-origin HTTP requests for:
+
+Invocations of fetch() or XMLHttpRequest, as discussed above.
+Web Fonts (for cross-domain font usage in @font-face within CSS), as described in the font fetching requirements, so that servers can deploy TrueType fonts that can only be loaded cross-origin and used by websites that are permitted to do so.
+WebGL textures.
+Images/video frames drawn to a canvas using drawImage().
+CSS Shapes from images.
+
+This is a general article about Cross-Origin Resource Sharing and includes a discussion of the necessary HTTP headers.
+ 
+ Functional overview
+ The Cross-Origin Resource Sharing standard works by adding new HTTP headers that let servers describe which origins are permitted to read that information from a web browser. Additionally, for HTTP request methods that can cause side-effects on server data (in particular, HTTP methods other than GET, or POST with certain MIME types), the specification mandates that browsers "preflight" the request, soliciting supported methods from the server with the HTTP OPTIONS request method, and then, upon "approval" from the server, sending the actual request. Servers can also inform clients whether "credentials" (such as Cookies and HTTP Authentication) should be sent with requests.
+CORS failures result in errors but for security reasons, specifics about the error are not available to JavaScript. All the code knows is that an error occurred. The only way to determine what specifically went wrong is to look at the browser's console for details.
+Subsequent sections discuss scenarios, as well as provide a breakdown of the HTTP headers used.
+ 
+ Examples of access control scenarios
+ We present three scenarios that demonstrate how Cross-Origin Resource Sharing works. All these examples use fetch(), which can make cross-origin requests in any supporting browser.
+ 
+ Simple requests
+ Some requests don't trigger a CORS preflight. Those are called simple requests from the obsolete CORS spec, though the Fetch spec (which now defines CORS) doesn't use that term.
+The motivation is that the <form> element from HTML 4.0 (which predates cross-site fetch() and XMLHttpRequest) can submit simple requests to any origin, so anyone writing a server must already be protecting against cross-site request forgery (CSRF). Under this assumption, the server doesn't have to opt-in (by responding to a preflight request) to receive any request that looks like a form submission, since the threat of CSRF is no worse than that of form submission. However, the server still must opt-in using Access-Control-Allow-Origin to share the response with the script.
+A simple request is one that meets all the following conditions:
+
+One of the allowed methods:
+
+GET
+HEAD
+POST
+
+Apart from the headers automatically set by the user agent (for example, Connection, User-Agent, or the forbidden request headers), the only headers which are allowed to be manually set are the CORS-safelisted request-headers, which are:
+
+Accept
+Accept-Language
+Content-Language
+Content-Type (please note the additional requirements below)
+Range (only with a single range header value; e.g., bytes=256- or bytes=127-255)
+
+The only type/subtype combinations allowed for the media type specified in the Content-Type header are:
+
+application/x-www-form-urlencoded
+multipart/form-data
+text/plain
+
+If the request is made using an XMLHttpRequest object, no event listeners are registered on the object returned by the XMLHttpRequest.upload property used in the request; that is, given an XMLHttpRequest instance xhr, no code has called xhr.upload.addEventListener() to add an event listener to monitor the upload.
+
+No ReadableStream object is used in the request.
+
+Note:
+WebKit Nightly and Safari Technology Preview place additional restrictions on the values allowed in the Accept, Accept-Language, and Content-Language headers. If any of those headers have "nonstandard" values, WebKit/Safari does not consider the request to be a "simple request". What values WebKit/Safari consider "nonstandard" is not documented, except in the following WebKit bugs:
+
+Require preflight for non-standard CORS-safelisted request headers Accept, Accept-Language, and Content-Language
+Allow commas in Accept, Accept-Language, and Content-Language request headers for simple CORS
+Switch to a blacklist model for restricted Accept headers in simple CORS requests
+
+No other browsers implement these extra restrictions because they're not part of the spec.
+
+For example, suppose web content at https://foo.example wishes to fetch JSON content from domain https://bar.other. Code of this sort might be used in JavaScript deployed on foo.example:
+jsconst fetchPromise = fetch("https://bar.other");
+
+fetchPromise
+ .then((response) => response.json())
+ .then((data) => {
+ console.log(data);
+ });
+
+This operation performs a simple exchange between the client and the server, using CORS headers to handle the privileges:
+
+Let's look at what the browser will send to the server in this case:
+httpGET /resources/public-data/ HTTP/1.1
+Host: bar.other
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:71.0) Gecko/20100101 Firefox/71.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-us,en;q=0.5
+Accept-Encoding: gzip,deflate
+Connection: keep-alive
+Origin: https://foo.example
+
+The request header of note is Origin, which shows that the invocation is coming from https://foo.example.
+Now let's see how the server responds:
+httpHTTP/1.1 200 OK
+Date: Mon, 01 Dec 2008 00:23:53 GMT
+Server: Apache/2
+Access-Control-Allow-Origin: *
+Keep-Alive: timeout=2, max=100
+Connection: Keep-Alive
+Transfer-Encoding: chunked
+Content-Type: application/xml
+
+[…XML Data…]
+
+In response, the server returns an Access-Control-Allow-Origin header with Access-Control-Allow-Origin: *, which means that the resource can be accessed by any origin.
+httpAccess-Control-Allow-Origin: *
+
+This pattern of the Origin and Access-Control-Allow-Origin headers is the simplest use of the access control protocol. If the resource owners at https://bar.other wished to restrict access to the resource to requests only from https://foo.example (i.e., no domain other than https://foo.example can access the resource in a cross-origin manner), they would send:
+httpAccess-Control-Allow-Origin: https://foo.example
+
+Note:
+When responding to a credentialed requests request, the server must specify an origin in the value of the Access-Control-Allow-Origin header, instead of specifying the * wildcard.
+
+ Preflighted requests
+ Unlike simple requests, for "preflighted" requests the browser first sends an HTTP request using the OPTIONS method to the resource on the other origin, in order to determine if the actual request is safe to send. Such cross-origin requests are preflighted since they may have implications for user data.
+The following is an example of a request that will be preflighted:
+jsconst fetchPromise = fetch("https://bar.other/doc", {
+ method: "POST",
+ mode: "cors",
+ headers: {
+ "Content-Type": "text/xml",
+ "X-PINGOTHER": "pingpong",
+ },
+ body: "<person><name>Arun</name></person>",
+});
+
+fetchPromise.then((response) => {
+ console.log(response.status);
+});
+
+The example above creates an XML body to send with the POST request. Also, a non-standard HTTP X-PINGOTHER request header is set. Such headers are not part of HTTP/1.1, but are generally useful to web applications. Since the request uses a Content-Type of text/xml, and since a custom header is set, this request is preflighted.
+
+Note:
+As described below, the actual POST request does not include the Access-Control-Request-* headers; they are needed only for the OPTIONS request.
+
+Let's look at the full exchange between client and server. The first exchange is the preflight request/response:
+httpOPTIONS /doc HTTP/1.1
+Host: bar.other
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:71.0) Gecko/20100101 Firefox/71.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-us,en;q=0.5
+Accept-Encoding: gzip,deflate
+Connection: keep-alive
+Origin: https://foo.example
+Access-Control-Request-Method: POST
+Access-Control-Request-Headers: content-type,x-pingother
+
+HTTP/1.1 204 No Content
+Date: Mon, 01 Dec 2008 01:15:39 GMT
+Server: Apache/2
+Access-Control-Allow-Origin: https://foo.example
+Access-Control-Allow-Methods: POST, GET, OPTIONS
+Access-Control-Allow-Headers: X-PINGOTHER, Content-Type
+Access-Control-Max-Age: 86400
+Vary: Accept-Encoding, Origin
+Keep-Alive: timeout=2, max=100
+Connection: Keep-Alive
+
+The first block above represents the preflight request with the OPTIONS method. The browser determines that it needs to send this based on the request parameters that the JavaScript code snippet above was using, so that the server can respond whether it is acceptable to send the request with the actual request parameters. OPTIONS is an HTTP/1.1 method that is used to determine further information from servers, and is a safe method, meaning that it can't be used to change the resource. Note that along with the OPTIONS request, two other request headers are sent:
+httpAccess-Control-Request-Method: POST
+Access-Control-Request-Headers: content-type,x-pingother
+
+The Access-Control-Request-Method header notifies the server as part of a preflight request that when the actual request is sent, it will do so with a POST request method. The Access-Control-Request-Headers header notifies the server that when the actual request is sent, it will do so with X-PINGOTHER and Content-Type custom headers. Now the server has an opportunity to determine whether it can accept a request under these conditions.
+The second block above is the response that the server returns, which indicate that the request method (POST) and request headers (X-PINGOTHER) are acceptable. Let's have a closer look at the following lines:
+httpAccess-Control-Allow-Origin: https://foo.example
+Access-Control-Allow-Methods: POST, GET, OPTIONS
+Access-Control-Allow-Headers: X-PINGOTHER, Content-Type
+Access-Control-Max-Age: 86400
+
+The server responds with Access-Control-Allow-Origin: https://foo.example, restricting access to the requesting origin domain only. It also responds with Access-Control-Allow-Methods, which says that POST and GET are valid methods to query the resource in question (this header is similar to the Allow response header, but used strictly within the context of access control).
+The server also sends Access-Control-Allow-Headers with a value of X-PINGOTHER, Content-Type, confirming that these are permitted headers to be used with the actual request. Like Access-Control-Allow-Methods, Access-Control-Allow-Headers is a comma-separated list of acceptable headers.
+Finally, Access-Control-Max-Age gives the value in seconds for how long the response to the preflight request can be cached without sending another preflight request. The default value is 5 seconds. In the present case, the max age is 86400 seconds (= 24 hours). Note that each browser has a maximum internal value that takes precedence when the Access-Control-Max-Age exceeds it.
+Once the preflight request is complete, the real request is sent:
+httpPOST /doc HTTP/1.1
+Host: bar.other
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:71.0) Gecko/20100101 Firefox/71.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-us,en;q=0.5
+Accept-Encoding: gzip,deflate
+Connection: keep-alive
+X-PINGOTHER: pingpong
+Content-Type: text/xml; charset=UTF-8
+Referer: https://foo.example/examples/preflightInvocation.html
+Content-Length: 55
+Origin: https://foo.example
+Pragma: no-cache
+Cache-Control: no-cache
+
+<person><name>Arun</name></person>
+
+HTTP/1.1 200 OK
+Date: Mon, 01 Dec 2008 01:15:40 GMT
+Server: Apache/2
+Access-Control-Allow-Origin: https://foo.example
+Vary: Accept-Encoding, Origin
+Content-Encoding: gzip
+Content-Length: 235
+Keep-Alive: timeout=2, max=99
+Connection: Keep-Alive
+Content-Type: text/plain
+
+[Some XML content]
+
+Preflighted requests and redirects
+Not all browsers currently support following redirects after a preflighted request. If a redirect occurs after such a request, some browsers currently will report an error message such as the following:
+
+The request was redirected to https://example.com/foo, which is disallowed for cross-origin requests that require preflight.
+Request requires preflight, which is disallowed to follow cross-origin redirects.
+
+The CORS protocol originally required that behavior but was subsequently changed to no longer require it. However, not all browsers have implemented the change, and thus still exhibit the originally required behavior.
+Until browsers catch up with the spec, you may be able to work around this limitation by doing one or both of the following:
+
+Change the server-side behavior to avoid the preflight and/or to avoid the redirect
+Change the request such that it is a simple request that doesn't cause a preflight
+
+If that's not possible, then another way is to:
+
+Make a simple request (using Response.url for the Fetch API, or XMLHttpRequest.responseURL) to determine what URL the real preflighted request would end up at.
+Make another request (the real request) using the URL you obtained from Response.url or XMLHttpRequest.responseURL in the first step.
+
+However, if the request is one that triggers a preflight due to the presence of the Authorization header in the request, you won't be able to work around the limitation using the steps above. And you won't be able to work around it at all unless you have control over the server the request is being made to.
+ 
+ Requests with credentials
+ 
+Note:
+When making credentialed requests to a different domain, third-party cookie policies will still apply. The policy is always enforced regardless of any setup on the server and the client as described in this chapter.
+
+The most interesting capability exposed by both fetch() or XMLHttpRequest and CORS is the ability to make "credentialed" requests that are aware of HTTP cookies and HTTP Authentication information. By default, in cross-origin fetch() or XMLHttpRequest calls, browsers will not send credentials.
+To ask for a fetch() request to include credentials, set the credentials option to "include".
+To ask for an XMLHttpRequest request to include credentials, set the XMLHttpRequest.withCredentials property to true.
+In this example, content originally loaded from https://foo.example makes a GET request to a resource on https://bar.other which sets Cookies. Content on foo.example might contain JavaScript like this:
+jsconst url = "https://bar.other/resources/credentialed-content/";
+
+const request = new Request(url, { credentials: "include" });
+
+const fetchPromise = fetch(request);
+fetchPromise.then((response) => console.log(response));
+
+This code creates a Request object, setting the credentials option to "include" in the constructor, then passes this request into fetch(). Since this is a simple GET request, it is not preflighted but the browser will reject any response that does not have the Access-Control-Allow-Credentials header set to true, and not make the response available to the invoking web content.
+
+Here is a sample exchange between client and server:
+httpGET /resources/credentialed-content/ HTTP/1.1
+Host: bar.other
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:71.0) Gecko/20100101 Firefox/71.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-us,en;q=0.5
+Accept-Encoding: gzip,deflate
+Connection: keep-alive
+Referer: https://foo.example/examples/credential.html
+Origin: https://foo.example
+Cookie: pageAccess=2
+
+HTTP/1.1 200 OK
+Date: Mon, 01 Dec 2008 01:34:52 GMT
+Server: Apache/2
+Access-Control-Allow-Origin: https://foo.example
+Access-Control-Allow-Credentials: true
+Cache-Control: no-cache
+Pragma: no-cache
+Set-Cookie: pageAccess=3; expires=Wed, 31-Dec-2008 01:34:53 GMT
+Vary: Accept-Encoding, Origin
+Content-Encoding: gzip
+Content-Length: 106
+Keep-Alive: timeout=2, max=100
+Connection: Keep-Alive
+Content-Type: text/plain
+
+[text/plain content]
+
+Although the request's Cookie header contains the cookie destined for the content on https://bar.other, if bar.other did not respond with an Access-Control-Allow-Credentials with value true, as demonstrated in this example, the response would be ignored and not made available to the web content.
+Preflight requests and credentials
+CORS-preflight requests must never include credentials. The response to a preflight request must specify Access-Control-Allow-Credentials: true to indicate that the actual request can be made with credentials.
+
+Note:
+Some enterprise authentication services require that TLS client certificates be sent in preflight requests, in contravention of the Fetch specification.
+Firefox 87 allows this non-compliant behavior to be enabled by setting the preference: network.cors_preflight.allow_client_cert to true (Firefox bug 1511151). Chromium-based browsers currently always send TLS client certificates in CORS preflight requests (Chrome bug 775438).
+
+Credentialed requests and wildcards
+When responding to a credentialed request:
+
+The server must not specify the * wildcard for the Access-Control-Allow-Origin response-header value, but must instead specify an explicit origin; for example: Access-Control-Allow-Origin: https://example.com
+The server must not specify the * wildcard for the Access-Control-Allow-Headers response-header value, but must instead specify an explicit list of header names; for example, Access-Control-Allow-Headers: X-PINGOTHER, Content-Type
+The server must not specify the * wildcard for the Access-Control-Allow-Methods response-header value, but must instead specify an explicit list of method names; for example, Access-Control-Allow-Methods: POST, GET
+The server must not specify the * wildcard for the Access-Control-Expose-Headers response-header value, but must instead specify an explicit list of header names; for example, Access-Control-Expose-Headers: Content-Encoding, Kuma-Revision
+
+If a request includes a credential (most commonly a Cookie header) and the response includes an Access-Control-Allow-Origin: * header (that is, with the wildcard), the browser will block access to the response, and report a CORS error in the devtools console.
+But if a request does include a credential (like the Cookie header) and the response includes an actual origin rather than the wildcard (like, for example, Access-Control-Allow-Origin: https://example.com), then the browser will allow access to the response from the specified origin.
+Also note that any Set-Cookie response header in a response would not set a cookie if the Access-Control-Allow-Origin value in that response is the * wildcard rather an actual origin.
+Third-party cookies
+Note that cookies set in CORS responses are subject to normal third-party cookie policies. In the example above, the page is loaded from foo.example but the Set-Cookie header in the response is sent by bar.other, and would thus not be saved if the user's browser is configured to reject all third-party cookies.
+Cookies set in CORS requests and responses are subject to normal third-party cookie policies.
+Third-party cookie policies may prevent third party cookies being sent in requests, effectively stopping a site from making credentialed requests even if permitted by the third party server (using Access-Control-Allow-Credentials).
+The default policy differs between browsers, but may be set using the SameSite attribute.
+Even if credentialed requests are allowed, a browser may be configured to reject all third-party cookies in responses.
+ 
+ The HTTP response headers
+ This section lists the HTTP response headers that servers return for access control requests as defined by the Cross-Origin Resource Sharing specification. The previous section gives an overview of these in action.
+ 
+ Access-Control-Allow-Origin
+ A returned resource may have one Access-Control-Allow-Origin header with the following syntax:
+httpAccess-Control-Allow-Origin: <origin> | *
+
+Access-Control-Allow-Origin specifies either a single origin which tells browsers to allow that origin to access the resource; or else — for requests without credentials — the * wildcard tells browsers to allow any origin to access the resource.
+For example, to allow code from the origin https://mozilla.org to access the resource, you can specify:
+httpAccess-Control-Allow-Origin: https://mozilla.org
+Vary: Origin
+
+If the server specifies a single origin (that may dynamically change based on the requesting origin as part of an allowlist) rather than the * wildcard, then the server should also include Origin in the Vary response header to indicate to clients that server responses will differ based on the value of the Origin request header.
+ 
+ Access-Control-Expose-Headers
+ The Access-Control-Expose-Headers header adds the specified headers to the allowlist that JavaScript (such as Response.headers) in browsers is allowed to access.
+httpAccess-Control-Expose-Headers: <header-name>[, <header-name>]*
+
+For example, the following would allow the X-My-Custom-Header and X-Another-Custom-Header headers to be exposed to the browser:
+httpAccess-Control-Expose-Headers: X-My-Custom-Header, X-Another-Custom-Header
+
+ Access-Control-Max-Age
+ The Access-Control-Max-Age header indicates how long the results of a preflight request can be cached. For an example of a preflight request, see the above examples.
+httpAccess-Control-Max-Age: <delta-seconds>
+
+The delta-seconds parameter indicates the number of seconds the results can be cached.
+ 
+ Access-Control-Allow-Credentials
+ The Access-Control-Allow-Credentials header indicates whether or not the response to the request can be exposed when the credentials flag is true. When used as part of a response to a preflight request, this indicates whether or not the actual request can be made using credentials. Note that simple GET requests are not preflighted, and so if a request is made for a resource with credentials, if this header is not returned with the resource, the response is ignored by the browser and not returned to web content.
+httpAccess-Control-Allow-Credentials: true
+
+Credentialed requests are discussed above.
+ 
+ Access-Control-Allow-Methods
+ The Access-Control-Allow-Methods header specifies the method or methods allowed when accessing the resource. This is used in response to a preflight request. The conditions under which a request is preflighted are discussed above.
+httpAccess-Control-Allow-Methods: <method>[, <method>]*
+
+An example of a preflight request is given above, including an example which sends this header to the browser.
+ 
+ Access-Control-Allow-Headers
+ The Access-Control-Allow-Headers header is used in response to a preflight request to indicate which HTTP headers can be used when making the actual request. This header is the server side response to the browser's Access-Control-Request-Headers header.
+httpAccess-Control-Allow-Headers: <header-name>[, <header-name>]*
+
+ The HTTP request headers
+ This section lists headers that clients may use when issuing HTTP requests in order to make use of the cross-origin sharing feature. Note that these headers are set for you when making invocations to servers. Developers making cross-origin requests do not have to set any cross-origin sharing request headers programmatically.
+ 
+ Origin
+ The Origin header indicates the origin of the cross-origin access request or preflight request.
+httpOrigin: <origin>
+
+The origin is a URL indicating the server from which the request is initiated. It does not include any path information, only the server name.
+
+Note:
+The origin value can be null.
+
+Note that in any access control request, the Origin header is always sent.
+ 
+ Access-Control-Request-Method
+ The Access-Control-Request-Method is used when issuing a preflight request to let the server know what HTTP method will be used when the actual request is made.
+httpAccess-Control-Request-Method: <method>
+
+Examples of this usage can be found above.
+ 
+ Access-Control-Request-Headers
+ The Access-Control-Request-Headers header is used when issuing a preflight request to let the server know what HTTP headers will be used when the actual request is made (for example, by passing them as the headers option). This browser-side header will be answered by the complementary server-side header of Access-Control-Allow-Headers.
+httpAccess-Control-Request-Headers: <field-name>[,<field-name>]*
+
+Examples of this usage can be found above.
+ 
+ Specifications
+
+ Specification
+
+ Fetch# http-access-control-allow-origin
+
+ Browser compatibility
+ Enable JavaScript to view this browser compatibility table.
+ 
+ See also
+ 
+CORS errors
+Enable CORS: I want to add CORS support to my server
+Fetch API
+XMLHttpRequest
+Will it CORS? - an interactive CORS explainer & generator
+How to run Chrome browser without CORS
+Using CORS with All (Modern) Browsers
+Stack Overflow answer with "how to" info for dealing with common problems:
+
+How to avoid the CORS preflight
+How to use a CORS proxy to get around "No Access-Control-Allow-Origin header"
+How to fix "Access-Control-Allow-Origin header must not be the wildcard"
+
+ Help improve MDN
+
+ Was this page helpful to you?
+
+ Yes
+
+ No
+
+ Learn how to contribute 
+ This page was last modified on Nov 30, 2025 by MDN contributors.
+ 
+ View this page on GitHub • Report a problem with this content
+
+============================================================
+SOURCE: CSP
+============================================================
+
+Content Security Policy (CSP) - HTTP | MDN
+
+ Skip to main content
+
+ Skip to search
+
+ Toggle sidebar
+
+ Web
+
+ HTTP
+
+ Guides
+
+ Content Security Policy (CSP)
+
+ Theme
+
+ OS default
+
+ Light
+
+ Dark
+
+ English (US)
+
+ Remember language
+
+ Learn more
+
+ Deutsch
+
+ English (US)
+
+ Español
+
+ Français
+
+ 日本語
+
+ 한국어
+
+ Português (do Brasil)
+
+ Русский
+
+ 中文 (简体)
+
+ Content Security Policy (CSP)
+
+ Content Security Policy (CSP) is a feature that helps to prevent or minimize the risk of certain types of security threats. It consists of a series of instructions from a website to a browser, which instruct the browser to place restrictions on the things that the code comprising the site is allowed to do.
+The primary use case for CSP is to control which resources, in particular JavaScript resources, a document is allowed to load. This is mainly used as a defense against cross-site scripting (XSS) attacks, in which an attacker is able to inject malicious code into the victim's site.
+A CSP can have other purposes as well, including defending against clickjacking and helping to ensure that a site's pages will be loaded over HTTPS.
+In this guide we'll start by describing how a CSP is delivered to a browser and what it looks like at a high level.
+Then we'll describe how it can be used to:
+
+Control which resources are loaded, to protect against XSS.
+Restrict embedding, to protect against clickjacking.
+Upgrade insecure requests, to help ensure that all resources are served over HTTPS.
+Require the use of trusted types, to help defend against client-side XSS.
+
+Note that there's no dependency between the different use cases: if you want to add clickjacking protection but not XSS mitigation, you can just add the directives for that use case.
+Finally we'll describe strategies for deploying a CSP and tools that can help to make this process easier.
+
+ CSP overview
+ A CSP should be delivered to the browser in the Content-Security-Policy response header. It should be set on all responses to all requests, not just the main document.
+You can also specify it using the http-equiv attribute of your document's <meta> element, and this is a useful option for some use cases, such as a client-side-rendered single page app which has only static resources, because you can then avoid relying on any server infrastructure. However, this option does not support all CSP features.
+The policy is specified as a series of directives, separated by semi-colons. Each directive controls a different aspect of the security policy. Each directive has a name, followed by a space, followed by a value. Different directives can have different syntaxes.
+For example, consider the following CSP:
+httpContent-Security-Policy: default-src 'self'; img-src 'self' example.com
+
+It sets two directives:
+
+the default-src directive is set to 'self'
+the img-src directive is set to 'self' example.com.
+
+The first directive, default-src, tells the browser to load only resources that are same-origin with the document, unless other more specific directives set a different policy for other resource types. The second, img-src, tells the browser to load images that are same-origin or that are served from example.com.
+In the next section, we'll look at the tools available to control resource loads, which is the main function of a CSP.
+ 
+ Controlling resource loading
+ A CSP can be used to control the resources that a document is allowed to load. This is primarily used for protection against cross-site scripting (XSS) attacks.
+In this section we'll first see how controlling resource loads can help protect against XSS, then at the tools CSP provides to control what resources are loaded. Finally we'll describe one particular recommended strategy, which is called a "Strict CSP".
+ 
+ XSS and resource loading
+ A cross-site scripting (XSS) attack is one in which an attacker is able to execute their code in the context of the target website. This code is then able to do anything that the website's own code could do, including, for example:
+
+access or modify the content of the site's loaded pages
+access or modify content in local storage
+make HTTP requests with the user's credentials, enabling them to impersonate the user or access sensitive data
+
+An XSS attack is possible when a website accepts some input which might have been crafted by an attacker (for example, URL parameters, or a comment on a blog post) and then includes it in the page without sanitizing it: that is, without ensuring that it can't be executed as JavaScript.
+Websites should protect themselves against XSS by sanitizing this input before including it in the page.
+
+Note:
+A CSP can actually help protect against XSS in two different ways:
+
+It can help ensure that input is sanitized before being used in the client: we discuss this later on in Requiring trusted types.
+By controlling resource loads, a CSP can provide a defense in depth against XSS, protecting the website even if sanitization fails. This is the XSS defense that we will discuss in this section.
+
+If sanitization fails, there are various forms the injected malicious code can take in the document, including:
+
+A <script> tag that links to a malicious source:
+html<script src="https://evil.example.com/hacker.js"></script>
+
+A <script> tag that includes inline JavaScript:
+html<script>
+ console.log("You've been hacked!");
+</script>
+
+An inline event handler:
+html<img
+ onmouseover="console.log(`You've been hacked!`)"
+ src="thumbnail.jpg"
+ alt="" />
+
+A javascript: URL:
+html<iframe src="javascript:console.log(`You've been hacked!`)"></iframe>
+
+A string argument to an unsafe API like eval():
+jseval("console.log(`You've been hacked!`)");
+
+By controlling resource loading, a CSP can provide protection against all of these. With a CSP, you can:
+
+define the permitted sources for JavaScript files and other resources, effectively blocking loads from https://evil.example.com
+disable inline script tags
+allow only script tags which have the correct nonce or hash set
+disable inline event handlers
+disable javascript: URLs
+disable dangerous APIs like eval()
+
+In the next section we'll go over the tools CSP provides to do these things.
+
+Note:
+Setting a CSP is not an alternative to sanitizing input. Websites should sanitize input and set a CSP, providing defense in depth against XSS.
+
+ Fetch directives
+ Fetch directives are used to specify a particular category of resource that a document is allowed to load — such as JavaScript, CSS stylesheets, images, fonts, and so on.
+There are different fetch directives for different types of resource. For example:
+
+script-src sets allowed sources for JavaScript.
+style-src sets allowed sources for CSS stylesheets.
+img-src sets allowed sources for images.
+
+One special fetch directive is default-src, which sets a fallback policy for all resources whose directives are not explicitly listed.
+For the complete set of fetch directives, see the reference documentation.
+Each fetch directive is specified as either the single keyword 'none' or one or more source expressions, separated by spaces. When more than one source expression is listed: if any of the methods allow the resource, then the resource is allowed.
+For example, the CSP below sets two fetch directives:
+
+default-src is given the single source expression 'self'
+img-src is given two source expressions: 'self' and example.com
+
+The effect of this is that:
+
+images must be either same-origin with the document, or loaded from example.com
+all other resources must be same-origin with the document.
+
+In the next few sections we'll describe some of the ways you can use source expressions to control resource loads. Note that although we're describing them separately, these expressions can in general be combined: for example, a single fetch directive may include nonces as well as hostnames.
+Blocking resources
+To block a resource type entirely, use the 'none' keyword. For example, the following directive blocks all <object> and <embed> resources:
+httpContent-Security-Policy: object-src 'none'
+
+Note that 'none' cannot be combined with any other method in a particular directive: in practice, if any other source expressions are given alongside 'none', then they are ignored.
+Nonces
+A nonce is the recommended approach for restricting the loading of <script> and <style> resources.
+With a nonce, the server generates a random value for every HTTP response, and includes it in a script-src and/or a style-src directive:
+httpContent-Security-Policy:
+ script-src 'nonce-416d1177-4d12-4e3b-b7c9-f6c409789fb8'
+
+The server then includes this value as the value of the nonce attribute of all the <script> and/or <style> tags that they intend to include in the document.
+The browser compares the two values, and loads the resource only if they match. The idea is that even if an attacker can insert some JavaScript into the page, they won't know which nonce the server is going to use, so the browser will refuse to run the script.
+For this approach to work, it must not be possible for an attacker to guess the nonce.
+In practice this means that the nonce must be different for every HTTP response, and must not be predictable.
+This in turn means that the server cannot serve static HTML, because it must insert a new nonce each time. Typically the server would use a templating engine to insert the nonce.
+Here's a snippet of Express code to demonstrate:
+jsfunction content(nonce) {
+ return `
+ <script nonce="${nonce}" src="/main.js"></script>
+ <script nonce="${nonce}">console.log("hello!");</script>
+ <h1>Hello world</h1> 
+ `;
+}
+
+app.get("/", (req, res) => {
+ const nonce = crypto.randomUUID();
+ res.setHeader("Content-Security-Policy", `script-src 'nonce-${nonce}'`);
+ res.send(content(nonce));
+});
+
+On every request, the server generates a new nonce, inserts it into the CSP and into the <script> tags in the returned document. Note that the server:
+
+generates a new nonce for every request
+can use nonces with both external and inline scripts
+uses the same nonce for all <script> tags in the document
+
+It's important that the server uses some kind of templating to insert nonces, and does not just insert them into all <script> tags: otherwise, the server might inadvertently insert nonces into scripts that were injected by an attacker.
+Note that nonces can only be used for elements that have a nonce attribute: that is, only <script> and <style> elements.
+Hashes
+Fetch directives can also use a hash of the script to guarantee its integrity. With this method, the server:
+
+calculates a hash of the script contents using a hash function (one of SHA-256, SHA-384, or SHA-512)
+creates a Base64 encoding of the result
+appends a prefix identifying the hash algorithm used (one of sha256-, sha384-, or sha512-).
+
+It then adds the result to the directive:
+httpContent-Security-Policy: script-src 'sha256-cd9827ad...'
+
+When the browser receives the document, it hashes the script, compares the result with the value from the header, and loads the script only if they match.
+External scripts must also include the integrity attribute for this method to work.
+Here's a snippet of Express code, to demonstrate:
+jsconst hash1 = "sha256-ex2O7MWOzfczthhKm6azheryNVoERSFrPrdvxRtP8DI=";
+const hash2 = "sha256-H/eahVJiG1zBXPQyXX0V6oaxkfiBdmanvfG9eZWSuEc=";
+
+const csp = `script-src '${hash1}' '${hash2}'`;
+const content = `
+ <script src="./main.js" integrity="${hash2}"></script>
+ <script>console.log("hello!");</script>
+ <h1>Hello world</h1> 
+ `;
+
+app.get("/", (req, res) => {
+ res.setHeader("Content-Security-Policy", csp);
+ res.send(content);
+});
+
+Note that:
+
+We have a separate hash for every script in the document.
+For the external script "main.js", we also include the integrity attribute, and give it the same value.
+Unlike the example using nonces, both the CSP and the content can be static, because the hashes stay the same. This makes hash-based policies more suitable for static pages or websites that rely on client-side rendering.
+
+Scheme-based policies
+Fetch directives can list a scheme, like https:, to allow resources that are served using that scheme. This, for example, allows a policy to require HTTPS for all resource loads:
+httpContent-Security-Policy: default-src https:
+
+Location-based policies
+Fetch directives can control resource loads based on where the resource is located.
+The keyword 'self' allows resources which are same-origin with the document itself:
+httpContent-Security-Policy: img-src 'self'
+
+You can also specify one or more hostnames, potentially including wildcards, and only resources served from those hosts will be allowed. This might be used, for example, to allow content to be served from a trusted CDN.
+httpContent-Security-Policy: img-src *.example.org
+
+You can specify multiple locations. The following directive allows only images that are same-origin with the current document, or are served from a subdomain of "example.org", or are served from "example.com":
+httpContent-Security-Policy: img-src 'self' *.example.org example.com
+
+Inline JavaScript
+If a CSP contains either a default-src or a script-src directive, then inline JavaScript will not be allowed to execute unless extra measures are taken to enable it. This includes:
+
+JavaScript included inside a <script> element in the page:
+html<script>
+ console.log("Hello from an inline script");
+</script>
+
+JavaScript in an inline event handler attribute:
+html<img src="x" onerror="console.log('Hello from an inline event handler')" />
+
+JavaScript in a javascript: URL:
+html<a href="javascript:console.log('Hello from a javascript: URL')">Click me</a>
+
+The unsafe-inline keyword can be used to override this restriction. For example, the following directive requires all resources to be same-origin, but allows inline JavaScript:
+httpContent-Security-Policy: default-src 'self' 'unsafe-inline'
+
+Warning:
+Developers should avoid 'unsafe-inline', because it defeats much of the purpose of having a CSP. Inline JavaScript is one of the most common XSS vectors, and one of the most basic goals of a CSP is to prevent its uncontrolled use.
+
+Inline <script> elements are allowed if they are protected by a nonce or a hash, as described above.
+If a directive contains nonce or hash expressions, then the unsafe-inline keyword is ignored by browsers.
+eval() and similar APIs
+Like inline JavaScript, if a CSP contains either a default-src or a script-src directive, then eval() and similar APIs will not be allowed to execute. This includes, among other APIs:
+
+eval() itself:
+jseval('console.log("hello from eval()")');
+
+The Function() constructor:
+jsconst sum = new Function("a", "b", "return a + b");
+
+The string argument to setTimeout() and setInterval():
+jssetTimeout("console.log('hello from setTimeout')", 1);
+
+The unsafe-eval keyword can be used to override this behavior, and as with unsafe-inline, and for the same reasons: developers should avoid unsafe-eval.
+Sometimes it can be difficult to remove usages of eval() and the other methods: in these situations, the Trusted Types API can make it safer, by ensuring that the input meets a defined policy.
+The trusted-types-eval keyword should be used to override the behavior in this case.
+Unlike unsafe-inline it only overrides the behavior in browser when trusted types are supported and enabled; which ensures that the methods will remain blocked on browsers that don't support trusted types.
+Unlike unsafe-inline, the unsafe-eval keyword does still work in a directive that contains nonce or hash expressions.
+ 
+ Strict CSP
+ To control script loading as a mitigation against XSS, recommended practice is to use nonce- or hash- based fetch directives. This is called a strict CSP. This type of CSP has two main advantages over a location-based CSP (usually called an allowlist CSP):
+
+Allowlist CSPs are hard to get right and often policies inadvertently whitelist unsafe domains, and hence don't provide effective protection against XSS (see CSP Is Dead, Long Live CSP! On the Insecurity of Whitelists and the Future of Content Security Policy).
+Allowlist CSPs can be very large and hard to maintain, in particular when using scripts that are outside of your control. According to How I learned to stop worrying and love the Content Security Policy, just to integrate Google Analytics, a developer is asked to add 187 Google domains to the allowlist.
+
+A nonce-based strict CSP looks like this:
+httpContent-Security-Policy:
+ script-src 'nonce-{RANDOM}';
+ object-src 'none';
+ base-uri 'none';
+
+In this CSP, we:
+
+use nonces to control which JavaScript resources are allowed to load
+block all object embeds
+block all uses of the <base> element to set a base URI.
+
+A hash-based strict CSP is the same, except it uses hashes instead of nonces:
+httpContent-Security-Policy:
+ script-src 'sha256-{HASHED_SCRIPT}';
+ object-src 'none';
+ base-uri 'none';
+
+Nonce-based directives are easier to maintain if you can generate responses, including the content itself, dynamically. Otherwise, you need to use hash-based directives. The problem with hash-based directives is that you need to recalculate and reapply the hash if any change is made to the script contents.
+The strict-dynamic keyword
+As presented above, the strict CSP is difficult to implement when you use scripts which are not under your control. If a third-party script loads any additional scripts, or uses any inline scripts, then this will fail, because the third-party script won't pass the nonce or hash through.
+The strict-dynamic keyword is provided to help with this problem. It is a keyword that can be included in a fetch directive, and it has the effect that if a script has a nonce or a hash attached to it, then that script will be allowed to load further scripts which do not themselves have nonces or hashes. That is, the trust placed in a script by a nonce or hash is passed on to scripts that the original script loads (and scripts that they load, and so on).
+For example, consider a document like this:
+html<html lang="en-US">
+ <head>
+ <script
+ src="./main.js"
+ integrity="sha256-gEh1+8U9S1vkEuQSmmUMTZjyNSu5tIoECP4UXIEjMTk="></script>
+ </head>
+ <body>
+ <h1>Example page!</h1>
+ </body>
+</html>
+
+It includes a script "main.js", which creates and adds another script, "main2.js":
+jsconsole.log("hello");
+
+const scriptElement = document.createElement("script");
+scriptElement.src = `main2.js`;
+
+document.head.appendChild(scriptElement);
+
+We serve our document with a CSP like this:
+httpContent-Security-Policy:
+ script-src 'sha256-gEh1+8U9S1vkEuQSmmUMTZjyNSu5tIoECP4UXIEjMTk='
+
+The "main.js" script will be allowed to load, because its hash matches the value in the CSP. But its attempt to load "main2.js" will fail.
+If we add 'strict-dynamic' to the CSP, then "main.js" will be allowed to load "main2.js":
+httpContent-Security-Policy:
+ script-src 'sha256-gEh1+8U9S1vkEuQSmmUMTZjyNSu5tIoECP4UXIEjMTk='
+ 'strict-dynamic'
+
+The 'strict-dynamic' keyword makes it much easier to create and maintain nonce- or hash-based CSPs, especially when a website uses third-party scripts. It does make your CSP less secure, though, because if the scripts you include create <script> elements based on potential sources of XSS, then the CSP will not protect them.
+Refactoring inline JavaScript and eval()
+We've seen above that inline JavaScript is disallowed by default in a CSP. With nonces or hashes, a developer can use inline <script> tags, but you'll still need to refactor code to remove other disallowed patterns, including inline event handlers, javascript: URLs, and uses of eval(). For example, inline event handlers should usually be replaced with calls to addEventListener():
+html<p onclick="console.log('Hello from an inline event handler')">click me</p>
+
+html<!-- served with the following CSP:
+ `script-src 'sha256-AjYfua7yQhrSlg807yyeaggxQ7rP9Lu0Odz7MZv8cL0='`
+ -->
+<p id="hello">click me</p>
+<script>
+ const hello = document.querySelector("#hello");
+ hello.addEventListener("click", () => {
+ console.log("Hello from an inline script");
+ });
+</script>
+
+ Clickjacking protection
+ The frame-ancestors directive can be used to control which documents, if any, are allowed to embed this document in a nested browsing context such as an <iframe>. This is an effective protection against clickjacking attacks, because these attacks depend on embedding the target site in a site controlled by the attacker.
+The syntax of frame-ancestors is a subset of the fetch directive syntax: you can provide the single keyword value 'none' or one or more source expressions. However, the only source expressions you can use are schemes, hostnames, or the 'self' keyword value.
+Unless you need your site to be embeddable, you should set frame-ancestors to 'none':
+httpContent-Security-Policy: frame-ancestors 'none'
+
+This directive is a more flexible replacement for the X-Frame-Options header.
+ 
+ Upgrading insecure requests
+ Web developers are strongly encouraged to serve all their content over HTTPS. In the process of upgrading a site to HTTPS, a site sometimes serves the main document over HTTPS but serves its resources over HTTP, for example, using markup like this:
+html<script src="http://example.org/my-cat.js"></script>
+
+This is called mixed content, and the presence of insecure resources greatly weakens the protection afforded by HTTPS. Under the mixed content algorithm that browsers implement, if a document is served over HTTPS, insecure resources are categorized into "upgradable content" and "blockable content". Upgradable content is upgraded to HTTPS, and blockable content is blocked, potentially breaking the page.
+The ultimate solution to mixed content is for developers to load all resources over HTTPS. However, even if a site is actually able to serve all content over HTTPS, it can still be very difficult (or even effectively impossible, where archived content is concerned) for a developer to rewrite all the URLs the site uses to load resources.
+The upgrade-insecure-requests directive is intended to solve this problem. This directive doesn't have any value: to set it, just include the directive name:
+httpContent-Security-Policy: upgrade-insecure-requests
+
+If this directive is set on a document, then the browser will automatically upgrade to HTTPS any HTTP URLs in the following cases:
+
+requests to load resources (such as images, scripts, or fonts)
+navigation requests (such as link targets) which are same-origin with the document
+navigation requests in nested browsing contexts, such as iframes
+form submissions
+
+However, top-level navigation requests whose target is a different origin will not be upgraded.
+For example, suppose the document at https://example.org is served with a CSP containing the upgrade-insecure-requests directive, and the document contains markup like this:
+html<script src="http://example.org/my-cat.js"></script>
+<script src="http://not-example.org/another-cat.js"></script>
+
+The browser will automatically upgrade both of these requests to HTTPS.
+Suppose the document also contains this:
+html<a href="http://example.org/more-cats">See some more cats!</a>
+<a href="http://not-example.org/even-more-cats">More cats, on another site!</a>
+
+The browser will upgrade the first link to HTTPS, but not the second, as it is navigating to a different origin.
+This directive is not a substitute for the Strict-Transport-Security header (also known as HSTS), because it does not upgrade external links to a site. Sites should include this directive and the Strict-Transport-Security header.
+ 
+ Requiring trusted types
+ The require-trusted-types-for and trusted-types directives enable you to defend against client-side cross-site scripting (XSS) attacks, by ensuring that any input has been passed through a transformation to make it safe before it is passed to a web platform API that might otherwise execute it as code.
+The require-trusted-types-for and trusted-types directives can be used to enforce the Trusted Types API.
+This allows you to defend against client-side cross-site scripting (XSS) attacks by mandating that any input must be passed through a transformation function, providing an opportunity to make it safe before it is sent to a web platform API that might otherwise execute it as code.
+ 
+ Injection sinks and sanitization
+ Some APIs in the web platform are known as injection sinks. These are APIs that can be passed some input, usually in the form of a string, and that can interpret that input as code. In this guide we've already seen eval(), but there are many other injection sinks, such as Element.innerHTML or Document.write().
+If an attacker can supply some specially crafted input to your website, and your website passes it to one of these injection sinks, then the attacker can execute malicious code.
+Some injection sinks, like eval(), are very hard to use safely, and we've seen that a CSP will typically block them entirely. Others can be made safer if the input to them is processed so as to remove unsafe elements. This practice is called sanitization.
+ 
+ The Trusted Types API
+ With the Trusted Types API, you can pass trusted types into injection sinks, instead of strings. Trusted types are objects that result from passing potentially dangerous input through a transformation function. This transformation typically sanitizes the input, by removing any elements that might make it executable (such as <script> tags).
+By default, your code could choose to pass trusted types or unsanitized strings to injection sinks. However, if you include the require-trusted-types-for directive in your CSP, and give it a value of 'script', then the browser will only allow your site to pass trusted types to injection sinks. For example, the following code will throw an exception:
+jsconst possiblyXSS = "<p>I might be XSS</p>";
+const target = document.querySelector("#target");
+
+target.innerHTML = possiblyXSS;
+// Will throw an exception if `require-trusted-types-for` is set
+
+Trusted type objects are created using a user-defined policy object. Your code can create any kind of policy object, including ones whose transformation function doesn't actually sanitize the input, and therefore doesn't protect you. To minimize this risk, you can include the trusted-types directive. This lists the names of acceptable policies, and the browser will only allow those named policies to be used.
+ 
+ Testing your policy
+ To ease deployment, CSP can be deployed in report-only mode.
+The policy is not enforced, but any violations are sent to the reporting endpoint specified in the policy. Additionally, a report-only header can be used to test a future revision to a policy without actually deploying it.
+You can use the Content-Security-Policy-Report-Only HTTP header to specify your policy, like this:
+httpContent-Security-Policy-Report-Only: policy
+
+If both a Content-Security-Policy-Report-Only header and a Content-Security-Policy header are present in the same response, both policies are honored.
+The policy specified in Content-Security-Policy headers is enforced while the Content-Security-Policy-Report-Only policy generates reports but is not enforced.
+Note that unlike a normal content security policy, a report-only policy cannot be delivered in a <meta> element.
+ 
+ Violation reporting
+ The recommended method for reporting CSP violations is to use the Reporting API, declaring endpoints in Reporting-Endpoints and specifying one of them as the CSP reporting target using the Content-Security-Policy header's report-to directive.
+
+Warning:
+You can also use the CSP report-uri directive to specify a target URL for CSP violation reports.
+This sends a slightly different JSON report format via a POST operation with a Content-Type of application/csp-report.
+This approach is deprecated, but you should declare both until report-to is supported in all browsers.
+For more information about the approach see the report-uri topic.
+
+A server can inform clients where to send reports using the Reporting-Endpoints HTTP response header.
+This header defines one or more endpoint URLs as a comma-separated list.
+For example, to define a reporting endpoint named csp-endpoint which accepts reports at https://example.com/csp-reports, the server's response header could look like this:
+httpReporting-Endpoints: csp-endpoint="https://example.com/csp-reports"
+
+If you want to have multiple endpoints that handle different types of reports, you would specify them like this:
+httpReporting-Endpoints: csp-endpoint="https://example.com/csp-reports",
+ hpkp-endpoint="https://example.com/hpkp-reports"
+
+You can then use the Content-Security-Policy header's report-to directive to specify that a particular defined endpoint should be used for reporting.
+For example, to send CSP violation reports to https://example.com/csp-reports for the default-src, you might send response headers that look like the following:
+httpReporting-Endpoints: csp-endpoint="https://example.com/csp-reports"
+Content-Security-Policy: default-src 'self'; report-to csp-endpoint
+
+When a CSP violation occurs, the browser sends the report as a JSON object to the specified endpoint via an HTTP POST operation, with a Content-Type of application/reports+json.
+The report is a serialized form of the CSPViolationReport object containing a type property with a value of "csp-violation".
+A typical object might look like this:
+json{
+ "age": 53531,
+ "body": {
+ "blockedURL": "inline",
+ "columnNumber": 39,
+ "disposition": "enforce",
+ "documentURL": "https://example.com/csp-report",
+ "effectiveDirective": "script-src-elem",
+ "lineNumber": 121,
+ "originalPolicy": "default-src 'self'; report-to csp-endpoint-name",
+ "referrer": "https://www.google.com/",
+ "sample": "console.log(\"lo\")",
+ "sourceFile": "https://example.com/csp-report",
+ "statusCode": 200
+ },
+ "type": "csp-violation",
+ "url": "https://example.com/csp-report",
+ "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36"
+}
+
+You need to set up a server to receive reports with the given JSON format and content type.
+The server handling these requests can then store or process the incoming reports in a way that best suits your needs.
+ 
+ See also
+ 
+CSP errors and warnings
+Mitigate cross-site scripting with a strict Content Security Policy on web.dev (2024)
+Content Security Policy: A successful mess between hardening and mitigation
+Content Security Policy Cheat Sheet on owasp.org
+CSP Evaluator
+
+ Help improve MDN
+
+ Was this page helpful to you?
+
+ Yes
+
+ No
+
+ Learn how to contribute 
+ This page was last modified on Mar 22, 2026 by MDN contributors.
+ 
+ View this page on GitHub • Report a problem with this content
+
+============================================================
+SOURCE: TCP
+============================================================
+
+TCP - Glossary | MDN
+
+ Skip to main content
+
+ Skip to search
+
+ Toggle sidebar
+
+ Glossary
+
+ TCP
+
+ Theme
+
+ OS default
+
+ Light
+
+ Dark
+
+ English (US)
+
+ Remember language
+
+ Learn more
+
+ Deutsch
+
+ English (US)
+
+ Español
+
+ Français
+
+ 日本語
+
+ 한국어
+
+ Português (do Brasil)
+
+ Русский
+
+ 中文 (简体)
+
+ TCP
+
+ TCP (Transmission Control Protocol) is an important network protocol that lets two hosts connect and exchange data streams. TCP guarantees the delivery of data and packets in the same order as they were sent. Vint Cerf and Bob Kahn, who were DARPA scientists at the time, designed TCP in the 1970s.
+TCP's role is to ensure the packets are reliably delivered, and error-free. TCP implements congestion control, which means the initial requests start small, increasing in size to the levels of bandwidth the computers, servers, and network can support.
+
+ See also
+ 
+Transmission Control Protocol (Wikipedia)
+HTTP Overview
+How browsers work
+Related glossary terms:
+
+IPv4
+IPv6
+Packet
+
+ Help improve MDN
+
+ Was this page helpful to you?
+
+ Yes
+
+ No
+
+ Learn how to contribute 
+ This page was last modified on Jul 11, 2025 by MDN contributors.
+ 
+ View this page on GitHub • Report a problem with this content
+
+============================================================
+SOURCE: UDP
+============================================================
+
+UDP (User Datagram Protocol) - Glossary | MDN
+
+ Skip to main content
+
+ Skip to search
+
+ Toggle sidebar
+
+ Glossary
+
+ UDP (User Datagram Protocol)
+
+ Theme
+
+ OS default
+
+ Light
+
+ Dark
+
+ English (US)
+
+ Remember language
+
+ Learn more
+
+ Deutsch
+
+ English (US)
+
+ Français
+
+ 日本語
+
+ 한국어
+
+ 中文 (简体)
+
+ UDP (User Datagram Protocol)
+
+ UDP (User Datagram Protocol) is a long standing protocol used together with IP for sending data when transmission speed and efficiency matter more than security and reliability.
+UDP uses a simple connectionless communication model with a minimum of protocol mechanism. UDP provides checksums for data integrity, and port numbers for addressing different functions at the source and destination of the datagram. It has no handshaking dialogues, and thus exposes the user's program to any unreliability of the underlying network; there is no guarantee of delivery, ordering, or duplicate protection. If error-correction facilities are needed at the network interface level, an application may use the Transmission Control Protocol (TCP) or Stream Control Transmission Protocol (SCTP) which are designed for this purpose.
+UDP is suitable for purposes where error checking and correction are either not necessary or are performed in the application; UDP avoids the overhead of such processing in the protocol stack. Time-sensitive applications often use UDP because dropping packets is preferable to waiting for packets delayed due to retransmission, which may not be an option in a real-time system.
+
+ See also
+ 
+User Datagram Protocol on Wikipedia
+Specification
+
+ Help improve MDN
+
+ Was this page helpful to you?
+
+ Yes
+
+ No
+
+ Learn how to contribute 
+ This page was last modified on Jan 25, 2026 by MDN contributors.
+ 
+ View this page on GitHub • Report a problem with this content
+
+============================================================
+SOURCE: DNS
+============================================================
+
+DNS - Glossary | MDN
+
+ Skip to main content
+
+ Skip to search
+
+ Toggle sidebar
+
+ Glossary
+
+ DNS
+
+ Theme
+
+ OS default
+
+ Light
+
+ Dark
+
+ English (US)
+
+ Remember language
+
+ Learn more
+
+ Deutsch
+
+ English (US)
+
+ Français
+
+ 日本語
+
+ 한국어
+
+ Русский
+
+ 中文 (简体)
+
+ 正體中文 (繁體)
+
+ DNS
+
+ DNS (Domain Name System) is a hierarchical and decentralized naming system for Internet-connected resources. DNS maintains a list of domain names along with the resources, such as IP addresses, that are associated with them.
+The most prominent function of DNS is the translation of human-friendly domain names (such as mozilla.org) to a numeric IP address (such as 192.0.2.172); this process of mapping a domain name to the appropriate IP address is known as a DNS lookup. By contrast, a reverse DNS lookup (rDNS) is used to determine the domain name associated with an IP address.
+
+ See also
+ 
+Understanding domain names
+Domain Name System on Wikipedia
+
+ Help improve MDN
+
+ Was this page helpful to you?
+
+ Yes
+
+ No
+
+ Learn how to contribute 
+ This page was last modified on Nov 16, 2025 by MDN contributors.
+ 
+ View this page on GitHub • Report a problem with this content
+
+============================================================
+SOURCE: Networks Deep Dive Expert
+============================================================
+
+
+Q: Explain the full HTTP/2 and HTTP/3 improvements over HTTP/1.1?
+A:
+HTTP/1.1 Problems:
+- Head-of-line blocking: requests queued on same TCP connection
+- No header compression: redundant headers sent every request
+- Only text protocol: inefficient binary parsing
+
+HTTP/2 Solutions (2015):
+- Multiplexing: multiple streams on ONE TCP connection (no head-of-line blocking at HTTP layer)
+- Header compression (HPACK): reference tables for repeated headers
+- Server push: server can proactively send resources
+- Binary protocol: frames instead of text
+- Stream prioritization
+
+HTTP/3 Solutions (2022):
+- Runs on QUIC protocol (built on UDP) instead of TCP
+- Eliminates TCP head-of-line blocking entirely (each stream independent)
+- Built-in TLS 1.3 (0-RTT connection resumption for returning clients)
+- Connection migration: switch networks (WiFi→4G) without dropping connection
+- Faster connection setup: 0-RTT vs 3-way handshake + TLS handshake
+
+Q: How do you implement rate limiting in an API gateway?
+A:
+// Token Bucket Algorithm in Redis
+class RateLimiter:
+    def __init__(self, redis_client, max_requests=100, window_seconds=60):
+        self.redis = redis_client
+        self.max_requests = max_requests
+        self.window = window_seconds
+
+    def is_allowed(self, identifier: str) -> tuple[bool, dict]:
+        key = f"rate:{identifier}"
+        pipe = self.redis.pipeline()
+        now = time.time()
+        window_start = now - self.window
+
+        pipe.zremrangebyscore(key, 0, window_start)  # Remove old entries
+        pipe.zadd(key, {str(now): now})              # Add current request
+        pipe.zcard(key)                               # Count requests
+        pipe.expire(key, self.window)                 # Set expiry
+        results = pipe.execute()
+
+        count = results[2]
+        remaining = max(0, self.max_requests - count)
+        reset_at = now + self.window
+
+        return count <= self.max_requests, {
+            "X-RateLimit-Limit": str(self.max_requests),
+            "X-RateLimit-Remaining": str(remaining),
+            "X-RateLimit-Reset": str(int(reset_at)),
+        }
+
+Q: How does a CDN work and how should you configure caching headers?
+A:
+CDN (Content Delivery Network) flow:
+1. User requests resource from edge node (closest geographically)
+2. Edge node checks local cache: HIT → return immediately
+3. Cache MISS → edge fetches from origin server
+4. Edge caches response based on Cache-Control headers
+5. Future requests for same resource served from edge
+
+Cache-Control headers:
+Cache-Control: public, max-age=31536000, immutable
+  - public: can be cached by CDN and browsers
+  - max-age=31536000: cache for 1 year (use with content hashing!)
+  - immutable: browser won't revalidate even on reload
+
+Cache-Control: private, no-cache
+  - private: only browser cache, NOT CDN
+  - no-cache: must revalidate with server before serving
+
+Cache-Control: no-store
+  - Never cache (sensitive data: banking, auth tokens)
+
+ETag pattern (conditional requests):
+Server sends: ETag: "abc123"
+Browser sends on next request: If-None-Match: "abc123"
+Server returns 304 Not Modified if unchanged (no body = less bandwidth)

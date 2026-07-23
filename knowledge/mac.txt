@@ -1,0 +1,79 @@
+Q: Explain the macOS Architecture (Darwin, XNU, Cocoa).
+A: macOS is a Unix-based operating system built on a core called Darwin. It is structurally similar to Linux but has distinct differences.
+
+Layers of macOS:
+1. User Experience Layer: Aqua (the GUI), Finder, Spotlight.
+2. Application Frameworks:
+   - Cocoa: The primary object-oriented API for macOS applications (Objective-C and Swift).
+   - Core Services: Non-GUI services (Core Foundation, Grand Central Dispatch).
+3. Core OS (Darwin): The open-source UNIX foundation. It provides POSIX compliance.
+4. Kernel (XNU): "X is Not Unix". XNU is a hybrid kernel:
+   - Mach: Handles low-level OS primitives (IPC, virtual memory, scheduling, thread management).
+   - BSD: Runs on top of Mach, providing the POSIX API, networking stack, file system, and user/group permissions.
+   - I/O Kit: An object-oriented framework (written in a subset of C++) for writing device drivers.
+
+Difference from Linux:
+Linux is a monolithic kernel. XNU is a hybrid kernel. macOS utilizes the Mach IPC system heavily for inter-process communication, which is deeply integrated into the OS architecture.
+
+---
+
+Q: What is Grand Central Dispatch (GCD) in macOS/iOS development?
+A: GCD (libdispatch) is Apple's C-level API for managing concurrent operations. It abstracts away raw thread management and instead provides queues.
+
+Concepts:
+- Dispatch Queues: You submit blocks of code (closures in Swift) to queues, and GCD executes them on a pool of threads managed by the OS.
+- Main Queue: A serial queue that executes on the main thread. All UI updates MUST happen here.
+- Global Queues: Concurrent queues with different Quality of Service (QoS) priorities (User Interactive, User Initiated, Utility, Background).
+
+Example in Swift:
+```swift
+// Do heavy work in the background
+DispatchQueue.global(qos: .userInitiated).async {
+    let result = performHeavyImageProcessing()
+    
+    // Switch back to the main queue to update the UI
+    DispatchQueue.main.async {
+        imageView.image = result
+    }
+}
+```
+In modern Swift (5.5+), GCD is largely being replaced by the `async/await` concurrency model, though GCD remains heavily used in existing codebases.
+
+---
+
+Q: Explain the macOS File System (APFS vs HFS+) and App Bundles.
+A: File Systems:
+- HFS+ (Mac OS Extended): The legacy file system used prior to macOS High Sierra (2017).
+- APFS (Apple File System): The modern 64-bit file system optimized for SSDs.
+  - Key Features: Clones (copying a file creates a lightweight reference, taking 0 extra space until modified), Snapshots (read-only point-in-time state of the file system), Space Sharing (multiple volumes share the same free space dynamically), and native encryption.
+
+macOS App Bundles (.app):
+A macOS application is not a single executable file like an `.exe` in Windows. It is a directory with the extension `.app` that the Finder displays as a single file (a package).
+
+Structure of an App Bundle (`MyApp.app/`):
+- `Contents/`
+  - `MacOS/`: Contains the actual compiled binary executable.
+  - `Resources/`: UI files (Storyboards, Nibs), images, localization strings, icons (`.icns`).
+  - `Frameworks/`: Embedded dynamic libraries (`.dylib` or `.framework`) required by the app.
+  - `Info.plist`: An XML file defining app metadata (Bundle ID, version, required permissions).
+
+---
+
+Q: How does Package Management work on macOS? Explain Homebrew.
+A: macOS does not ship with a built-in package manager like `apt` (Debian) or `dnf` (Fedora). Developers rely on third-party tools, primarily Homebrew.
+
+Homebrew (`brew`):
+- "The missing package manager for macOS."
+- How it works: It downloads source code or pre-compiled binaries (bottles) into `/opt/homebrew` (on Apple Silicon) or `/usr/local` (on Intel) and symlinks them into `.../bin`.
+- It intentionally runs as the local user (not root) to prevent security risks and permission issues.
+
+Commands:
+```bash
+brew install python       # Installs CLI tools and libraries
+brew install --cask slack # Installs GUI macOS applications (.app bundles)
+brew update               # Updates the local list of packages
+brew upgrade              # Upgrades installed packages
+```
+
+macOS SIP (System Integrity Protection):
+SIP prevents even the `root` user from modifying critical system directories (like `/System`, `/usr` excluding `/usr/local`, `/bin`, `/sbin`). This is why Homebrew creates its own isolated directory structure in `/opt/homebrew` on modern Macs.

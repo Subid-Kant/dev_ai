@@ -1,0 +1,698 @@
+Q: Explain iOS Architecture (Cocoa Touch, Core Services) and Swift vs Objective-C.
+A: iOS architecture is layered, building on the foundation of macOS (Darwin/XNU) but optimized for mobile.
+
+Layers:
+1. Cocoa Touch: The top UI framework layer. Includes UIKit (older, imperative) and SwiftUI (modern, declarative), Foundation, EventKit, MapKit.
+2. Media: Core Graphics (Quartz), Core Animation, Metal (GPU hardware acceleration), AVFoundation.
+3. Core Services: Non-UI services. Core Data (Object Graph/Database), Core Location, Foundation (basic data types, collections).
+4. Core OS: The lowest layer. Mach kernel, file system, network sockets, security, Bluetooth.
+
+Swift vs Objective-C:
+- Objective-C: A dynamic, message-passing superset of C. Uses `.h` (header) and `.m` (implementation) files. Relies heavily on runtime resolution.
+- Swift: Introduced in 2014, Swift is modern, safe, fast, and statically typed. It eliminates headers, uses Optionals for null safety, supports Structs (value types) extensively, and has modern features like Generics and async/await.
+
+```swift
+// Swift Null Safety (Optionals)
+var name: String? = nil
+// Safe unwrapping
+if let safeName = name {
+    print("Hello \(safeName)")
+}
+// Guard (Early exit)
+guard let safeName = name else { return }
+print("Hello \(safeName)")
+```
+
+---
+
+Q: How does iOS Memory Management work? Explain ARC, strong, weak, and unowned.
+A: iOS uses Automatic Reference Counting (ARC) to manage memory, not a Garbage Collector. ARC inserts `retain` and `release` calls at compile time.
+
+How ARC works:
+Every object has a reference count. When an object is assigned to a variable, count + 1. When a variable goes out of scope, count - 1. When count == 0, the object is immediately deallocated.
+
+Reference Types in Swift:
+1. Strong (Default): Increases the reference count. Keeps the object alive.
+2. Weak: Does NOT increase the reference count. When the object is deallocated, the weak reference is automatically set to `nil`. (Therefore, weak variables MUST be Optionals `var x: Type?`).
+3. Unowned: Does NOT increase the reference count. Assumes the object will NEVER be deallocated before the reference is accessed. If it is deallocated and accessed, the app crashes. (Non-optional).
+
+Retain Cycles (Memory Leaks):
+Occur when Object A has a strong reference to Object B, and Object B has a strong reference to Object A. Their reference counts will never reach 0.
+Solution: Make one of the references `weak`.
+
+Common Retain Cycle: Closures capturing `self` strongly.
+```swift
+class Downloader {
+    var onComplete: (() -> Void)?
+    var data: Data?
+    
+    func start() {
+        // [weak self] captures self weakly to avoid a retain cycle
+        onComplete = { [weak self] in
+            guard let self = self else { return }
+            print("Finished downloading for \(self)")
+        }
+    }
+}
+```
+
+---
+
+Q: Explain SwiftUI and how it differs from UIKit.
+A: UIKit is the traditional, imperative, view-controller-based UI framework. SwiftUI is Apple's modern, declarative, reactive UI framework introduced in iOS 13.
+
+Differences:
+- UIKit (Imperative): "Create a label, set its text to X, add it to the view, set constraints. When data changes, manually update the label text."
+- SwiftUI (Declarative): "The UI is a function of its state. If the state is X, the UI looks like Y. When state changes, the UI automatically redraws."
+
+State Management in SwiftUI:
+- `@State`: For simple, local state owned by the view.
+- `@Binding`: To pass state down to a child view, allowing the child to mutate the parent's state.
+- `@StateObject`: To instantiate an observable object (ViewModel) and tie it to the view's lifecycle.
+- `@ObservedObject`: To pass an already instantiated observable object into a view.
+- `@EnvironmentObject`: Global state injected at the top of the view hierarchy and accessible anywhere.
+
+```swift
+// SwiftUI Example
+import SwiftUI
+
+// ViewModel
+class CounterModel: ObservableObject {
+    @Published var count = 0 // @Published triggers UI updates
+}
+
+// View
+struct CounterView: View {
+    @StateObject var viewModel = CounterModel()
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("Count: \(viewModel.count)")
+                .font(.largeTitle)
+            
+            Button("Increment") {
+                viewModel.count += 1
+            }
+            .padding()
+            .background(Color.blue)
+            .foregroundColor(.white)
+            .cornerRadius(10)
+        }
+    }
+}
+```
+
+---
+
+Q: How does iOS concurrency work? Explain Grand Central Dispatch (GCD) vs async/await.
+A: iOS has historically used GCD (dispatch queues) for concurrency. Swift 5.5 introduced modern `async/await`.
+
+GCD (Grand Central Dispatch):
+Callback-based API. Can lead to "callback hell" and retain cycle risks.
+```swift
+func fetchUser(id: Int, completion: @escaping (User?) -> Void) {
+    DispatchQueue.global(qos: .userInitiated).async {
+        let user = performNetworkRequest()
+        DispatchQueue.main.async { // MUST switch back to main for UI
+            completion(user)
+        }
+    }
+}
+```
+
+async/await (Modern Swift Concurrency):
+Code looks synchronous, is easier to read, and compiler guarantees thread safety (with Actors).
+```swift
+// Defining an async function
+func fetchUser(id: Int) async throws -> User {
+    let url = URL(string: "https://api.example.com/users/\(id)")!
+    // URLSession native async API
+    let (data, _) = try await URLSession.shared.data(from: url)
+    return try JSONDecoder().decode(User.self, from: data)
+}
+
+// Calling from SwiftUI (using Task)
+struct UserView: View {
+    @State private var user: User?
+    
+    var body: some View {
+        VStack {
+            if let user = user {
+                Text(user.name)
+            } else {
+                ProgressView()
+            }
+        }
+        .task { // Automatically runs an async task tied to the view's lifecycle
+            do {
+                // @MainActor automatically ensures UI updates happen on main thread
+                user = try await fetchUser(id: 1) 
+            } catch {
+                print("Error: \(error)")
+            }
+        }
+    }
+}
+```
+
+Actors:
+Reference types like classes, but they isolate their state. Only one task can access an actor's mutable state at a time, eliminating data races.
+```swift
+actor BankAccount {
+    var balance: Int = 0
+    
+    // Other code must `await` to call this, ensuring thread safety
+    func deposit(amount: Int) {
+        balance += amount
+    }
+}
+```
+
+
+============================================================
+SOURCE: iOS Expert Q&A
+============================================================
+
+
+iOS DEVELOPMENT — COMPREHENSIVE GUIDE
+
+=== SWIFTUI FUNDAMENTALS ===
+Q: How do you build a complete SwiftUI app with data flow?
+A:
+// Model
+struct Task: Identifiable, Codable {
+    let id: UUID
+    var title: String
+    var isCompleted: Bool
+    var createdAt: Date
+}
+
+// ViewModel
+@MainActor
+class TaskViewModel: ObservableObject {
+    @Published private(set) var tasks: [Task] = []
+    @Published private(set) var isLoading = false
+    @Published var error: String?
+
+    private let repository: TaskRepository
+
+    init(repository: TaskRepository = TaskRepositoryImpl()) {
+        self.repository = repository
+        Task { await loadTasks() }
+    }
+
+    func loadTasks() async {
+        isLoading = true
+        do {
+            tasks = try await repository.fetchTasks()
+        } catch {
+            self.error = error.localizedDescription
+        }
+        isLoading = false
+    }
+
+    func addTask(title: String) async {
+        let task = Task(id: UUID(), title: title, isCompleted: false, createdAt: Date())
+        do {
+            let saved = try await repository.save(task)
+            tasks.insert(saved, at: 0)
+        } catch {
+            self.error = error.localizedDescription
+        }
+    }
+
+    func toggleTask(_ task: Task) async {
+        var updated = task
+        updated.isCompleted.toggle()
+        do {
+            let saved = try await repository.save(updated)
+            if let idx = tasks.firstIndex(where: { $0.id == saved.id }) {
+                tasks[idx] = saved
+            }
+        } catch {
+            self.error = error.localizedDescription
+        }
+    }
+}
+
+// View
+struct TaskListView: View {
+    @StateObject private var viewModel = TaskViewModel()
+    @State private var showingAdd = false
+    @State private var newTitle = ""
+
+    var body: some View {
+        NavigationStack {
+            Group {
+                if viewModel.isLoading {
+                    ProgressView()
+                } else {
+                    List(viewModel.tasks) { task in
+                        TaskRow(task: task) {
+                            Task { await viewModel.toggleTask(task) }
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Tasks")
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    Button(action: { showingAdd = true }) {
+                        Image(systemName: "plus")
+                    }
+                }
+            }
+            .sheet(isPresented: $showingAdd) {
+                AddTaskView { title in
+                    Task { await viewModel.addTask(title: title) }
+                }
+            }
+        }
+    }
+}
+
+=== NETWORKING WITH ASYNC/AWAIT ===
+actor NetworkService {
+    private let session: URLSession
+    private let decoder: JSONDecoder
+
+    init() {
+        let config = URLSessionConfiguration.default
+        config.timeoutIntervalForRequest = 30
+        session = URLSession(configuration: config)
+        decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        decoder.dateDecodingStrategy = .iso8601
+    }
+
+    func fetch<T: Decodable>(_ type: T.Type, from url: URL) async throws -> T {
+        let (data, response) = try await session.data(from: url)
+        guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
+            throw NetworkError.invalidResponse
+        }
+        return try decoder.decode(type, from: data)
+    }
+}
+
+=== CORE DATA ===
+class PersistenceController {
+    static let shared = PersistenceController()
+
+    let container: NSPersistentContainer
+
+    init() {
+        container = NSPersistentContainer(name: "Model")
+        container.loadPersistentStores { _, error in
+            if let error { fatalError("CoreData error: \(error)") }
+        }
+        container.viewContext.automaticallyMergesChangesFromParent = true
+    }
+
+    func save() {
+        let ctx = container.viewContext
+        guard ctx.hasChanges else { return }
+        try? ctx.save()
+    }
+}
+
+=== COMBINE FRAMEWORK ===
+class SearchViewModel: ObservableObject {
+    @Published var query = ""
+    @Published private(set) var results: [Item] = []
+
+    private var cancellables = Set<AnyCancellable>()
+
+    init(service: SearchService) {
+        $query
+            .debounce(for: .milliseconds(300), scheduler: DispatchQueue.main)
+            .removeDuplicates()
+            .filter { !$0.isEmpty }
+            .flatMap { query in
+                service.search(query: query)
+                    .catch { _ in Just([]) }
+            }
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.results, on: self)
+            .store(in: &cancellables)
+    }
+}
+
+
+============================================================
+SOURCE: iOS Advanced Patterns Expert
+============================================================
+
+
+Q: How do you build a production iOS app with SwiftUI and TCA (The Composable Architecture)?
+A:
+// Feature.swift
+import ComposableArchitecture
+
+struct UserFeature: Reducer {
+    struct State: Equatable {
+        var users: [User] = []
+        var isLoading = false
+        var searchText = ""
+        var selectedUser: User?
+        var alert: AlertState<Action>?
+
+        var filteredUsers: [User] {
+            searchText.isEmpty ? users : users.filter {
+                $0.name.localizedCaseInsensitiveContains(searchText)
+            }
+        }
+    }
+
+    enum Action: Equatable {
+        case loadUsers
+        case usersLoaded(TaskResult<[User]>)
+        case searchTextChanged(String)
+        case userTapped(User)
+        case alertDismissed
+    }
+
+    @Dependency(\.userClient) var userClient
+
+    var body: some ReducerOf<Self> {
+        Reduce { state, action in
+            switch action {
+            case .loadUsers:
+                state.isLoading = true
+                return .run { send in
+                    await send(.usersLoaded(TaskResult { try await userClient.fetchAll() }))
+                }
+            case let .usersLoaded(.success(users)):
+                state.isLoading = false
+                state.users = users
+                return .none
+            case let .usersLoaded(.failure(error)):
+                state.isLoading = false
+                state.alert = AlertState { TextState("Error: \(error.localizedDescription)") }
+                return .none
+            case let .searchTextChanged(text):
+                state.searchText = text
+                return .none
+            case let .userTapped(user):
+                state.selectedUser = user
+                return .none
+            case .alertDismissed:
+                state.alert = nil
+                return .none
+            }
+        }
+    }
+}
+
+Q: How do you implement advanced networking in Swift with async/await?
+A:
+// NetworkClient.swift
+actor NetworkClient {
+    private let session: URLSession
+    private let decoder: JSONDecoder
+    private let baseURL: URL
+    private var authToken: String?
+
+    init(baseURL: URL) {
+        let config = URLSessionConfiguration.default
+        config.timeoutIntervalForRequest = 30
+        config.waitsForConnectivity = true
+        session = URLSession(configuration: config)
+        decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        decoder.dateDecodingStrategy = .iso8601
+        self.baseURL = baseURL
+    }
+
+    func setAuthToken(_ token: String) { authToken = token }
+
+    func request<T: Decodable>(_ endpoint: Endpoint) async throws -> T {
+        var request = URLRequest(url: baseURL.appendingPathComponent(endpoint.path))
+        request.httpMethod = endpoint.method.rawValue
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        if let token = authToken {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        }
+        if let body = endpoint.body {
+            request.httpBody = try JSONSerialization.data(withJSONObject: body)
+        }
+
+        let (data, response) = try await session.data(for: request)
+
+        guard let http = response as? HTTPURLResponse else {
+            throw NetworkError.invalidResponse
+        }
+
+        switch http.statusCode {
+        case 200..<300: break
+        case 401: throw NetworkError.unauthorized
+        case 404: throw NetworkError.notFound
+        case 500..<600: throw NetworkError.serverError(http.statusCode)
+        default: throw NetworkError.unknown(http.statusCode)
+        }
+
+        return try decoder.decode(T.self, from: data)
+    }
+}
+
+Q: How do you use SwiftData for local persistence in iOS 17+?
+A:
+import SwiftData
+
+@Model
+class Task {
+    @Attribute(.unique) var id: UUID
+    var title: String
+    var isCompleted: Bool
+    var priority: Priority
+    var createdAt: Date
+    var tags: [String]
+
+    @Relationship(deleteRule: .cascade)
+    var subtasks: [SubTask]?
+
+    init(title: String, priority: Priority = .medium) {
+        self.id = UUID()
+        self.title = title
+        self.isCompleted = false
+        self.priority = priority
+        self.createdAt = Date()
+        self.tags = []
+    }
+
+    enum Priority: Int, Codable {
+        case low = 1, medium = 2, high = 3
+    }
+}
+
+// In App
+@main
+struct MyApp: App {
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+        }
+        .modelContainer(for: Task.self)
+    }
+}
+
+// In View
+struct TaskListView: View {
+    @Query(sort: \\Task.createdAt, order: .reverse) private var tasks: [Task]
+    @Environment(\\.modelContext) private var context
+
+    var body: some View {
+        List(tasks) { task in
+            TaskRow(task: task)
+        }
+        .toolbar {
+            Button(action: addTask) {
+                Label("Add", systemImage: "plus")
+            }
+        }
+    }
+
+    func addTask() {
+        let task = Task(title: 'New Task')
+        context.insert(task)
+    }
+}
+
+
+============================================================
+SOURCE: iOS Advanced Patterns Expert
+============================================================
+
+
+Q: How do you build a production iOS app with SwiftUI and TCA (The Composable Architecture)?
+A:
+// Feature.swift
+import ComposableArchitecture
+
+struct UserFeature: Reducer {
+    struct State: Equatable {
+        var users: [User] = []
+        var isLoading = false
+        var searchText = ""
+        var selectedUser: User?
+        var alert: AlertState<Action>?
+
+        var filteredUsers: [User] {
+            searchText.isEmpty ? users : users.filter {
+                $0.name.localizedCaseInsensitiveContains(searchText)
+            }
+        }
+    }
+
+    enum Action: Equatable {
+        case loadUsers
+        case usersLoaded(TaskResult<[User]>)
+        case searchTextChanged(String)
+        case userTapped(User)
+        case alertDismissed
+    }
+
+    @Dependency(\.userClient) var userClient
+
+    var body: some ReducerOf<Self> {
+        Reduce { state, action in
+            switch action {
+            case .loadUsers:
+                state.isLoading = true
+                return .run { send in
+                    await send(.usersLoaded(TaskResult { try await userClient.fetchAll() }))
+                }
+            case let .usersLoaded(.success(users)):
+                state.isLoading = false
+                state.users = users
+                return .none
+            case let .usersLoaded(.failure(error)):
+                state.isLoading = false
+                state.alert = AlertState { TextState("Error: \(error.localizedDescription)") }
+                return .none
+            case let .searchTextChanged(text):
+                state.searchText = text
+                return .none
+            case let .userTapped(user):
+                state.selectedUser = user
+                return .none
+            case .alertDismissed:
+                state.alert = nil
+                return .none
+            }
+        }
+    }
+}
+
+Q: How do you implement advanced networking in Swift with async/await?
+A:
+// NetworkClient.swift
+actor NetworkClient {
+    private let session: URLSession
+    private let decoder: JSONDecoder
+    private let baseURL: URL
+    private var authToken: String?
+
+    init(baseURL: URL) {
+        let config = URLSessionConfiguration.default
+        config.timeoutIntervalForRequest = 30
+        config.waitsForConnectivity = true
+        session = URLSession(configuration: config)
+        decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        decoder.dateDecodingStrategy = .iso8601
+        self.baseURL = baseURL
+    }
+
+    func setAuthToken(_ token: String) { authToken = token }
+
+    func request<T: Decodable>(_ endpoint: Endpoint) async throws -> T {
+        var request = URLRequest(url: baseURL.appendingPathComponent(endpoint.path))
+        request.httpMethod = endpoint.method.rawValue
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        if let token = authToken {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        }
+        if let body = endpoint.body {
+            request.httpBody = try JSONSerialization.data(withJSONObject: body)
+        }
+
+        let (data, response) = try await session.data(for: request)
+
+        guard let http = response as? HTTPURLResponse else {
+            throw NetworkError.invalidResponse
+        }
+
+        switch http.statusCode {
+        case 200..<300: break
+        case 401: throw NetworkError.unauthorized
+        case 404: throw NetworkError.notFound
+        case 500..<600: throw NetworkError.serverError(http.statusCode)
+        default: throw NetworkError.unknown(http.statusCode)
+        }
+
+        return try decoder.decode(T.self, from: data)
+    }
+}
+
+Q: How do you use SwiftData for local persistence in iOS 17+?
+A:
+import SwiftData
+
+@Model
+class Task {
+    @Attribute(.unique) var id: UUID
+    var title: String
+    var isCompleted: Bool
+    var priority: Priority
+    var createdAt: Date
+    var tags: [String]
+
+    @Relationship(deleteRule: .cascade)
+    var subtasks: [SubTask]?
+
+    init(title: String, priority: Priority = .medium) {
+        self.id = UUID()
+        self.title = title
+        self.isCompleted = false
+        self.priority = priority
+        self.createdAt = Date()
+        self.tags = []
+    }
+
+    enum Priority: Int, Codable {
+        case low = 1, medium = 2, high = 3
+    }
+}
+
+// In App
+@main
+struct MyApp: App {
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+        }
+        .modelContainer(for: Task.self)
+    }
+}
+
+// In View
+struct TaskListView: View {
+    @Query(sort: \\Task.createdAt, order: .reverse) private var tasks: [Task]
+    @Environment(\\.modelContext) private var context
+
+    var body: some View {
+        List(tasks) { task in
+            TaskRow(task: task)
+        }
+        .toolbar {
+            Button(action: addTask) {
+                Label("Add", systemImage: "plus")
+            }
+        }
+    }
+
+    func addTask() {
+        let task = Task(title: 'New Task')
+        context.insert(task)
+    }
+}

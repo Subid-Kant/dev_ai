@@ -1,0 +1,1583 @@
+Q: Explain Kotlin coroutines and how they differ from threads
+A: Kotlin coroutines are lightweight, suspendable computations managed by the Kotlin runtime, not the OS. Unlike threads (OS-managed, expensive), coroutines are cheap: you can run 100,000 coroutines on a handful of threads without significant overhead.
+
+Key difference from threads:
+- Thread: 1-2MB stack memory each, OS-managed, blocking
+- Coroutine: ~1KB overhead each, Kotlin-managed, suspending (not blocking)
+- 1,000 threads = crash/OOM; 1,000,000 coroutines = fine
+
+Coroutines require a CoroutineScope and a Dispatcher:
+```kotlin
+// Dispatchers
+Dispatchers.Main    // Android UI thread — only for UI operations
+Dispatchers.IO      // Network, disk, database — large thread pool (64 threads)
+Dispatchers.Default // CPU-intensive work — thread count = CPU cores
+Dispatchers.Unconfined // Don't use in production
+
+// In ViewModel — tied to ViewModel lifecycle
+viewModelScope.launch {
+    val result = withContext(Dispatchers.IO) { fetchDataFromNetwork() }
+    // Back on Main after withContext
+    updateUI(result)
+}
+
+// In Fragment/Activity — tied to lifecycle
+lifecycleScope.launch {
+    repeatOnLifecycle(Lifecycle.State.STARTED) {
+        viewModel.stateFlow.collect { state -> renderUI(state) }
+    }
+}
+```
+
+suspend functions — mark functions that can be suspended:
+```kotlin
+// suspend = can pause without blocking the thread
+suspend fun fetchUser(id: Int): User {
+    return withContext(Dispatchers.IO) {
+        api.getUser(id)  // network call — thread free while waiting
+    }
+}
+
+// Can ONLY be called from another suspend function or coroutine scope
+// Regular function cannot call suspend function directly
+```
+
+async/await for parallel execution:
+```kotlin
+// Sequential (slow — waits for each)
+val user = fetchUser(1)       // waits
+val posts = fetchPosts(1)     // waits after user
+// Total: time(user) + time(posts)
+
+// Parallel (fast)
+viewModelScope.launch {
+    val userDeferred  = async(Dispatchers.IO) { fetchUser(1) }
+    val postsDeferred = async(Dispatchers.IO) { fetchPosts(1) }
+    val user  = userDeferred.await()   // both started already
+    val posts = postsDeferred.await()
+    // Total: max(time(user), time(posts))
+}
+
+// Parallel with error handling
+viewModelScope.launch {
+    val user = async(Dispatchers.IO) { fetchUser(1) }
+    val posts = async(Dispatchers.IO) { fetchPosts(1) }
+    try {
+        dashboard = Dashboard(user.await(), posts.await())
+    } catch (e: Exception) {
+        showError(e.message)
+    }
+}
+```
+
+Exception handling in coroutines:
+```kotlin
+// CoroutineExceptionHandler — catches unhandled exceptions
+val handler = CoroutineExceptionHandler { _, throwable ->
+    Log.e("TAG", "Uncaught exception: ${throwable.message}")
+}
+
+viewModelScope.launch(handler) {
+    riskyOperation()
+}
+
+// supervisorScope — one child failing doesn't cancel siblings
+supervisorScope {
+    val job1 = launch { fetchUsers() }
+    val job2 = launch { fetchStats() }  // runs even if job1 fails
+}
+
+// vs coroutineScope — one failing cancels all
+coroutineScope {
+    val j1 = launch { task1() }
+    val j2 = launch { task2() }  // cancelled if j1 fails
+}
+```
+
+---
+
+Q: How does Jetpack Compose work internally and what are the recomposition rules?
+A: Jetpack Compose is a reactive UI framework where composable functions describe UI, and the runtime automatically re-runs (recomposes) only the parts that need updating when state changes.
+
+Composable function rules:
+1. Must be idempotent — same inputs must always produce same output
+2. Must be side-effect free (except in controlled effects like LaunchedEffect)
+3. Can run in any order — don't assume ordering
+4. Can run in parallel — don't share mutable state
+
+State and recomposition:
+```kotlin
+// State that triggers recomposition
+@Composable
+fun Counter() {
+    var count by remember { mutableStateOf(0) }
+    // 'remember' preserves state across recompositions
+    // WITHOUT remember: count resets to 0 on every recomposition!
+
+    Column {
+        Text("Count: $count")           // recomposes when count changes
+        Button(onClick = { count++ }) {
+            Text("Increment")
+        }
+    }
+}
+
+// rememberSaveable — survives configuration changes AND recompositions
+@Composable
+fun SearchBar() {
+    var query by rememberSaveable { mutableStateOf("") }
+    TextField(value = query, onValueChange = { query = it })
+}
+```
+
+State hoisting — lift state to lowest common ancestor:
+```kotlin
+// BAD: Stateful composable (hard to test/reuse)
+@Composable
+fun CounterBad() {
+    var count by remember { mutableStateOf(0) }
+    Button(onClick = { count++ }) { Text("$count") }
+}
+
+// GOOD: Stateless composable (easy to test/reuse/preview)
+@Composable
+fun Counter(count: Int, onIncrement: () -> Unit) {
+    Button(onClick = onIncrement) { Text("$count") }
+}
+
+// GOOD: Parent manages state
+@Composable
+fun CounterScreen() {
+    var count by remember { mutableStateOf(0) }
+    Counter(count = count, onIncrement = { count++ })
+}
+```
+
+Side effects — how to handle non-UI work in Compose:
+```kotlin
+// LaunchedEffect — runs a coroutine tied to key(s)
+@Composable
+fun UserScreen(userId: Int) {
+    val viewModel = hiltViewModel<UserViewModel>()
+
+    // Runs once when userId changes, cancels if userId changes or composable leaves
+    LaunchedEffect(userId) {
+        viewModel.loadUser(userId)
+    }
+
+    // LaunchedEffect(Unit) — runs once when composable enters composition
+    LaunchedEffect(Unit) {
+        viewModel.trackScreenView("UserScreen")
+    }
+}
+
+// DisposableEffect — runs and has cleanup (like lifecycle events)
+@Composable
+fun LocationTracker() {
+    DisposableEffect(Unit) {
+        val manager = LocationManager()
+        manager.startTracking()
+        onDispose {
+            manager.stopTracking()  // cleanup when composable leaves
+        }
+    }
+}
+
+// SideEffect — runs after every successful recomposition
+@Composable
+fun AnalyticsTracker(screen: String) {
+    val analytics = LocalAnalytics.current
+    SideEffect {
+        analytics.setCurrentScreen(screen)
+    }
+}
+```
+
+List performance with LazyColumn:
+```kotlin
+@Composable
+fun UserList(users: List<User>) {
+    LazyColumn(
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        items(
+            items = users,
+            key = { user -> user.id },  // CRITICAL: stable keys enable animations + efficiency
+        ) { user ->
+            UserCard(user = user)
+        }
+
+        item { Spacer(Modifier.height(80.dp)) }  // bottom padding for FAB
+    }
+}
+
+// Efficient state collection in Compose
+val state by viewModel.stateFlow.collectAsStateWithLifecycle()
+// collectAsStateWithLifecycle stops collecting when in background
+// collectAsState does NOT — wastes resources
+```
+
+---
+
+Q: Explain Android MVVM architecture with Hilt dependency injection
+A: MVVM (Model-View-ViewModel) separates concerns: View (Compose/XML) observes ViewModel, which contains UI state + business logic. ViewModel gets data from Repository, which abstracts data sources.
+
+Clean architecture layers:
+```
+UI (Composable/Fragment)
+    ↕ observes StateFlow
+ViewModel (viewModelScope)
+    ↕ calls use cases
+Repository (single source of truth)
+    ↕ coordinates
+Data Sources: API (Retrofit) + Local DB (Room)
+```
+
+Full implementation with Hilt:
+```kotlin
+// Data layer — Entity
+@Entity(tableName = "users")
+data class UserEntity(
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val name: String,
+    val email: String,
+)
+
+// Data layer — DAO
+@Dao
+interface UserDao {
+    @Query("SELECT * FROM users ORDER BY name ASC")
+    fun getAllFlow(): Flow<List<UserEntity>>  // reactive: updates UI when DB changes
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertAll(users: List<UserEntity>)
+}
+
+// Data layer — Repository
+@Singleton
+class UserRepository @Inject constructor(
+    private val api: UserApi,        // Retrofit
+    private val dao: UserDao,        // Room
+) {
+    // Expose reactive Flow from Room (single source of truth)
+    fun getUsers(): Flow<List<User>> =
+        dao.getAllFlow().map { entities -> entities.map { it.toDomain() } }
+
+    // Refresh from network (called by ViewModel)
+    suspend fun refreshUsers(): Result<Unit> = runCatching {
+        val networkUsers = api.getUsers()
+        dao.upsertAll(networkUsers.map { it.toEntity() })
+    }
+}
+
+// Domain layer — UiState
+sealed class UsersUiState {
+    object Loading : UsersUiState()
+    data class Success(val users: List<User>) : UsersUiState()
+    data class Error(val message: String) : UsersUiState()
+}
+
+// Presentation layer — ViewModel
+@HiltViewModel
+class UsersViewModel @Inject constructor(
+    private val repository: UserRepository,
+) : ViewModel() {
+
+    private val _uiState = MutableStateFlow<UsersUiState>(UsersUiState.Loading)
+    val uiState: StateFlow<UsersUiState> = _uiState.asStateFlow()
+
+    init {
+        // Observe DB via Flow — auto-updates when Room data changes
+        repository.getUsers()
+            .onEach { users ->
+                _uiState.value = UsersUiState.Success(users)
+            }
+            .catch { e ->
+                _uiState.value = UsersUiState.Error(e.message ?: "Unknown error")
+            }
+            .launchIn(viewModelScope)
+
+        // Initial network fetch
+        refresh()
+    }
+
+    fun refresh() {
+        viewModelScope.launch {
+            _uiState.value = UsersUiState.Loading
+            repository.refreshUsers()
+                .onFailure { e ->
+                    _uiState.value = UsersUiState.Error(e.message ?: "Fetch failed")
+                }
+        }
+    }
+}
+
+// Hilt Module — wires the dependencies
+@Module
+@InstallIn(SingletonComponent::class)
+object NetworkModule {
+    @Provides @Singleton
+    fun provideRetrofit(): Retrofit = Retrofit.Builder()
+        .baseUrl(BuildConfig.API_URL)
+        .addConverterFactory(MoshiConverterFactory.create())
+        .client(OkHttpClient.Builder()
+            .addInterceptor(HttpLoggingInterceptor().apply {
+                level = HttpLoggingInterceptor.Level.BODY })
+            .build())
+        .build()
+
+    @Provides @Singleton
+    fun provideUserApi(retrofit: Retrofit): UserApi =
+        retrofit.create(UserApi::class.java)
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object DatabaseModule {
+    @Provides @Singleton
+    fun provideDatabase(@ApplicationContext ctx: Context): AppDatabase =
+        Room.databaseBuilder(ctx, AppDatabase::class.java, "app_db")
+            .addMigrations(MIGRATION_1_2)
+            .build()
+
+    @Provides
+    fun provideUserDao(db: AppDatabase): UserDao = db.userDao()
+}
+```
+
+Hilt annotations cheat sheet:
+```kotlin
+@HiltAndroidApp        // Application class — bootstraps Hilt
+@AndroidEntryPoint     // Activity/Fragment/Service that uses injection
+@HiltViewModel         // ViewModel — injected via hiltViewModel()
+@Inject constructor()  // Constructor injection
+
+// Scope annotations
+@Singleton             // One instance per app
+@ViewModelScoped       // One per ViewModel instance
+@ActivityScoped        // One per Activity
+@FragmentScoped        // One per Fragment
+
+// Module annotations
+@Module                // Marks a Hilt module
+@InstallIn(SingletonComponent::class)  // Which component to install in
+@Provides              // Factory method (external libs)
+@Binds                 // Bind interface to implementation (abstract)
+```
+
+---
+
+Q: How does Room database work with migrations and TypeConverters?
+A: Room is Android's SQLite ORM that verifies SQL at compile time. It consists of three parts: Entity (table), DAO (data access), and Database (connection manager).
+
+Complete Room setup:
+```kotlin
+// 1. Entity — annotates data class as a database table
+@Entity(
+    tableName = "tasks",
+    indices = [Index(value = ["user_id"]), Index(value = ["title"], unique = true)]
+)
+data class TaskEntity(
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
+
+    @ColumnInfo(name = "user_id")
+    val userId: Int,
+
+    val title: String,
+
+    @ColumnInfo(name = "due_date")
+    val dueDate: Long,          // Stored as Unix timestamp
+
+    val priority: Priority,     // Enum stored via TypeConverter
+
+    @ColumnInfo(name = "is_completed")
+    val isCompleted: Boolean = false,
+)
+
+// 2. TypeConverter — convert types Room doesn't natively support
+class Converters {
+    @TypeConverter
+    fun priorityToInt(priority: Priority): Int = priority.ordinal
+
+    @TypeConverter
+    fun intToPriority(value: Int): Priority = Priority.values()[value]
+
+    @TypeConverter
+    fun timestampToDate(value: Long?): Date? =
+        value?.let { Date(it) }
+
+    @TypeConverter
+    fun dateToTimestamp(date: Date?): Long? =
+        date?.time
+
+    @TypeConverter
+    fun listToString(list: List<String>): String =
+        list.joinToString(",")
+
+    @TypeConverter
+    fun stringToList(value: String): List<String> =
+        if (value.isEmpty()) emptyList() else value.split(",")
+}
+
+// 3. DAO — SQL operations
+@Dao
+interface TaskDao {
+    // Flow<T> = reactive: emits new list whenever table changes
+    @Query("SELECT * FROM tasks WHERE user_id = :userId ORDER BY due_date ASC")
+    fun getTasksForUser(userId: Int): Flow<List<TaskEntity>>
+
+    @Query("SELECT * FROM tasks WHERE is_completed = 0 ORDER BY priority DESC, due_date ASC")
+    fun getPendingTasks(): Flow<List<TaskEntity>>
+
+    // suspend = must be called from coroutine or suspend function
+    @Query("SELECT * FROM tasks WHERE id = :id")
+    suspend fun getById(id: Int): TaskEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(tasks: List<TaskEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertOrIgnore(task: TaskEntity): Long  // returns rowid
+
+    @Update
+    suspend fun update(task: TaskEntity)
+
+    @Delete
+    suspend fun delete(task: TaskEntity)
+
+    @Query("DELETE FROM tasks WHERE is_completed = 1")
+    suspend fun deleteCompleted(): Int  // returns count deleted
+
+    @Query("UPDATE tasks SET is_completed = :done WHERE id = :id")
+    suspend fun setCompleted(id: Int, done: Boolean)
+
+    // Complex query with joins
+    @Query("""
+        SELECT t.*, u.name as user_name
+        FROM tasks t
+        INNER JOIN users u ON t.user_id = u.id
+        WHERE t.due_date BETWEEN :start AND :end
+        ORDER BY t.due_date ASC
+    """)
+    fun getTasksWithUserInRange(start: Long, end: Long): Flow<List<TaskWithUser>>
+}
+
+// 4. Database
+@Database(
+    entities = [TaskEntity::class, UserEntity::class],
+    version = 3,
+    exportSchema = true,  // exports schema JSON for migration tracking (commit to git!)
+)
+@TypeConverters(Converters::class)
+abstract class AppDatabase : RoomDatabase() {
+    abstract fun taskDao(): TaskDao
+    abstract fun userDao(): UserDao
+
+    companion object {
+        @Volatile private var INSTANCE: AppDatabase? = null
+
+        fun getInstance(context: Context): AppDatabase =
+            INSTANCE ?: synchronized(this) {
+                INSTANCE ?: Room.databaseBuilder(
+                    context.applicationContext,
+                    AppDatabase::class.java,
+                    "app_database"
+                )
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+                    .build()
+                    .also { INSTANCE = it }
+            }
+    }
+}
+
+// 5. Migrations — preserve user data between schema versions
+val MIGRATION_1_2 = object : Migration(1, 2) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        database.execSQL(
+            "ALTER TABLE tasks ADD COLUMN priority INTEGER NOT NULL DEFAULT 0"
+        )
+    }
+}
+
+val MIGRATION_2_3 = object : Migration(2, 3) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        // Create new table
+        database.execSQL("""
+            CREATE TABLE IF NOT EXISTS task_tags (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                task_id INTEGER NOT NULL,
+                tag TEXT NOT NULL,
+                FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE
+            )
+        """.trimIndent())
+        database.execSQL("CREATE INDEX IF NOT EXISTS index_task_tags_task_id ON task_tags(task_id)")
+    }
+}
+```
+
+Room with Hilt (recommended pattern):
+```kotlin
+@Module @InstallIn(SingletonComponent::class)
+object DatabaseModule {
+    @Provides @Singleton
+    fun provideDatabase(@ApplicationContext context: Context): AppDatabase =
+        Room.databaseBuilder(context, AppDatabase::class.java, "app.db")
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+            .enableMultiInstanceInvalidation()  // multiple processes
+            .build()
+
+    @Provides fun provideTaskDao(db: AppDatabase) = db.taskDao()
+    @Provides fun provideUserDao(db: AppDatabase) = db.userDao()
+}
+```
+
+Common Room mistakes:
+- Calling DAO from main thread without coroutines → IllegalStateException
+- Returning List<T> instead of Flow<List<T>> → won't update when data changes
+- Forgetting to export schema (exportSchema=true) → can't track migrations
+- Using allowMainThreadQueries() in production → ANR (use coroutines instead)
+- Missing fallbackToDestructiveMigration() → crash on version mismatch (loses data!)
+
+---
+
+Q: How do Kotlin Flow, StateFlow, and SharedFlow differ?
+A: Flow is the base type — a cold stream that starts producing values only when collected. StateFlow and SharedFlow are hot streams that are active regardless of collectors.
+
+Flow — cold stream:
+```kotlin
+// Cold: starts fresh for each collector
+fun fetchUsers(): Flow<List<User>> = flow {
+    emit(dao.getCachedUsers())        // emits cached data immediately
+    val fresh = api.getUsers()        // then fetches from network
+    dao.upsertAll(fresh)
+    emit(dao.getCachedUsers())        // emits fresh data
+}
+
+// In ViewModel:
+viewModelScope.launch {
+    fetchUsers().collect { users ->   // flow starts executing here
+        _uiState.value = Success(users)
+    }
+}
+
+// Flow operators
+val processedFlow = rawFlow
+    .filter { it.isActive }
+    .map { it.toDisplayModel() }
+    .debounce(300L)               // wait 300ms after last emission
+    .distinctUntilChanged()       // skip if value is same as previous
+    .flowOn(Dispatchers.IO)       // run upstream on IO thread
+    .catch { e -> emit(emptyList()) }  // handle errors in the chain
+```
+
+StateFlow — hot, state-holding stream:
+```kotlin
+// Always has a value (initial value required)
+// Only emits when value CHANGES (equality check)
+// Replays latest value to new collectors
+
+private val _uiState = MutableStateFlow<UiState>(Loading)
+val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+
+// Updating
+_uiState.value = Success(users)           // simple assignment
+_uiState.update { currentState ->          // atomic update
+    currentState.copy(isLoading = false, users = users)
+}
+
+// Collecting
+lifecycleScope.launch {
+    repeatOnLifecycle(Lifecycle.State.STARTED) {
+        viewModel.uiState.collect { state ->
+            renderState(state)
+        }
+    }
+}
+
+// Transforming StateFlow
+val userNames = uiState
+    .map { state -> (state as? Success)?.users?.map { it.name } ?: emptyList() }
+    .stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000L),  // keeps active 5s after last subscriber
+        initialValue = emptyList()
+    )
+```
+
+SharedFlow — hot, event stream (no stored value):
+```kotlin
+// Multiple collectors, no initial value, can replay N items
+private val _events = MutableSharedFlow<UiEvent>(
+    replay = 0,              // don't replay past events to new collectors
+    extraBufferCapacity = 1, // buffer 1 event if collector is slow
+    onBufferOverflow = BufferOverflow.DROP_OLDEST
+)
+val events: SharedFlow<UiEvent> = _events.asSharedFlow()
+
+// Emit events
+viewModelScope.launch {
+    _events.emit(UiEvent.ShowSnackbar("User created!"))
+    _events.emit(UiEvent.NavigateTo(Screen.Detail(userId)))
+}
+
+// Collect in Fragment
+viewLifecycleOwner.lifecycleScope.launch {
+    viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+        viewModel.events.collect { event ->
+            when (event) {
+                is UiEvent.ShowSnackbar -> showSnackbar(event.message)
+                is UiEvent.NavigateTo -> navigate(event.screen)
+            }
+        }
+    }
+}
+```
+
+Choosing between them:
+```
+Flow:        one-shot async ops, cold (repository queries, network calls)
+StateFlow:   UI state (loading/success/error), always has current value
+SharedFlow:  one-time events (navigation, snackbars, toasts)
+             events that shouldn't be replayed on rotation
+```
+
+---
+
+Q: How does Android navigation work with Navigation Component and Compose?
+A: Android Navigation Component handles back stack, animations, and deep links. In Compose apps, use Navigation Compose (androidx.navigation:navigation-compose).
+
+Navigation Compose setup:
+```kotlin
+// Define a sealed class or object for all destinations
+sealed class Screen(val route: String) {
+    object Home : Screen("home")
+    object UserList : Screen("users")
+    data class UserDetail(val userId: Int) : Screen("users/{userId}") {
+        companion object {
+            const val ROUTE = "users/{userId}"
+            fun createRoute(id: Int) = "users/$id"
+        }
+    }
+    object Settings : Screen("settings")
+}
+
+// Main NavHost
+@Composable
+fun AppNavGraph(
+    navController: NavHostController = rememberNavController(),
+    startDestination: String = Screen.Home.route,
+) {
+    NavHost(navController = navController, startDestination = startDestination) {
+        composable(Screen.Home.route) {
+            HomeScreen(
+                onNavigateToUsers = { navController.navigate(Screen.UserList.route) }
+            )
+        }
+
+        composable(Screen.UserList.route) {
+            UserListScreen(
+                onUserClick = { userId ->
+                    navController.navigate(Screen.UserDetail.createRoute(userId))
+                }
+            )
+        }
+
+        composable(
+            route = Screen.UserDetail.ROUTE,
+            arguments = listOf(
+                navArgument("userId") { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+            val userId = backStackEntry.arguments?.getInt("userId") ?: return@composable
+            UserDetailScreen(
+                userId = userId,
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(Screen.Settings.route) { SettingsScreen() }
+    }
+}
+
+// Type-safe navigation (Navigation 2.8+ with @Serializable routes)
+@Serializable
+object HomeRoute
+
+@Serializable
+data class UserDetailRoute(val userId: Int)
+
+NavHost(navController, startDestination = HomeRoute) {
+    composable<HomeRoute> { HomeScreen() }
+    composable<UserDetailRoute> { backStackEntry ->
+        val route: UserDetailRoute = backStackEntry.toRoute()
+        UserDetailScreen(userId = route.userId)
+    }
+}
+navController.navigate(UserDetailRoute(userId = 42))
+```
+
+Navigation with BottomNavigationBar:
+```kotlin
+@Composable
+fun MainScreen() {
+    val navController = rememberNavController()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    val bottomNavItems = listOf(Screen.Home, Screen.UserList, Screen.Settings)
+
+    Scaffold(
+        bottomBar = {
+            NavigationBar {
+                bottomNavItems.forEach { screen ->
+                    NavigationBarItem(
+                        icon = { Icon(screen.icon, contentDescription = null) },
+                        label = { Text(screen.label) },
+                        selected = currentRoute == screen.route,
+                        onClick = {
+                            navController.navigate(screen.route) {
+                                // Pop up to start destination — avoid deep back stack
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true  // don't re-create if already top
+                                restoreState = true      // restore state when reselecting
+                            }
+                        }
+                    )
+                }
+            }
+        }
+    ) { padding ->
+        AppNavGraph(navController = navController, modifier = Modifier.padding(padding))
+    }
+}
+```
+
+---
+
+Q: Explain Android Retrofit networking with error handling
+A: Retrofit is a type-safe HTTP client that converts API interfaces to actual HTTP calls. Use suspend functions for coroutine integration and a sealed Result type for clean error handling.
+
+Complete Retrofit setup:
+```kotlin
+// 1. Data model with Moshi
+@JsonClass(generateAdapter = true)  // Moshi codegen (faster, null-safe)
+data class UserDto(
+    val id: Int,
+    val name: String,
+    val email: String,
+    @Json(name = "created_at") val createdAt: String,
+    @Json(name = "avatar_url") val avatarUrl: String?,
+)
+
+// 2. API interface
+interface UserApi {
+    @GET("users")
+    suspend fun getUsers(
+        @Query("page") page: Int = 1,
+        @Query("per_page") perPage: Int = 20,
+    ): List<UserDto>
+
+    @GET("users/{id}")
+    suspend fun getUser(@Path("id") id: Int): UserDto
+
+    @POST("users")
+    suspend fun createUser(@Body request: CreateUserRequest): UserDto
+
+    @PUT("users/{id}")
+    suspend fun updateUser(@Path("id") id: Int, @Body request: UpdateUserRequest): UserDto
+
+    @DELETE("users/{id}")
+    suspend fun deleteUser(@Path("id") id: Int): Response<Unit>  // Response<Unit> for 204 No Content
+
+    @Multipart
+    @POST("users/{id}/avatar")
+    suspend fun uploadAvatar(
+        @Path("id") id: Int,
+        @Part avatar: MultipartBody.Part,
+    ): UserDto
+}
+
+// 3. OkHttp client with interceptors
+fun buildOkHttpClient(authTokenProvider: AuthTokenProvider): OkHttpClient {
+    return OkHttpClient.Builder()
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .writeTimeout(30, TimeUnit.SECONDS)
+        .addInterceptor { chain ->
+            // Auth header injected on every request
+            val token = authTokenProvider.getToken()
+            val request = chain.request().newBuilder()
+                .addHeader("Authorization", "Bearer $token")
+                .addHeader("Accept", "application/json")
+                .build()
+            chain.proceed(request)
+        }
+        .addInterceptor(HttpLoggingInterceptor().apply {
+            level = if (BuildConfig.DEBUG) {
+                HttpLoggingInterceptor.Level.BODY
+            } else {
+                HttpLoggingInterceptor.Level.NONE
+            }
+        })
+        .build()
+}
+
+// 4. Repository with sealed Result
+sealed class ApiResult<out T> {
+    data class Success<T>(val data: T) : ApiResult<T>()
+    data class Error(val code: Int, val message: String) : ApiResult<Nothing>()
+    data class NetworkError(val exception: IOException) : ApiResult<Nothing>()
+    object Loading : ApiResult<Nothing>()
+}
+
+class UserRepository @Inject constructor(private val api: UserApi) {
+
+    suspend fun getUsers(page: Int = 1): ApiResult<List<User>> {
+        return try {
+            val response = api.getUsers(page = page)
+            ApiResult.Success(response.map { it.toDomain() })
+        } catch (e: HttpException) {
+            val errorBody = e.response()?.errorBody()?.string()
+            ApiResult.Error(e.code(), errorBody ?: e.message())
+        } catch (e: IOException) {
+            ApiResult.NetworkError(e)
+        }
+    }
+}
+
+// 5. ViewModel using Result
+@HiltViewModel
+class UsersViewModel @Inject constructor(
+    private val repository: UserRepository
+) : ViewModel() {
+
+    private val _state = MutableStateFlow<UiState>(UiState.Loading)
+    val state = _state.asStateFlow()
+
+    fun loadUsers() = viewModelScope.launch {
+        _state.value = UiState.Loading
+        when (val result = repository.getUsers()) {
+            is ApiResult.Success -> _state.value = UiState.Success(result.data)
+            is ApiResult.Error -> _state.value = UiState.Error(
+                "Server error ${result.code}: ${result.message}")
+            is ApiResult.NetworkError -> _state.value = UiState.Error(
+                "No internet connection")
+            else -> {}
+        }
+    }
+}
+```
+
+---
+
+Q: How do Android permissions work at runtime?
+A: Android has two permission categories. Normal permissions (INTERNET, VIBRATE) are auto-granted. Dangerous permissions (CAMERA, LOCATION, CONTACTS, MICROPHONE) require explicit user approval at runtime (Android 6+).
+
+Modern permission flow using ActivityResultContracts:
+```kotlin
+class MainActivity : AppCompatActivity() {
+
+    // Register launchers in onCreate or as class properties (NOT in onClick!)
+    private val requestCameraPermission = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        when {
+            isGranted -> openCamera()
+            shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) -> {
+                // User denied but can ask again — show explanation
+                showRationale("Camera is needed to take profile photos") {
+                    requestCameraPermission.launch(Manifest.permission.CAMERA)
+                }
+            }
+            else -> {
+                // User denied permanently ("Don't ask again")
+                showSettingsDialog("Please enable Camera in app settings")
+            }
+        }
+    }
+
+    private val requestMultiplePermissions = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val cameraGranted = permissions[Manifest.permission.CAMERA] == true
+        val micGranted = permissions[Manifest.permission.RECORD_AUDIO] == true
+
+        when {
+            cameraGranted && micGranted -> startVideoCall()
+            !cameraGranted -> showError("Camera permission denied")
+            !micGranted -> showError("Microphone permission denied")
+        }
+    }
+
+    private fun checkAndRequestCamera() {
+        when {
+            ContextCompat.checkSelfPermission(this, CAMERA) == PERMISSION_GRANTED -> {
+                openCamera()  // Already granted
+            }
+            shouldShowRequestPermissionRationale(CAMERA) -> {
+                // Show rationale dialog, then request
+                showRationale("Camera needed for profile photo") {
+                    requestCameraPermission.launch(CAMERA)
+                }
+            }
+            else -> {
+                requestCameraPermission.launch(CAMERA)
+            }
+        }
+    }
+}
+```
+
+In Compose with rememberLauncherForActivityResult:
+```kotlin
+@Composable
+fun CameraScreen() {
+    val context = LocalContext.current
+    var hasCameraPermission by remember {
+        mutableStateOf(
+            ContextCompat.checkSelfPermission(context, CAMERA) == PERMISSION_GRANTED
+        )
+    }
+
+    val launcher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        hasCameraPermission = granted
+    }
+
+    if (hasCameraPermission) {
+        CameraPreview()
+    } else {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text("Camera permission is required")
+            Button(onClick = { launcher.launch(CAMERA) }) {
+                Text("Grant Permission")
+            }
+        }
+    }
+}
+```
+
+Location permissions (special case — foreground before background):
+```kotlin
+// Must request foreground first, then background separately
+val foregroundLauncher = registerForActivityResult(RequestPermission()) { granted ->
+    if (granted) {
+        // Now request background if needed
+        if (needsBackgroundLocation) {
+            backgroundLauncher.launch(ACCESS_BACKGROUND_LOCATION)
+        }
+    }
+}
+// Never request ACCESS_BACKGROUND_LOCATION in the same call as foreground
+```
+
+AndroidManifest.xml declarations:
+```xml
+<manifest>
+    <!-- Dangerous permissions — must also request at runtime -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />  <!-- Android 13+ -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" /> <!-- Android 13+ -->
+
+    <!-- Normal — auto-granted, no runtime request needed -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+</manifest>
+```
+
+---
+
+Q: How does Kotlin's type system handle null safety?
+A: Kotlin's null safety is a compile-time feature that distinguishes between nullable (String?) and non-nullable (String) types. The compiler prevents NullPointerExceptions by forcing you to handle the null case explicitly.
+
+```kotlin
+// Non-nullable — compiler guarantees it's never null
+val name: String = "Alice"
+name.length  // always safe, no null check needed
+
+// Nullable — might be null
+val email: String? = null
+// email.length  // COMPILE ERROR: requires null check
+
+// 4 ways to handle nullable:
+
+// 1. Safe call operator (?.) — returns null if receiver is null
+val len: Int? = email?.length      // null (not NPE)
+email?.uppercase()?.trim()        // chain safe calls
+
+// 2. Elvis operator (?:) — provide default if null
+val len: Int = email?.length ?: 0  // 0 if email is null
+val domain = email?.split("@")?.get(1) ?: "unknown"
+
+// 3. if let check
+if (email != null) {
+    println(email.length)  // smart cast: email is String inside this block
+}
+
+// 4. let scope function
+email?.let { nonNullEmail ->
+    println(nonNullEmail.uppercase())  // only runs if email != null
+    sendEmail(nonNullEmail)
+}
+
+// guard-style with return (prefer in functions)
+fun process(email: String?) {
+    val safeEmail = email ?: return  // early exit if null
+    // email is non-null below
+    sendEmail(safeEmail)
+}
+
+// Force unwrap (!!) — NEVER in production, crashes on null
+val len = email!!.length  // NullPointerException if email is null
+// Only use in tests with known-good data, or right after hard null checks
+```
+
+Smart casts — compiler narrows type after null checks:
+```kotlin
+fun printLength(obj: Any?) {
+    if (obj is String) {
+        println(obj.length)  // Smart cast: obj is String here, no cast needed
+    }
+    if (obj != null) {
+        println(obj)  // Smart cast: obj is Any (not Any?) here
+    }
+
+    val result = when (obj) {
+        is String -> "String of length ${obj.length}"
+        is Int -> "Int: ${obj * 2}"
+        null -> "null"
+        else -> "Unknown type"
+    }
+}
+```
+
+lateinit vs lazy — two ways to defer initialization:
+```kotlin
+// lateinit: mutable, for dependency injection (set before use)
+class MyFragment : Fragment() {
+    @Inject lateinit var viewModel: MyViewModel  // set by Hilt
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        viewModel.load()  // safe to use here
+    }
+
+    // Check before use if unsure
+    if (::viewModel.isInitialized) { ... }
+}
+
+// lazy: immutable, computed once on first access
+class ExpensiveClass {
+    val database: Database by lazy {
+        createDatabase()  // runs once, result cached
+    }
+    // database is null before first access, non-null after
+}
+```
+
+
+============================================================
+SOURCE: Android Expert Q&A
+============================================================
+
+
+ANDROID DEVELOPMENT — COMPREHENSIVE GUIDE
+
+=== JETPACK COMPOSE — Modern UI ===
+
+Q: How do you build a complete screen in Jetpack Compose?
+A:
+@Composable
+fun UserProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    when (val state = uiState) {
+        is ProfileUiState.Loading -> LoadingSpinner()
+        is ProfileUiState.Error -> ErrorMessage(state.message)
+        is ProfileUiState.Success -> ProfileContent(state.user)
+    }
+}
+
+@Composable
+fun ProfileContent(user: User) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp)
+    ) {
+        AsyncImage(
+            model = user.avatarUrl,
+            contentDescription = "Avatar",
+            modifier = Modifier.size(100.dp).clip(CircleShape)
+        )
+        Text(user.name, style = MaterialTheme.typography.headlineMedium)
+        Text(user.email, style = MaterialTheme.typography.bodyMedium)
+    }
+}
+
+=== VIEWMODEL + STATEFLOW ===
+@HiltViewModel
+class ProfileViewModel @Inject constructor(
+    private val userRepository: UserRepository
+) : ViewModel() {
+
+    private val _uiState = MutableStateFlow<ProfileUiState>(ProfileUiState.Loading)
+    val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
+
+    init {
+        loadProfile()
+    }
+
+    private fun loadProfile() {
+        viewModelScope.launch {
+            userRepository.getUser()
+                .onStart { _uiState.value = ProfileUiState.Loading }
+                .catch { e -> _uiState.value = ProfileUiState.Error(e.message ?: "Unknown error") }
+                .collect { user -> _uiState.value = ProfileUiState.Success(user) }
+        }
+    }
+}
+
+=== ROOM DATABASE ===
+@Entity(tableName = "users")
+data class UserEntity(
+    @PrimaryKey val id: String,
+    val name: String,
+    val email: String,
+    val syncedAt: Long = System.currentTimeMillis()
+)
+
+@Dao
+interface UserDao {
+    @Query("SELECT * FROM users WHERE id = :id")
+    fun getUserById(id: String): Flow<UserEntity?>
+
+    @Upsert
+    suspend fun upsert(user: UserEntity)
+
+    @Query("DELETE FROM users")
+    suspend fun deleteAll()
+}
+
+@Database(entities = [UserEntity::class], version = 1)
+@TypeConverters(Converters::class)
+abstract class AppDatabase : RoomDatabase() {
+    abstract fun userDao(): UserDao
+
+    companion object {
+        @Volatile private var INSTANCE: AppDatabase? = null
+
+        fun getDatabase(context: Context): AppDatabase =
+            INSTANCE ?: synchronized(this) {
+                Room.databaseBuilder(context, AppDatabase::class.java, "app_db")
+                    .fallbackToDestructiveMigration()
+                    .build().also { INSTANCE = it }
+            }
+    }
+}
+
+=== RETROFIT + COROUTINES ===
+interface ApiService {
+    @GET("users/{id}")
+    suspend fun getUser(@Path("id") id: String): Response<UserDto>
+
+    @POST("users")
+    suspend fun createUser(@Body user: CreateUserRequest): Response<UserDto>
+}
+
+class UserRepositoryImpl(
+    private val api: ApiService,
+    private val dao: UserDao
+) : UserRepository {
+    override fun getUser(id: String): Flow<User> = flow {
+        // Emit cached data first
+        dao.getUserById(id).first()?.let { emit(it.toDomain()) }
+        // Then fetch fresh data
+        val response = api.getUser(id)
+        if (response.isSuccessful) {
+            response.body()?.let { dto ->
+                dao.upsert(dto.toEntity())
+                emit(dto.toDomain())
+            }
+        }
+    }
+}
+
+=== DEPENDENCY INJECTION WITH HILT ===
+@Module
+@InstallIn(SingletonComponent::class)
+object NetworkModule {
+    @Provides @Singleton
+    fun provideRetrofit(): Retrofit = Retrofit.Builder()
+        .baseUrl(BuildConfig.BASE_URL)
+        .addConverterFactory(GsonConverterFactory.create())
+        .client(OkHttpClient.Builder()
+            .addInterceptor(HttpLoggingInterceptor().apply {
+                level = HttpLoggingInterceptor.Level.BODY
+            })
+            .build())
+        .build()
+
+    @Provides @Singleton
+    fun provideApiService(retrofit: Retrofit): ApiService =
+        retrofit.create(ApiService::class.java)
+}
+
+=== NAVIGATION COMPOSE ===
+@Composable
+fun AppNavigation() {
+    val navController = rememberNavController()
+
+    NavHost(navController, startDestination = "home") {
+        composable("home") {
+            HomeScreen(onNavigateToProfile = { userId ->
+                navController.navigate("profile/$userId")
+            })
+        }
+        composable(
+            "profile/{userId}",
+            arguments = listOf(navArgument("userId") { type = NavType.StringType })
+        ) { backStack ->
+            val userId = backStack.arguments?.getString("userId") ?: return@composable
+            ProfileScreen(userId = userId)
+        }
+    }
+}
+
+
+============================================================
+SOURCE: Android Clean Architecture Expert
+============================================================
+
+
+Q: How do you implement Clean Architecture in Android with Hilt?
+A:
+// Domain Layer - pure Kotlin, no Android dependencies
+// domain/model/User.kt
+data class User(val id: String, val name: String, val email: String)
+
+// domain/repository/UserRepository.kt (interface)
+interface UserRepository {
+    fun getUsers(): Flow<List<User>>
+    suspend fun getUserById(id: String): User?
+    suspend fun updateUser(user: User): Result<User>
+}
+
+// domain/usecase/GetUsersUseCase.kt
+class GetUsersUseCase(private val repository: UserRepository) {
+    operator fun invoke(): Flow<List<User>> = repository.getUsers()
+        .map { users -> users.sortedBy { it.name } }
+        .catch { e -> throw DomainException("Failed to get users", e) }
+}
+
+// Data Layer
+// data/remote/UserApi.kt
+interface UserApi {
+    @GET("users")
+    suspend fun getUsers(): List<UserDto>
+    @GET("users/{id}")
+    suspend fun getUser(@Path("id") id: String): UserDto
+}
+
+// data/repository/UserRepositoryImpl.kt
+class UserRepositoryImpl(
+    private val api: UserApi,
+    private val dao: UserDao,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+) : UserRepository {
+    override fun getUsers(): Flow<List<User>> = flow {
+        // Cache-first strategy
+        emit(dao.getAll().map { it.toDomain() })
+        // Refresh from network
+        val fresh = withContext(dispatcher) { api.getUsers() }
+        dao.upsertAll(fresh.map { it.toEntity() })
+        emit(fresh.map { it.toDomain() })
+    }.flowOn(dispatcher)
+}
+
+// Presentation Layer
+// presentation/users/UsersViewModel.kt
+@HiltViewModel
+class UsersViewModel @Inject constructor(
+    private val getUsersUseCase: GetUsersUseCase
+) : ViewModel() {
+
+    sealed class UiState {
+        object Loading : UiState()
+        data class Success(val users: List<User>) : UiState()
+        data class Error(val message: String) : UiState()
+    }
+
+    private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
+    val uiState = _uiState.asStateFlow()
+
+    // Search support
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery = _searchQuery.asStateFlow()
+
+    val filteredUsers = combine(uiState, searchQuery) { state, query ->
+        if (state is UiState.Success && query.isNotBlank()) {
+            UiState.Success(state.users.filter { it.name.contains(query, ignoreCase = true) })
+        } else state
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), UiState.Loading)
+
+    init {
+        loadUsers()
+    }
+
+    private fun loadUsers() {
+        getUsersUseCase()
+            .onStart { _uiState.value = UiState.Loading }
+            .onEach { _uiState.value = UiState.Success(it) }
+            .catch { _uiState.value = UiState.Error(it.message ?: "Unknown error") }
+            .launchIn(viewModelScope)
+    }
+
+    fun onSearchQueryChange(query: String) { _searchQuery.value = query }
+}
+
+Q: How do you implement WorkManager for background tasks in Android?
+A:
+// Define work
+class SyncWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, params) {
+    override suspend fun doWork(): Result {
+        return try {
+            val userId = inputData.getString("userId") ?: return Result.failure()
+            // Do actual work
+            syncRepository.syncUser(userId)
+            Result.success()
+        } catch (e: Exception) {
+            if (runAttemptCount < 3) Result.retry() else Result.failure()
+        }
+    }
+
+    companion object {
+        fun buildRequest(userId: String): OneTimeWorkRequest {
+            val constraints = Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build()
+            return OneTimeWorkRequestBuilder<SyncWorker>()
+                .setConstraints(constraints)
+                .setInputData(workDataOf("userId" to userId))
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 15, TimeUnit.SECONDS)
+                .addTag("sync")
+                .build()
+        }
+    }
+}
+
+// Schedule work
+class UserRepository(private val workManager: WorkManager) {
+    fun scheduleSync(userId: String) {
+        val request = SyncWorker.buildRequest(userId)
+        workManager.enqueueUniqueWork("user-sync-$userId",
+            ExistingWorkPolicy.REPLACE, request)
+    }
+
+    fun observeSyncStatus(userId: String): Flow<WorkInfo?> =
+        workManager.getWorkInfosByTagFlow("sync").map { it.firstOrNull() }
+}
+
+Q: How do you handle offline-first in Android with Room + Retrofit?
+A:
+// NetworkBoundResource pattern
+inline fun <ResultType, RequestType> networkBoundResource(
+    crossinline query: () -> Flow<ResultType>,
+    crossinline fetch: suspend () -> RequestType,
+    crossinline saveFetchResult: suspend (RequestType) -> Unit,
+    crossinline shouldFetch: (ResultType) -> Boolean = { true }
+) = flow {
+    val data = query().first()
+    val flow = if (shouldFetch(data)) {
+        emit(Resource.Loading(data))
+        try {
+            saveFetchResult(fetch())
+            query().map { Resource.Success(it) }
+        } catch (t: Throwable) {
+            query().map { Resource.Error(t, it) }
+        }
+    } else {
+        query().map { Resource.Success(it) }
+    }
+    emitAll(flow)
+}
+
+// Usage
+fun getArticles(): Flow<Resource<List<Article>>> = networkBoundResource(
+    query = { dao.getArticles() },
+    fetch = { api.getArticles() },
+    saveFetchResult = { articles -> dao.upsert(articles.map { it.toEntity() }) },
+    shouldFetch = { cached -> cached.isEmpty() || isStale() }
+)
+
+
+============================================================
+SOURCE: Android Clean Architecture Expert
+============================================================
+
+
+Q: How do you implement Clean Architecture in Android with Hilt?
+A:
+// Domain Layer - pure Kotlin, no Android dependencies
+// domain/model/User.kt
+data class User(val id: String, val name: String, val email: String)
+
+// domain/repository/UserRepository.kt (interface)
+interface UserRepository {
+    fun getUsers(): Flow<List<User>>
+    suspend fun getUserById(id: String): User?
+    suspend fun updateUser(user: User): Result<User>
+}
+
+// domain/usecase/GetUsersUseCase.kt
+class GetUsersUseCase(private val repository: UserRepository) {
+    operator fun invoke(): Flow<List<User>> = repository.getUsers()
+        .map { users -> users.sortedBy { it.name } }
+        .catch { e -> throw DomainException("Failed to get users", e) }
+}
+
+// Data Layer
+// data/remote/UserApi.kt
+interface UserApi {
+    @GET("users")
+    suspend fun getUsers(): List<UserDto>
+    @GET("users/{id}")
+    suspend fun getUser(@Path("id") id: String): UserDto
+}
+
+// data/repository/UserRepositoryImpl.kt
+class UserRepositoryImpl(
+    private val api: UserApi,
+    private val dao: UserDao,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+) : UserRepository {
+    override fun getUsers(): Flow<List<User>> = flow {
+        // Cache-first strategy
+        emit(dao.getAll().map { it.toDomain() })
+        // Refresh from network
+        val fresh = withContext(dispatcher) { api.getUsers() }
+        dao.upsertAll(fresh.map { it.toEntity() })
+        emit(fresh.map { it.toDomain() })
+    }.flowOn(dispatcher)
+}
+
+// Presentation Layer
+// presentation/users/UsersViewModel.kt
+@HiltViewModel
+class UsersViewModel @Inject constructor(
+    private val getUsersUseCase: GetUsersUseCase
+) : ViewModel() {
+
+    sealed class UiState {
+        object Loading : UiState()
+        data class Success(val users: List<User>) : UiState()
+        data class Error(val message: String) : UiState()
+    }
+
+    private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
+    val uiState = _uiState.asStateFlow()
+
+    // Search support
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery = _searchQuery.asStateFlow()
+
+    val filteredUsers = combine(uiState, searchQuery) { state, query ->
+        if (state is UiState.Success && query.isNotBlank()) {
+            UiState.Success(state.users.filter { it.name.contains(query, ignoreCase = true) })
+        } else state
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), UiState.Loading)
+
+    init {
+        loadUsers()
+    }
+
+    private fun loadUsers() {
+        getUsersUseCase()
+            .onStart { _uiState.value = UiState.Loading }
+            .onEach { _uiState.value = UiState.Success(it) }
+            .catch { _uiState.value = UiState.Error(it.message ?: "Unknown error") }
+            .launchIn(viewModelScope)
+    }
+
+    fun onSearchQueryChange(query: String) { _searchQuery.value = query }
+}
+
+Q: How do you implement WorkManager for background tasks in Android?
+A:
+// Define work
+class SyncWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, params) {
+    override suspend fun doWork(): Result {
+        return try {
+            val userId = inputData.getString("userId") ?: return Result.failure()
+            // Do actual work
+            syncRepository.syncUser(userId)
+            Result.success()
+        } catch (e: Exception) {
+            if (runAttemptCount < 3) Result.retry() else Result.failure()
+        }
+    }
+
+    companion object {
+        fun buildRequest(userId: String): OneTimeWorkRequest {
+            val constraints = Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build()
+            return OneTimeWorkRequestBuilder<SyncWorker>()
+                .setConstraints(constraints)
+                .setInputData(workDataOf("userId" to userId))
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 15, TimeUnit.SECONDS)
+                .addTag("sync")
+                .build()
+        }
+    }
+}
+
+// Schedule work
+class UserRepository(private val workManager: WorkManager) {
+    fun scheduleSync(userId: String) {
+        val request = SyncWorker.buildRequest(userId)
+        workManager.enqueueUniqueWork("user-sync-$userId",
+            ExistingWorkPolicy.REPLACE, request)
+    }
+
+    fun observeSyncStatus(userId: String): Flow<WorkInfo?> =
+        workManager.getWorkInfosByTagFlow("sync").map { it.firstOrNull() }
+}
+
+Q: How do you handle offline-first in Android with Room + Retrofit?
+A:
+// NetworkBoundResource pattern
+inline fun <ResultType, RequestType> networkBoundResource(
+    crossinline query: () -> Flow<ResultType>,
+    crossinline fetch: suspend () -> RequestType,
+    crossinline saveFetchResult: suspend (RequestType) -> Unit,
+    crossinline shouldFetch: (ResultType) -> Boolean = { true }
+) = flow {
+    val data = query().first()
+    val flow = if (shouldFetch(data)) {
+        emit(Resource.Loading(data))
+        try {
+            saveFetchResult(fetch())
+            query().map { Resource.Success(it) }
+        } catch (t: Throwable) {
+            query().map { Resource.Error(t, it) }
+        }
+    } else {
+        query().map { Resource.Success(it) }
+    }
+    emitAll(flow)
+}
+
+// Usage
+fun getArticles(): Flow<Resource<List<Article>>> = networkBoundResource(
+    query = { dao.getArticles() },
+    fetch = { api.getArticles() },
+    saveFetchResult = { articles -> dao.upsert(articles.map { it.toEntity() }) },
+    shouldFetch = { cached -> cached.isEmpty() || isStale() }
+)

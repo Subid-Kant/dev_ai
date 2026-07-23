@@ -1,0 +1,630 @@
+Q: Explain the JVM Architecture and how Garbage Collection works in Java.
+A: The Java Virtual Machine (JVM) is the engine that drives Java code. It converts compiled Java bytecode (.class files) into machine code.
+
+Architecture:
+1. Class Loader Subsystem: Loads, links, and initializes class files. (Loading -> Linking (Verify, Prepare, Resolve) -> Initialization).
+2. Runtime Data Areas:
+   - Method Area: Stores class structures (metadata, constant pool, static variables). Shared among all threads.
+   - Heap: Where all objects and their instance variables are allocated. Garbage Collected. Shared.
+   - Stack: One per thread. Stores frames (local variables, operand stack, method exit info). Thread-safe.
+   - PC Register: Program Counter, holds the address of the currently executing instruction. One per thread.
+   - Native Method Stack: For native code (C/C++) executed via JNI.
+
+Garbage Collection (GC):
+GC automatically reclaims memory by deleting unreachable objects in the Heap.
+Generational GC splits the Heap into:
+- Young Generation: Eden space, Survivor spaces (S0, S1). Most objects die young. Minor GC clears this.
+- Old (Tenured) Generation: Objects that survive multiple Minor GCs move here. Major GC (or Full GC) clears this.
+- Metaspace (replaced PermGen in Java 8): Stores class metadata. Native memory.
+
+Common GC Algorithms:
+- G1 GC (Garbage First): Default since Java 9. Partitions heap into regions. Predictable pause times. Good for large heaps.
+- ZGC (Z Garbage Collector): Scalable low-latency GC (Java 11+). Pause times < 1ms even for terabyte heaps.
+- Parallel GC: High throughput, multiple threads for GC.
+
+```java
+// Tuning GC in production (JVM flags)
+// java -Xms4g -Xmx4g -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -jar app.jar
+// -Xms: Initial heap size, -Xmx: Max heap size (Keep them equal to avoid resizing overhead)
+```
+
+---
+
+Q: How does Java Concurrency work? Explain Threads, Executors, and the new Virtual Threads (Project Loom).
+A: Concurrency in Java enables parallel execution. Traditionally, Java threads mapped 1:1 to OS threads, which are heavy (~1MB stack).
+
+Traditional Threading:
+```java
+Thread t = new Thread(() -> {
+    System.out.println("Running in thread: " + Thread.currentThread().getName());
+});
+t.start();
+```
+
+ExecutorService (Thread Pools):
+Manages a pool of threads to avoid the overhead of thread creation.
+```java
+ExecutorService executor = Executors.newFixedThreadPool(10);
+Future<String> future = executor.submit(() -> {
+    Thread.sleep(1000);
+    return "Result";
+});
+// future.get() blocks until result is ready
+```
+
+CompletableFuture (Java 8+):
+Non-blocking, chainable asynchronous programming.
+```java
+CompletableFuture.supplyAsync(() -> fetchUserData())
+    .thenApply(user -> processData(user))
+    .thenAccept(result -> System.out.println("Done: " + result))
+    .exceptionally(ex -> {
+        ex.printStackTrace();
+        return null;
+    });
+```
+
+Virtual Threads (Java 21+ Project Loom):
+Lightweight threads managed by the JVM, not the OS. You can spawn millions of them. They map many-to-one to OS threads. When a virtual thread blocks (e.g., I/O), the JVM unmounts it and runs another on the carrier OS thread.
+```java
+try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+    IntStream.range(0, 1_000_000).forEach(i -> {
+        executor.submit(() -> {
+            Thread.sleep(Duration.ofSeconds(1)); // Does not block the OS thread!
+            return i;
+        });
+    });
+} // Blocks here until all million virtual threads complete
+```
+
+Locks and Synchronization:
+- `synchronized`: Intrinsic lock (monitor) on the object. Reentrant.
+- `ReentrantLock`: More flexible (tryLock, fairness).
+- `ConcurrentHashMap`: Highly concurrent thread-safe map using lock striping (Java 7) or CAS (Java 8+).
+
+---
+
+Q: Explain Java Streams API and give real-world examples.
+A: Java 8 introduced Streams to process collections in a declarative, functional style. A stream is a pipeline of operations (intermediate and terminal) applied to a source.
+
+Key Concepts:
+- Intermediate Operations: Return a new Stream (lazy). e.g., filter, map, flatMap, sorted, distinct.
+- Terminal Operations: Produce a result or side-effect, consuming the stream. e.g., collect, forEach, reduce, count, anyMatch.
+
+Real-world processing example:
+```java
+public record Transaction(String id, double amount, String type, LocalDate date) {}
+
+List<Transaction> transactions = getTransactions();
+
+// 1. Filter and Map (Get IDs of large deposits)
+List<String> largeDeposits = transactions.stream()
+    .filter(t -> t.type().equals("DEPOSIT"))
+    .filter(t -> t.amount() > 10000)
+    .map(Transaction::id)
+    .toList(); // Java 16+ (or .collect(Collectors.toList()))
+
+// 2. Grouping (Sum amounts by type)
+Map<String, Double> sumByType = transactions.stream()
+    .collect(Collectors.groupingBy(
+        Transaction::type,
+        Collectors.summingDouble(Transaction::amount)
+    ));
+
+// 3. FlatMap (Flattening lists of lists)
+List<List<String>> nestedTags = List.of(List.of("tech", "java"), List.of("spring", "java"));
+Set<String> uniqueTags = nestedTags.stream()
+    .flatMap(List::stream) // Flattens to Stream<String>
+    .collect(Collectors.toSet());
+
+// 4. Parallel Streams (Uses ForkJoinPool, good for large CPU-bound tasks)
+double total = transactions.parallelStream()
+    .mapToDouble(Transaction::amount)
+    .sum();
+```
+
+---
+
+Q: Explain Spring Boot architecture, Dependency Injection, and how to build a REST API.
+A: Spring Boot is an extension of the Spring framework that simplifies Java enterprise development through convention-over-configuration and auto-configuration.
+
+Core Concepts:
+1. Inversion of Control (IoC) & Dependency Injection (DI):
+   Objects don't create their dependencies; the Spring Container creates and injects them (usually via constructor).
+2. Auto-Configuration:
+   Based on the classpath (e.g., if `spring-boot-starter-web` is present, it configures Tomcat and Spring MVC).
+3. Annotations:
+   - `@SpringBootApplication`: Combines `@Configuration`, `@EnableAutoConfiguration`, and `@ComponentScan`.
+   - `@Component`, `@Service`, `@Repository`: Stereotypes for beans.
+
+Building a Production-Ready REST API (MVC + JPA):
+
+```java
+// 1. Entity (JPA/Hibernate)
+@Entity
+@Table(name = "users")
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @Column(nullable = false, unique = true)
+    private String email;
+    
+    private String name;
+    // Getters, Setters, Constructors (or use Lombok @Data)
+}
+
+// 2. Repository (Spring Data JPA)
+public interface UserRepository extends JpaRepository<User, Long> {
+    Optional<User> findByEmail(String email); // Auto-generates SQL query
+}
+
+// 3. Service (Business Logic)
+@Service
+@Transactional
+public class UserService {
+    private final UserRepository repository; // Constructor Injection
+
+    public UserService(UserRepository repository) {
+        this.repository = repository;
+    }
+
+    public User createUser(User user) {
+        if (repository.findByEmail(user.getEmail()).isPresent()) {
+            throw new RuntimeException("Email already exists");
+        }
+        return repository.save(user);
+    }
+}
+
+// 4. Controller (REST Endpoints)
+@RestController
+@RequestMapping("/api/users")
+public class UserController {
+    private final UserService service;
+
+    public UserController(UserService service) {
+        this.service = service;
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public User create(@RequestBody @Valid User user) {
+        return service.createUser(user);
+    }
+}
+```
+
+Security (Spring Security + JWT):
+```java
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+            .csrf(csrf -> csrf.disable()) // Disable CSRF for stateless REST APIs
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/auth/**").permitAll() // Open endpoints
+                .anyRequest().authenticated() // Protect others
+            )
+            .addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        return http.build();
+    }
+}
+```
+
+
+============================================================
+SOURCE: Java Expert Q&A
+============================================================
+
+
+JAVA — COMPREHENSIVE GUIDE
+
+=== OBJECT-ORIENTED PRINCIPLES ===
+Q: Demonstrate SOLID principles in Java?
+A:
+// S - Single Responsibility: One class, one reason to change
+class UserValidator { boolean isValid(User u) { ... } }
+class UserRepository { void save(User u) { ... } }
+class UserNotifier { void notify(User u) { ... } }
+
+// O - Open/Closed: Open for extension, closed for modification
+interface Shape { double area(); }
+class Circle implements Shape { 
+    double area() { return Math.PI * radius * radius; } 
+}
+class Rectangle implements Shape {
+    double area() { return width * height; }
+}
+
+// L - Liskov Substitution: Subclasses must be substitutable
+// I - Interface Segregation: Small, specific interfaces
+interface Readable { String read(); }
+interface Writable { void write(String data); }
+// Rather than one giant interface
+
+// D - Dependency Inversion: Depend on abstractions
+class OrderService {
+    private final PaymentGateway gateway; // interface, not concrete class
+    OrderService(PaymentGateway gateway) { this.gateway = gateway; }
+}
+
+=== JAVA GENERICS ===
+public class Result<T> {
+    private final T value;
+    private final String error;
+    private final boolean success;
+
+    private Result(T value, String error, boolean success) {
+        this.value = value; this.error = error; this.success = success;
+    }
+
+    public static <T> Result<T> success(T value) {
+        return new Result<>(value, null, true);
+    }
+
+    public static <T> Result<T> failure(String error) {
+        return new Result<>(null, error, false);
+    }
+
+    public <U> Result<U> map(Function<T, U> mapper) {
+        if (success) return Result.success(mapper.apply(value));
+        return Result.failure(error);
+    }
+}
+
+=== STREAMS AND LAMBDAS ===
+List<Order> orders = getOrders();
+
+// Complex stream pipeline
+Map<String, Double> revenueByCategory = orders.stream()
+    .filter(o -> o.getStatus() == OrderStatus.COMPLETED)
+    .filter(o -> o.getCreatedAt().isAfter(LocalDate.now().minusDays(30)))
+    .collect(Collectors.groupingBy(
+        Order::getCategory,
+        Collectors.summingDouble(Order::getTotal)
+    ));
+
+// Parallel stream for CPU-intensive tasks
+long count = largeList.parallelStream()
+    .filter(this::isComplex)
+    .mapToLong(this::process)
+    .sum();
+
+=== CONCURRENCY ===
+// ExecutorService
+ExecutorService executor = Executors.newFixedThreadPool(10);
+List<Future<Result>> futures = tasks.stream()
+    .map(task -> executor.submit(() -> processTask(task)))
+    .collect(Collectors.toList());
+
+// CompletableFuture
+CompletableFuture<User> userFuture = CompletableFuture.supplyAsync(() -> fetchUser(id));
+CompletableFuture<Orders> ordersFuture = CompletableFuture.supplyAsync(() -> fetchOrders(id));
+
+CompletableFuture.allOf(userFuture, ordersFuture)
+    .thenApply(v -> buildProfile(userFuture.join(), ordersFuture.join()))
+    .exceptionally(ex -> Profile.empty());
+
+// Virtual Threads (Java 21+)
+try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+    executor.submit(() -> handleRequest(request));
+}
+
+=== DESIGN PATTERNS ===
+// Builder
+User user = User.builder()
+    .name("Alice")
+    .email("alice@example.com")
+    .role(Role.ADMIN)
+    .build();
+
+// Repository Pattern
+public interface UserRepository {
+    Optional<User> findById(Long id);
+    List<User> findByRole(Role role);
+    User save(User user);
+    void delete(Long id);
+}
+
+// Observer Pattern
+public interface EventListener<T> { void onEvent(T event); }
+
+public class EventBus {
+    private final Map<Class<?>, List<EventListener<?>>> listeners = new HashMap<>();
+
+    public <T> void subscribe(Class<T> type, EventListener<T> listener) {
+        listeners.computeIfAbsent(type, k -> new ArrayList<>()).add(listener);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> void publish(T event) {
+        listeners.getOrDefault(event.getClass(), Collections.emptyList())
+            .forEach(l -> ((EventListener<T>) l).onEvent(event));
+    }
+}
+
+=== SPRING BOOT REST API ===
+@RestController
+@RequestMapping("/api/v1/users")
+@RequiredArgsConstructor
+public class UserController {
+    private final UserService userService;
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDto> getUser(@PathVariable Long id) {
+        return userService.findById(id)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping
+    public ResponseEntity<UserDto> createUser(@Valid @RequestBody CreateUserRequest req) {
+        UserDto created = userService.create(req);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+            .path("/{id}").buildAndExpand(created.getId()).toUri();
+        return ResponseEntity.created(location).body(created);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<UserDto> updateUser(@PathVariable Long id,
+                                              @Valid @RequestBody UpdateUserRequest req) {
+        return ResponseEntity.ok(userService.update(id, req));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        userService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+}
+
+
+============================================================
+SOURCE: Java Spring Boot Expert
+============================================================
+
+
+Q: How do you build a complete Spring Boot microservice with all best practices?
+A:
+// Entity
+@Entity
+@Table(name = "orders")
+@EntityListeners(AuditingEntityListener.class)
+@Data @Builder @NoArgsConstructor @AllArgsConstructor
+public class Order {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private String customerId;
+
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItem> items = new ArrayList<>();
+
+    @CreatedDate private LocalDateTime createdAt;
+    @LastModifiedDate private LocalDateTime updatedAt;
+
+    public BigDecimal getTotal() {
+        return items.stream()
+            .map(item -> item.getPrice().multiply(new BigDecimal(item.getQuantity())))
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+}
+
+// Service
+@Service
+@Transactional
+@RequiredArgsConstructor
+@Slf4j
+public class OrderService {
+    private final OrderRepository orderRepository;
+    private final ProductClient productClient; // Feign client
+    private final KafkaTemplate<String, OrderEvent> kafka;
+    private final OrderMapper mapper;
+
+    public OrderResponse createOrder(CreateOrderRequest request) {
+        // Validate inventory via product service
+        request.getItems().forEach(item -> {
+            ProductResponse product = productClient.getProduct(item.getProductId());
+            if (product.getStock() < item.getQuantity()) {
+                throw new InsufficientStockException(item.getProductId());
+            }
+        });
+
+        Order order = mapper.toEntity(request);
+        order.setStatus(OrderStatus.PENDING);
+        Order saved = orderRepository.save(order);
+
+        // Publish domain event
+        kafka.send("orders", saved.getId().toString(),
+            new OrderCreatedEvent(saved.getId(), saved.getCustomerId(), saved.getTotal()));
+
+        log.info("Order {} created for customer {}", saved.getId(), saved.getCustomerId());
+        return mapper.toResponse(saved);
+    }
+}
+
+// Global Exception Handler
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ProblemDetail handleValidation(MethodArgumentNotValidException ex) {
+        ProblemDetail detail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        detail.setTitle("Validation Failed");
+        detail.setProperty("errors", ex.getBindingResult().getFieldErrors().stream()
+            .collect(Collectors.toMap(
+                FieldError::getField,
+                fe -> fe.getDefaultMessage() != null ? fe.getDefaultMessage() : "Invalid"
+            )));
+        return detail;
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ProblemDetail handleNotFound(ResourceNotFoundException ex) {
+        ProblemDetail detail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
+        detail.setTitle(ex.getMessage());
+        return detail;
+    }
+}
+
+// Integration Test
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestContainers
+class OrderServiceIntegrationTest {
+    @Container
+    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15");
+
+    @Container
+    static KafkaContainer kafka = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka"));
+
+    @DynamicPropertySource
+    static void properties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgres::getJdbcUrl);
+        registry.add("spring.kafka.bootstrap-servers", kafka::getBootstrapServers);
+    }
+
+    @Autowired private MockMvc mockMvc;
+
+    @Test
+    void createOrder_success() throws Exception {
+        mockMvc.perform(post("/api/v1/orders")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"customerId\": \"cust-1\", \"items\": [{\"productId\": \"prod-1\", \"quantity\": 2}]}")
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.status").value("PENDING"))
+            .andExpect(jsonPath("$.customerId").value("cust-1"));
+    }
+}
+
+
+============================================================
+SOURCE: Java Spring Boot Expert
+============================================================
+
+
+Q: How do you build a complete Spring Boot microservice with all best practices?
+A:
+// Entity
+@Entity
+@Table(name = "orders")
+@EntityListeners(AuditingEntityListener.class)
+@Data @Builder @NoArgsConstructor @AllArgsConstructor
+public class Order {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private String customerId;
+
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItem> items = new ArrayList<>();
+
+    @CreatedDate private LocalDateTime createdAt;
+    @LastModifiedDate private LocalDateTime updatedAt;
+
+    public BigDecimal getTotal() {
+        return items.stream()
+            .map(item -> item.getPrice().multiply(new BigDecimal(item.getQuantity())))
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+}
+
+// Service
+@Service
+@Transactional
+@RequiredArgsConstructor
+@Slf4j
+public class OrderService {
+    private final OrderRepository orderRepository;
+    private final ProductClient productClient; // Feign client
+    private final KafkaTemplate<String, OrderEvent> kafka;
+    private final OrderMapper mapper;
+
+    public OrderResponse createOrder(CreateOrderRequest request) {
+        // Validate inventory via product service
+        request.getItems().forEach(item -> {
+            ProductResponse product = productClient.getProduct(item.getProductId());
+            if (product.getStock() < item.getQuantity()) {
+                throw new InsufficientStockException(item.getProductId());
+            }
+        });
+
+        Order order = mapper.toEntity(request);
+        order.setStatus(OrderStatus.PENDING);
+        Order saved = orderRepository.save(order);
+
+        // Publish domain event
+        kafka.send("orders", saved.getId().toString(),
+            new OrderCreatedEvent(saved.getId(), saved.getCustomerId(), saved.getTotal()));
+
+        log.info("Order {} created for customer {}", saved.getId(), saved.getCustomerId());
+        return mapper.toResponse(saved);
+    }
+}
+
+// Global Exception Handler
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ProblemDetail handleValidation(MethodArgumentNotValidException ex) {
+        ProblemDetail detail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        detail.setTitle("Validation Failed");
+        detail.setProperty("errors", ex.getBindingResult().getFieldErrors().stream()
+            .collect(Collectors.toMap(
+                FieldError::getField,
+                fe -> fe.getDefaultMessage() != null ? fe.getDefaultMessage() : "Invalid"
+            )));
+        return detail;
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ProblemDetail handleNotFound(ResourceNotFoundException ex) {
+        ProblemDetail detail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
+        detail.setTitle(ex.getMessage());
+        return detail;
+    }
+}
+
+// Integration Test
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestContainers
+class OrderServiceIntegrationTest {
+    @Container
+    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15");
+
+    @Container
+    static KafkaContainer kafka = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka"));
+
+    @DynamicPropertySource
+    static void properties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgres::getJdbcUrl);
+        registry.add("spring.kafka.bootstrap-servers", kafka::getBootstrapServers);
+    }
+
+    @Autowired private MockMvc mockMvc;
+
+    @Test
+    void createOrder_success() throws Exception {
+        mockMvc.perform(post("/api/v1/orders")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"customerId\": \"cust-1\", \"items\": [{\"productId\": \"prod-1\", \"quantity\": 2}]}")
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.status").value("PENDING"))
+            .andExpect(jsonPath("$.customerId").value("cust-1"));
+    }
+}
