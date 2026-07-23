@@ -7,7 +7,7 @@ from transformers import (
     BitsAndBytesConfig,
 )
 from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
-from trl import SFTTrainer, SFTConfig
+from trl import SFTTrainer
 
 # 1. Configuration
 MODEL_ID = "unsloth/llama-3-8b-Instruct-bnb-4bit" # Ungated, pre-quantized 4-bit Llama 3! No HF token needed.
@@ -78,8 +78,9 @@ def train():
     # and will raise a ValueError if it's handed an already-wrapped PeftModel.
     # We'll print trainable params after the trainer wraps the model instead.
 
-    # 7. Training Arguments (using SFTConfig for newer TRL versions)
-    training_args = SFTConfig(
+    from transformers import TrainingArguments
+    # 7. Training Arguments (using stable TrainingArguments)
+    training_args = TrainingArguments(
         output_dir=OUTPUT_DIR,
         per_device_train_batch_size=2,
         gradient_accumulation_steps=4,
@@ -90,23 +91,12 @@ def train():
         weight_decay=0.001,
         max_grad_norm=0.3,
         max_steps=500, 
-        # bf16, not fp16: matches the model's actual compute dtype (see note above
-        # bnb_config) and is more numerically stable for LLM training in general.
         fp16=False,
         bf16=True,
         warmup_ratio=0.03,
         group_by_length=True,
         lr_scheduler_type="cosine",
         report_to="none",
-        dataset_text_field="text",
-        # Renamed from max_seq_length -> max_length in current trl's SFTConfig.
-        max_length=1024,
-        # Newer trl defaults to loss_type="chunked_nll", which patches the model's
-        # lm_head.forward for memory savings. That patch assumes forward is a plain
-        # bound method, but Unsloth's pre-quantized model already wraps forward as a
-        # functools.partial, which breaks the patch (AttributeError: no '__func__').
-        # Falling back to the standard loss path avoids that patching entirely.
-        loss_type="nll",
     )
 
     # 8. SFT Trainer
@@ -114,8 +104,10 @@ def train():
         model=model,
         train_dataset=dataset,
         peft_config=peft_config,
-        processing_class=tokenizer,
+        tokenizer=tokenizer,
         args=training_args,
+        dataset_text_field="text",
+        max_seq_length=1024,
     )
     trainer.model.print_trainable_parameters()
 
