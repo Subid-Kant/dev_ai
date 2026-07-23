@@ -7,6 +7,9 @@ on:
   workflow_dispatch:
     # Allows you to trigger it manually from GitHub
 
+permissions:
+  contents: write   # <-- ADDED: grants GITHUB_TOKEN push access (fixes the 403)
+
 jobs:
   crawl_and_learn:
     runs-on: ubuntu-latest
