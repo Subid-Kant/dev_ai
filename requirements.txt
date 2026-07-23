@@ -6,8 +6,8 @@ pyyaml>=6.0
 tqdm>=4.66.0
 transformers>=4.40.0
 peft>=0.10.0
-trl==0.8.6
-bitsandbytes==0.44.1
+trl>=0.9.6
+bitsandbytes>=0.46.1
 datasets>=2.18.0
 accelerate>=0.29.0
 chromadb>=0.4.24

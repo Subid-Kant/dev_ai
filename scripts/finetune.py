@@ -7,7 +7,7 @@ from transformers import (
     BitsAndBytesConfig,
 )
 from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
-from trl import SFTTrainer
+from trl import SFTTrainer, SFTConfig
 
 # 1. Configuration
 MODEL_ID = "unsloth/llama-3-8b-Instruct-bnb-4bit" # Ungated, pre-quantized 4-bit Llama 3! No HF token needed.
@@ -78,9 +78,11 @@ def train():
     # and will raise a ValueError if it's handed an already-wrapped PeftModel.
     # We'll print trainable params after the trainer wraps the model instead.
 
-    from transformers import TrainingArguments
-    # 7. Training Arguments (using stable TrainingArguments)
-    training_args = TrainingArguments(
+    # 7. Training Arguments
+    # SFTConfig replaces plain TrainingArguments and now also carries the
+    # dataset/tokenization fields (dataset_text_field, max_length) that used
+    # to be passed directly into SFTTrainer's constructor in older trl versions.
+    training_args = SFTConfig(
         output_dir=OUTPUT_DIR,
         per_device_train_batch_size=2,
         gradient_accumulation_steps=4,
@@ -90,24 +92,35 @@ def train():
         learning_rate=2e-4,
         weight_decay=0.001,
         max_grad_norm=0.3,
-        max_steps=500, 
+        max_steps=500,
         fp16=False,
         bf16=True,
         warmup_ratio=0.03,
         group_by_length=True,
         lr_scheduler_type="cosine",
         report_to="none",
+        dataset_text_field="text",
+        max_length=1024,
+        # trl's newer default loss_type="chunked_nll" patches lm_head.forward
+        # in place for memory savings, but that patch assumes lm_head.forward
+        # is a plain bound method. On a 4-bit bitsandbytes model prepared with
+        # prepare_model_for_kbit_training, lm_head.forward is already wrapped
+        # as a functools.partial, which crashes the patch at SFTTrainer
+        # construction time (AttributeError: 'functools.partial' object has
+        # no attribute '__func__'). Forcing the plain "nll" loss avoids that
+        # patch entirely.
+        loss_type="nll",
     )
 
     # 8. SFT Trainer
+    # tokenizer= was removed in favor of processing_class=; dataset_text_field
+    # and max_seq_length (now max_length) moved onto SFTConfig above.
     trainer = SFTTrainer(
         model=model,
         train_dataset=dataset,
         peft_config=peft_config,
-        tokenizer=tokenizer,
+        processing_class=tokenizer,
         args=training_args,
-        dataset_text_field="text",
-        max_seq_length=1024,
     )
     trainer.model.print_trainable_parameters()
 
