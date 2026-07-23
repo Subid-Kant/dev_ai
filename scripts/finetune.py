@@ -101,6 +101,15 @@ def train():
         report_to="none",
         dataset_text_field="text",
         max_length=1024,
+        # trl's newer default loss_type="chunked_nll" patches lm_head.forward
+        # in place for memory savings, but that patch assumes lm_head.forward
+        # is a plain bound method. On a 4-bit bitsandbytes model prepared with
+        # prepare_model_for_kbit_training, lm_head.forward is already wrapped
+        # as a functools.partial, which crashes the patch at SFTTrainer
+        # construction time (AttributeError: 'functools.partial' object has
+        # no attribute '__func__'). Forcing the plain "nll" loss avoids that
+        # patch entirely.
+        loss_type="nll",
     )
 
     # 8. SFT Trainer
