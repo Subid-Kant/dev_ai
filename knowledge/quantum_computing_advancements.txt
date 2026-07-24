@@ -6334,3 +6334,163 @@ From the light shining from the Sun to the atoms in your body, from the computer
 Perhaps the greatest lesson of quantum physics is one of humility. Nature is not obligated to behave in ways that feel familiar or intuitive. Instead, it continually surprises us with patterns that are more elegant, more subtle, and more fascinating than anyone once imagined. As scientists continue exploring the quantum world, each new discovery brings us closer to understanding the deepest workings of the universe—and reminds us that even the smallest particles can reveal the biggest secrets of existence.
 
 
+Source: https://quantumzeitgeist.com/
+Title: Latest Quantum Computing News & Breakthroughs | Quantum …
+Quantum computing's breakthroughs, deals, and research, delivered straight to your inbox.
+Read by quantum researchers, engineers, developers, and business professionals worldwide.
+A living directory of the global quantum industry. Browse 1,100+ companies across 52 countries, plus public quantum stocks and the investors funding them.
+28 to 30 September 2026, Dubai. Where quantum technologies enter real-world systems.
+Disclaimer: All material, including information from or attributed to Quantum Zeitgeist or individual authors of content on this website, has been obtained from sources believed to be accurate as of the date of publication. However, Quantum Zeitgeist makes no warranty of the accuracy or completeness of the information and Quantum Zeitgeist does not assume any responsibility for its accuracy, efficacy, or use. Any information on the website obtained by Quantum Zeitgeist from third parties has not been reviewed for accuracy.
+Copyright 2019 to 2026 The Quantum Zeitgeist website is owned and operated by Hadamard LLC, a Wyoming limited liability company.
+
+
+Source: https://news.mit.edu/topic/quantum-computing
+Title: Quantum computing | MIT News | Massachusetts Institute of …
+Download RSS feed: News Articles / In the Media / Audio
+Initial research projects advance national priorities across natural resources, manufacturing, nuclear physics, and more.
+“Scientific American” showcases the history and future of America’s scientific engine, highlighting promising young scientists and icons at MIT and beyond.
+Leaders, faculty across MIT discuss fostering innovation and talent in Greater Boston in special series of articles published alongside the outlet's annual list of 'Tech Power Players'
+A prototype wiring system for dilution refrigerators could advance the realization of practical quantum computers.
+Researchers establish key insights for reading and writing information for quantum sensing, communication, computing, and control.
+The Quantum Systems Laboratory will catalyze quantum innovation and be open to government, academic, and industry researchers.
+With $25 million investment from the Commonwealth of Massachusetts, MIT to build a new shared-use facility to serve as a statewide quantum toolbox.
+A new method for precisely moving columns of individual atoms within a material could give rise to exotic quantum properties.
+A new technique helps scientists measure a phenomenon that can cause quantum circuits to perform differently than expected, increasing the error in computations.
+New system at MIT.nano will support quantum technology research.
+Building on a long-standing MIT–IBM collaboration, the new lab will chart the convergence of AI, algorithms, and quantum computing.
+Ultra-efficient chip design enables extremely strong cryptography algorithms to run on energy-constrained edge devices.
+Startup accelerator program grows to over 30 companies, almost half of them with MIT pedigrees.
+At MIT, former U.S. ambassador to China Nicholas Burns highlights climate change as an area for diplomatic engagement, while exploring areas including China's emphasis on STEM education.
+Light-emitting structures that curl off the chip surface could enable advanced displays, high-speed optical communications, and larger-scale quantum computers.
+This website is managed by the MIT News Office, part of the Institute Office of Communications.
+Massachusetts Institute of Technology77 Massachusetts Avenue, Cambridge, MA, USA
+
+
+Source: https://www.scientificamerican.com/quantum-computing/
+Title: Quantum Computing - Scientific American
+A new quantum computer sets a high watermark for accuracy. Are we on the verge of a big breakthrough?
+How quantum sensing could reveal hidden faults in thousands of U.S. bridges
+Of the more than 624,000 highway bridges in the U.S., an estimated 220,000 need repairs. Quantum sensors could help engineers better safeguard these vital pieces of infrastructure
+Top quantum computer expert claims Microsoft’s ‘topological qubit’ doesn’t hold up
+The company has been touting its quantum technology for years, but some experts say these claims just don’t pass muster
+The Department of Energy official discusses what will drive tomorrow’s innovation
+Microsoft’s new quantum computer chip has a fundamental problem
+Microsoft’s announcement of a new quantum computing breakthrough with its Majorana 2 chip continues a trend of bold claims followed by scant evidence
+A quantum computing system’s perfect randomness could keep your secrets safe
+Generating and confirming the randomness of qubits could lead to breakthroughs in computer data encryption
+Quantum computing could lead to revolutions in cryptography, materials design and telecommunications. But fulfilling those promises could be many years away
+Sometimes science does make our world turn upside down
+The next quantum revolution may require a helium ‘gold rush’ on the moon
+The rare isotope helium-3 is one of Earth’s most precious commodities—so precious, in fact, that it might prove profitable to mine from the moon
+What if time were reversed? Physicists show how time could flow backward on a quantum scale
+Researchers have developed a way to flip time to move backward in a quantum system. This level of control could lead to bizarre real-world applications
+DARPA’s AI is built to call BS on wild weapons claims
+The SciFy program tests whether adversaries’ most outlandish scientific claims add up or fall apart
+Subscribe to Scientific American to learn and share the most exciting discoveries, innovations and ideas shaping our world today.
+Scientific American is affiliated with LabX Media Group, which owns or has commercial relations with other B2B and B2C brands (many of them can be found at www.labxmediagroup.com). Scientific American maintains a strict policy of editorial independence in reporting developments in science to our readers.
+© 2026 SCIENTIFIC AMERICAN INC.ALL RIGHTS RESERVED.
+
+
+Source: https://www.startus-insights.com/innovators-guide/future-of-quantum-computing/
+Title: Future of Quantum Computing [2026-2030] | StartUs Insights
+Quantum error correction (QEC) protects quantum information from noise and physical qubit faults. It improves program reliability by distributing logical information across qubit groups. Researchers identify it as the core requirement for future large-scale quantum computing due to the sensitivity of current hardware to environmental interference.
+In the first 10 months of 2025 alone, 120 new peer-reviewed papers covering QEC codes were published, surging dramatically from the 36 papers published in 2024. Error correction development addresses practical limits in coherence, fidelity, and circuit depth on today’s devices.
+The potential of error correction affects both technical and commercial domains. Improved correction reduces hardware thresholds for early applications and supports stable execution of deeper circuits.
+Google’s 105-qubit processor Willow achieved exponential error suppression as encoded qubit arrays grew (from 3×3 to 7×7 lattices). It demonstrated the “below threshold” phenomenon that keeps the physical error rate below a critical value, allowing the QEC code to function correctly.
+Market studies indicate that scalable error correction is a key factor for the business viability of quantum computing platforms. In 2024, the QEC market was assessed at USD 412.6 million, and it is set to reach USD 3.8 billion, growing at a CAGR of 28.4%.
+US-based startup Quantinuum develops trapped-ion quantum processors that support advanced logical qubit formation for reliable program execution.
+The company builds error-corrected qubits through high-fidelity ion control that stabilizes quantum states and suppresses operational faults. Its H-Series systems enable repeated error-suppression cycles that maintain coherence for longer circuit runs.
+These capabilities support enterprise pilots that require consistent results across optimisation and simulation tasks. Quantinuum positions its platform as a practical step toward scalable quantum computing through measurable gains in error correction.
+Superconducting qubits use microwave circuits cooled to millikelvin temperatures to create controllable quantum states. These circuits behave like artificial atoms and support fast gate operations.
+Superconducting designs are identified as one of the most mature hardware pathways for quantum computation due to strong integration with existing semiconductor processes.
+Superconducting systems rely on Josephson junctions, electrical components made from two superconductors separated by a very thin insulating barrier. They enable precise control of qubit frequencies and coupling strengths.
+This design supports rapid gate execution, which reduces exposure to noise during computation. Hardware teams continue to refine coherence times through improved materials, cleaner fabrication techniques, and enhanced chip packaging.
+Industry momentum around superconducting qubits remains strong because this architecture demonstrates regular scaling progress.
+IBM’s recent processors, including the Nighthawk, demonstrate improved fidelity and modular chip designs that support larger systems. These systems remain central to early research due to their compatibility with existing control electronics and foundry-grade manufacturing.
+Superconducting qubit innovations enable faster gate times, and maturing fabrication methods reduce operational errors and enhance the quality of quantum circuits.
+In 2023, superconducting materials recorded USD 11.57 billion in revenue, with forecasts indicating a CAGR of 11.3% between 2024 and 2032.
+US-based computing veteran IBM advances superconducting qubit technology through its IBM Quantum program, which develops processors designed for scalable circuit performance.
+The program introduced the Nighthawk processor, a device that uses an improved two-qubit gate design to deliver higher fidelity and stronger qubit connectivity.
+Nighthawk integrates refined fabrication methods and upgraded control electronics that extend coherence across the chip. These improvements reduce noise and support deeper quantum circuits for optimisation or chemistry workloads.
+IBM positions Nighthawk as a central step in its roadmap toward larger superconducting systems that support consistent and reliable program execution.
+Trapped-ion systems use charged atoms confined in electromagnetic fields to act as stable qubits. Lasers control these ions with high precision and support reliable quantum operations.
+Research groups view this architecture as one of the most accurate approaches to quantum computation due to strong coherence and uniform qubit behavior. Each ion behaves as an identical qubit, which simplifies calibration across the full system.
+This uniformity reduces systematic errors that affect other qubit types. High gate fidelity remains a major advantage, with reports of error rates across controlled test circuits.
+Industry interest in trapped-ion technology continues to grow because the architecture demonstrates repeatable performance across increasingly complex experiments.
+Oxford Ionics reported the highest-ever state preparation and measurement (SPAM) fidelities of 99.9993%. Another advantage of the technology is coherence for long durations, enabling deep quantum circuits and extensive gate operations before error accumulation becomes substantial.
+Quantum Art has demonstrated a stable linear chain of 200 ions in a trapped-ion system – one of the longest ion chains ever achieved, marking a key milestone toward scalable quantum computing.
+US-based IonQ develops trapped-ion quantum systems that focus on stable qubit behavior and high gate fidelity. Its Aria system that uses precisely controlled ytterbium ions to deliver consistent performance across complex quantum circuits.
+Aria benefits from long coherence times and uniform qubit properties, which support repeatable results in optimisation and simulation workloads.
+The system is available through major cloud platforms and allows organisations to test real quantum programs with reliable device behavior. IonQ positions Aria as a leading trapped-ion system for early commercial exploration due to its accuracy, accessibility, and strong operational stability.
+Photonic quantum computing uses single photons or continuous-variable light modes to represent qubits. These qubits travel through optical circuits that guide, split, and interfere photons to perform quantum operations.
+Researchers value photonic systems for their potential to operate at room temperature and integrate with existing telecom infrastructure.
+Photonic systems demonstrate calculation speed that exceeds classical machines by more than 1000 times, making them valuable for AI data infrastructures. This is consistent with the figures demonstrated by the chip developed in China by Chip Hub for Integrated Photonics Xplore (CHIPX) and Turing Quantum.
+Photonic platforms avoid many decoherence issues that affect matter-based qubits. Optical states show strong resilience to environmental noise, which supports stable quantum operations across larger circuits.
+This resilience allows developers to focus on scaling optical components through integrated photonic chips that use established semiconductor processes.
+Photonic systems attract commercial attention due to alignment with high-volume manufacturing infrastructure. Telecom-grade components and silicon photonics offer a path toward large and scalable architectures.
+The Phonotinc Quantum Computing market is projected to grow from USD 1.1 billion in 2030 to USD 7 billion in 2036 in global revenue.
+US-based startup PsiQuantum develops photonic quantum processors built on silicon photonics technology. The company designs optical qubits that use single photons passing through waveguides and interferometers on semiconductor-fabricated chips.
+PsiQuantum strengthened its position with a USD 1 billion funding round in September 2025, which supports the development of large-scale photonic quantum systems.
+The company also collaborates with Lockheed Martin on quantum technologies for advanced aerospace and defense applications. These developments signal strong commercial confidence in photonic architectures that leverage existing semiconductor manufacturing infrastructure.
+Neutral-atom systems use individual atoms held in optical tweezers to create flexible qubit arrays. Lasers trap and arrange these atoms with high spatial precision, which enables configurable layouts suited for various quantum operations.
+This technology uses atoms that can enter highly excited energy states that allow for stronger interactions between them. These interactions enable fast two-qubit operations and support larger multi-qubit circuits. This behavior helps neutral-atom devices handle complex operations that require coordinated qubit activity.
+This architecture supports strong connectivity across large qubit grids and offers natural scalability advantages. Researchers at Caltech have achieved 99.98% accuracy in single-qubit operations by trapping 6,100 caesium atoms as qubits in an array.
+Neutral-atom platforms also gain commercial traction because they can be easily scaled. Neural atoms are more easily controlled and arranged in large arrays compared to qubits in standard quantum chips. This makes the perspective of quantum computers with thousands or millions of qubits significantly more feasible.
+US-based startup QuEra develops neutral-atom quantum systems that use scalable optical tweezer arrays to arrange and control large numbers of atomic qubits.
+The company builds its hardware on Rydberg-mediated interactions, which support fast and programmable multi-qubit operations across flexible grid configurations.
+Its Aquila system, offered through Amazon Braket quantum cloud computing service, provides public access to programmable neutral-atom circuits and supports workloads in optimization and quantum simulation.
+Aquila demonstrates strong coherence and large system size, which allows researchers to explore complex algorithms across sizable qubit arrays.
+Topological qubits store quantum information in non-local states that resist small disturbances. These states protect information from noise that affects many other qubit types. Researchers consider this approach a promising route to stable quantum systems that require less active error correction.
+Topological qubits rely on exotic quantum states predicted in specific materials. These states emerge under tightly controlled conditions and support operations with strong resistance to environmental faults. This built-in protection reduces error rates and supports long-term goals for fault-tolerant computation.
+Topological approaches remain in early stages, but ongoing research shows measurable progress in creating and controlling these states. Advances in material science and low-temperature device engineering improve the reliability of experimental systems.
+These developments move topological qubits closer to proof-of-concept demonstrations that support future commercial systems.
+US-based corporation Microsoft advances topological qubit research through its Azure Quantum program. The company develops devices based on Majorana zero modes, which arise in engineered materials under precise conditions.
+Microsoft’s Majorana 1 chip aims to create qubits with built-in resistance to noise through stable non-local quantum states. This design supports long-term goals for fault-tolerant architectures by reducing the number of physical qubits needed for reliable computation.
+The company reports progress in detecting and controlling Majorana modes, which marks a significant step toward practical topological qubit hardware.
+Quantum-AI convergence describes the use of quantum algorithms to support machine-learning tasks across optimisation, sampling, and feature-extraction workflows. Researchers explore how quantum circuits can process complex data structures that challenge classical systems.
+This convergence attracts growing attention because AI requires increasing computational power for large-scale model training.
+When integrated with AI, quantum computers can manipulate an extremely large number of simultaneous states, with a 1000-qubit system projected to handle 2^1000 states at once (a 302-digit number).
+AI’s pattern recognition augments quantum error correction, identifying and predicting qubit noise and optimizing QEC codes, to address the main bottlenecks in scaling quantum systems
+Commercial efforts focus on hybrid workflows that combine classical accelerators with quantum circuits accessed through cloud platforms. These workflows support early experiments in optimisation, fraud detection, and materials discovery.
+This drives Quantum Machine Learning (QML) to contribute around USD 150 billion to the projected market value of quantum computing (USD 250 billion).
+UK-based startup ORCA Computing develops photonic quantum systems and hybrid platforms that connect quantum processors with classical AI infrastructure. The company focuses on telecom-compatible photonic hardware that fits into existing data-centre environments.
+ORCA recently partnered with the Poznan Supercomputing and Networking Center and NVIDIA to deploy a hybrid quantum-classical platform using NVIDIA’s CUDA-Q units.
+This setup links ORCA’s photonic quantum processors with high-performance GPUs to support AI-driven workloads and quantum algorithm research.
+The project illustrates how hybrid architectures can enable practical Quantum-AI convergence within established high-performance computing settings.
+Quantum networking connects quantum devices through shared entanglement to enable distributed computation and secure communication. This architecture allows remote processors to exchange quantum information with strong protection against eavesdropping.
+Current prototypes demonstrate entanglement distribution across short and medium distances using optical fibres. These systems show stable photon transmission and reliable entanglement generation under controlled conditions.
+Progress in quantum repeaters and photonic interfaces improves network reach and supports early demonstrations of multi-node computation.
+Industry interest grows because quantum networking enables modular architectures that bypass monolithic hardware limits. Distributed systems allow multiple smaller processors to collaborate on larger algorithms, which reduces single-chip scaling pressure.
+For instance, IBM and Cisco are collaborating to build networks connecting large quantum computers, potentially enabling computations over hundreds of thousands of qubits.
+Commercial development focuses on fibre-based quantum links, entanglement distribution platforms, and cloud-accessible testbeds. Early deployments support research in secure communication, distributed sensing, and cross-device circuit execution.
+These developments highlight the long-term potential of networked quantum systems for both technical scalability and secure information exchange.
+Japanese corporation Toshiba develops quantum networking systems that focus on secure long-distance communication. The company builds quantum key distribution (QKD) technology that uses single photons to protect information transmitted through optical fibres.
+Toshiba demonstrates stable photon transmission across metropolitan networks and supports integration with existing telecom infrastructure.
+The teams report progress in high-rate key generation and extended fibre reach. These capabilities position Toshiba as a key contributor to quantum networking solutions that support secure and distributed quantum operations.
+Post-quantum cryptography (PQC) develops classical algorithms designed to resist attacks from quantum computers. These algorithms replace vulnerable public-key systems that rely on factoring or discrete logarithms. Security agencies identify post-quantum schemes as essential for protecting long-term digital information.
+Governments and enterprises adopt post-quantum protocols to counter harvest-now, decrypt-later threats. These threats arise when adversaries collect encrypted data today and aim to decrypt it once large quantum systems become available. Standardised algorithms provide a structured path to secure communication even in a quantum-capable future.
+Industry adoption expands due to the formalisation of NIST-approved algorithms across encryption, signatures, and key exchange. Cloud providers and hardware vendors integrate these schemes into products that support hybrid classical-post-quantum security.
+Analysts view widespread migration as an essential step for long-term resilience across finance, healthcare, and critical infrastructure sectors. Economic relevance grows as organisations face regulatory pressure to prepare for quantum threats.
+The value of the PQC products market is established at USD 1.9 billion in 2025 and is projected to reach up to USD 12.4 billion by 2035, growing at a CAGR of 20.6%.
+US-based company Cloudflare deploys post-quantum cryptographic algorithms across its global network. The company integrates NIST-approved schemes into its TLS infrastructure to protect HTTP traffic against future quantum attacks.
+Cloudflare tests hybrid key exchange methods that combine classical and post-quantum components for immediate compatibility and enhanced security.
+These deployments help organisations adopt quantum-safe protocols at scale. Cloudflare’s work positions it as a major contributor to practical and widely accessible post-quantum security.
+Hybrid quantum-classical systems combine quantum processors with classical high-performance computing to improve task performance. This model assigns quantum circuits to specialised subproblems while classical processors handle broader workflow orchestration.
+Researchers highlight hybrid systems as the most practical near-term path for enterprise adoption due to modest hardware requirements. Hybrid workflows support optimisation, simulation, and sampling tasks that benefit from quantum subroutines. These workflows integrate quantum resources through cloud platforms and established programming interfaces.
+Early experiments show improved performance for selected workloads when quantum circuits complement classical accelerators. Hybrid systems carry commercial value because they extend classical infrastructure rather than replace it. This expands access to quantum capabilities while maintaining predictable operational processes.
+Current estimate for hybrid quantum-classical platforms projects growth to about USD 7.6 billion by 2033 at roughly 28% CAGR.
+US-based corporation NVIDIA develops hybrid quantum-classical platforms through its CUDA-Q framework. The company enables developers to integrate quantum circuits with GPU-accelerated classical computation for optimisation and simulation workloads.
+CUDA-Q supports execution across diverse quantum hardware while coordinating classical processing through high-performance GPUs. This integration offers a structured path to experiment with hybrid algorithms using established HPC resources.
+Breakthroughs across qubit architectures, error correction, photonics, and hybrid compute systems show how rapidly quantum technology moves toward practical value.
+The companies in this report demonstrate how focused research, maturing hardware, and growing enterprise pilots turn quantum science into viable commercial pathways. These developments mark a decisive shift as quantum computing transitions from experimental labs to applied industry use.
+With access to over 9 million emerging companies and 20K+ technologies & trends globally, our AI and Big Data-powered Discovery Platform equips you with the actionable insights you need to stay ahead of the curve in your market.
+Leverage this powerful tool to spot the next big thing before it goes mainstream. Stay relevant, resilient, and ready for what is next.
+
+
+Source: https://www.sciencedaily.com/news/computers_math/quantum_computers/
+Title: Quantum Computers News -- ScienceDaily
+Stay informed with ScienceDaily's free email newsletter, updated daily and weekly. Or view our many newsfeeds in your RSS reader:
+Keep up to date with the latest news from ScienceDaily via social networks:
+Tell us what you think of ScienceDaily -- we welcome both positive and negative comments. Have any problems using the site? Questions?
+
+

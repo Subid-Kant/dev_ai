@@ -238,3 +238,206 @@ have lower downtime, and provide better performance for end users.
 Except as otherwise noted, the content of this page is licensed under the Creative Commons Attribution 4.0 License, and code samples are licensed under the Apache 2.0 License. For details, see the Google Developers Site Policies. Java is a registered trademark of Oracle and/or its affiliates.
 
 
+Source: https://www.icloud.com/
+Title: iCloud
+Log in to iCloud to access your photos, mail, notes, documents and more. Sign in with your Apple Account or create a new account to start using Apple services.
+
+
+Source: https://claude.ai/
+Title: Sign in - Claude
+Google Cloud’s Vertex AI Microsoft Foundry Regional compliance Console login Resources Blog Claude partner network Community Connectors Courses Customer stories Engineering at Anthropic Events …
+
+
+Source: https://cloud.google.com/
+Title: AI and Cloud Computing Services | Google Cloud
+Build with AI. Deploy and scale apps fast. Analyze and secure your data. Start now with $300 in free credit.
+Try Gemini Enterprise app—the front door to AI for every employee
+Introducing Google AI Threat Defense to help you outpace the adversary
+Everything Google Cloud customers need to know coming out of Google I/O
+What’s next in Google AI infrastructure: Scaling for the agentic era
+One platform for agent development, orchestration, and governance
+What’s new in the agentic Data Cloud: Powering the system of action
+Introducing Google AI Threat Defense to help you outpace the adversary
+Everything Google Cloud customers need to know coming out of Google I/O
+What’s next in Google AI infrastructure: Scaling for the agentic era
+One platform for agent development, orchestration, and governance
+What’s new in the agentic Data Cloud: Powering the system of action
+Introducing Google AI Threat Defense to help you outpace the adversary
+Everything Google Cloud customers need to know coming out of Google I/O
+What’s next in Google AI infrastructure: Scaling for the agentic era
+One platform for agent development, orchestration, and governance
+What’s new in the agentic Data Cloud: Powering the system of action
+Build agents with Agent Platform’s fully-managed, remote MCP server
+Now available: Gemini Omni Flash and Nano Banana 2 Lite
+Introducing Gemini 3.5: frontier intelligence with action
+Business leader's guide to agentic work with Gemini Enterprise
+Join AI Live + Labs in a city near you. Learn how to build, secure, and scale enterprise AI agents.
+Roadmap for migrating enterprise workloads to an AI-ready cloud
+New users get a $300 welcome credit to try eligible Google Cloud products, plus all users get free usage of 20+ free tier products
+Join Gemini Enterprise Agent Ready (GEAR) and get 35 monthly credits to learn how to build enterprise-grade agents
+Early stage funded startups can get up to $350,000 in Cloud credits through the Google for Startups Cloud Program
+Build agents with Agent Platform’s fully-managed, remote MCP server
+Now available: Gemini Omni Flash and Nano Banana 2 Lite
+Introducing Gemini 3.5: frontier intelligence with action
+Business leader's guide to agentic work with Gemini Enterprise
+Join AI Live + Labs in a city near you. Learn how to build, secure, and scale enterprise AI agents.
+Roadmap for migrating enterprise workloads to an AI-ready cloud
+New users get a $300 welcome credit to try eligible Google Cloud products, plus all users get free usage of 20+ free tier products
+Join Gemini Enterprise Agent Ready (GEAR) and get 35 monthly credits to learn how to build enterprise-grade agents
+Early stage funded startups can get up to $350,000 in Cloud credits through the Google for Startups Cloud Program
+Build with the cloud platform designed for developers and AI
+Try Google Cloud with free usage of over 20 products, plus new customers get $300 in free credits on signup.
+Try Google Cloud with free usage of over 20 products, plus new customers get $300 in free credits on signup.
+Build AI agents and generative AI applications with our fully managed AI platform, over 200 foundation models, and ecosystem of AI partners
+Improve customer service with virtual agents and conversational AI products like Speech-to-Text
+Get AI-powered code generation, recommendations, and completion from Gemini Code Assist
+Explore our ecosystem of Gemini products for businesses and developers—including Gemini Enterprise app—to help you get the most out of Google AI
+Create and run customizable virtual machines with Compute Engine, including custom Cloud TPUs, Cloud GPUs and Google Axion Processors (Arm-based CPUs).
+Automatically deploy, scale, and manage containers with Google Kubernetes Engine or Cloud Run
+Migrate your apps at your own pace by moving directly to virtual machines or automatically modernizing to containers—without rewriting code
+Store any type of data, any amount of data, and retrieve it as often as you’d like with object storage
+Transfer data with online and offline transfer solutions, including Storage Transfer Service and Transfer Appliance
+Persistent Disk block storage is fully integrated with Google Cloud products like Compute Engine and GKE
+Reduce MySQL, PostgreSQL, and SQL Server costs with Cloud SQL, a fully-managed database service
+Scale your enterprise workloads and build generative AI apps with AlloyDB for PostgreSQL
+Get high performance, a 99.999% availability SLA, and virtually unlimited scale with Spanner
+Run analytics at scale with 26%–34% lower three-year TCO on BigQuery compared to cloud data warehouse alternatives
+Ingest, process, and analyze event streams in real time to make data more useful
+Reveal the true power of your data and bring clarity to every situation with Looker and Google Cloud
+Help protect your applications and websites against denial of service and web attacks with Cloud Armor
+Quickly and securely scale web and video content delivery with Cloud CDN
+Explore hybrid connectivity options, including VPN, peering, and enterprise support
+Write, debug, and run cloud-native applications, locally or in the cloud—quickly and easily with Cloud Code
+With Cloud Build, continuously build, test, and deploy software across all languages and in multiple environments
+Deploy pre-built solution templates—with an active Google Cloud account—including dynamic websites, load balanced VMs, and three tier web apps.
+Understand threat actors and potential attack vectors with Google Threat Intelligence and Mandiant Consulting Services
+Detect, investigate, and respond to threats faster with Google Security Operations
+Protect your workloads and meet digital sovereignty requirements with our full suite of security products and services
+Build and scale generative AI apps and agents with Gemini Enterprise Agent Platform
+Agent Platform is our fully-managed AI development platform to build and manage AI applications and agents, with access to Agent Studio and 200+ foundation models.
+Agent Platform is our fully-managed AI development platform to build and manage AI applications and agents, with access to Agent Studio and 200+ foundation models.
+The Home Depot turns fragmented customer service into seamless journeys with Google Cloud
+Volkswagen uses Gemini to power its virtual assistant in the myVW app, surfacing helpful information from the owner’s manual
+Estée Lauder uses Agent Platform and Gemini to simplify internal processes, including language translations and writing ad copy
+PODS and their agency partner, Tombras, created a “smart billboard” using a custom model trained on their data in Agent Platform
+MLB compares live plays with its Statcast dataset in real time and shares fresh player insights using Agent Platform and BigQuery
+Solve your business problems with our industry solutions
+From improving retail product discovery to detecting bank fraud, our industry solutions tackle your biggest challenges.
+Best Buy uses Google Cloud generative AI to power its virtual assistants, freeing up their customer care agents to troubleshoot product issues, change order delivery and schedules, and manage subscriptions. Discover what you can do with our retail solutions.
+
+
+Source: https://cloud.google.com/storage
+Title: Cloud Storage
+85% of enterprise data is unstructured. Don't let it become dark data. Watch the fireside chat to learn how smart storage instantly becomes your AI foundation.
+Cloud Storage is a managed service for storing unstructured data. Store any amount of data and retrieve it as often as you like.
+New customers get $300 in free credits. All customers get 5 GiB of standard storage, 55,000 operations, 100 GiB of data transfer, and more for free each month.
+Looking for something else? Check out personal, team, and block storage options.﻿
+Automatically transition to lower-cost storage classes
+Standard, nearline, coldline, and archive storage options
+Fast, low-cost, highly durable archive and backup storage
+Simplify management of your Cloud Storage at scale with Storage Intelligence. Storage Intelligence eliminates manual storage management practices. This unified management product offers multiple powerful features to analyze large storage estates and easily take actions. Analyze object and bucket metadata to derive cost and security insights about your data through Insights Datasets. Use Gemini Cloud Assist to generate insights with natural language conversations. Perform actions at-scale on millions of objects with zero or no code with Batch Operations and minimize application downtime by moving entire buckets with just two commands, while preserving bucket name with Bucket Relocation.
+Enhance the performance of demanding applications with Rapid Cache , a fully managed, intelligent SSD-backed read cache for Region, Dual-region, or Multi-region buckets. Combined with Multi-region buckets, Rapid Cache brings your data closer to compute resources in any zone where your TPUs/GPUs are available, giving you low latency and high throughput of up to 20 Tbps for AI/ML and data analytics workloads. Benefit from minimizing your network egress costs when accessing data across a continent without the need for provisioning or managing a separate storage tier.
+Cloud Identity and Access Management (IAM) allows you to control who has access to your buckets and objects.
+Once your data is stored in Cloud Storage, easily plug into Google Cloud’s powerful tools to create your data warehouse with BigQuery, run open source analytics with Managed Service for Apache Spark, or build and deploy machine learning (ML) models with Gemini Enterprise Agent Platform. The Data Agent Kit streamlines your workflows by bundling secure Model Context Protocol (MCP) tools, native IDE plugins, and pre-codified data engineering, data science, and data app developer skills into a single, open-source package.
+With features like Object Lifecycle Management (OLM) and Autoclass you can easily optimize costs with object placement across storage classes. You can enable, at the bucket level, policy-based automatic object movement to colder storage classes based on the last access time. There are no early deletion or retrieval fees, nor class transition charges for object access in colder storage classes.
+Industry leading dual-region buckets support an expansive number of regions. A single, continental-scale bucket offers nine regions across three continents, providing a Recovery Time Objective (RTO) of zero. In the event of an outage, applications seamlessly access the data in the alternate region. There is no failover and failback process. For organizations requiring ultra availability, turbo replication with dual-region buckets offers a 15 minute Recovery Point Objective (RPO) SLA.
+Cloud Storage is a common choice for storing training data, models, and checkpoints for machine learning projects in Cloud Storage buckets. With Cloud Storage FUSE, you can take advantage of the scale, affordability, throughput, and simplicity that Cloud Storage provides, while maintaining compatibility with applications that use or require filesystem semantics. Cloud Storage FUSE also now offers caching, which provides up to 2.2x faster time to train and 2.9x higher training throughput, compared to native ML framework dataloaders.
+Storage Transfer Service offers a highly performant, online pathway to Cloud Storage—both with the scalability and speed you need to simplify the data transfer process. For offline data transfer our Transfer Appliance is a shippable storage server that sits in your datacenter and then ships to an ingest location where the data is uploaded to Cloud Storage.
+Cloud Storage offers secure-by-design features to protect your data and advanced controls and capabilities to keep your data private and secure against leaks or compromises. Security features include access control policies, data encryption, retention policies, retention policy locks, and signed URLs.
+Define conditions that trigger data deletion or transition to a cheaper storage class.
+Continue to store old copies of objects when they are deleted or overwritten.
+Soft delete offers improved protection against accidental and malicious data deletion by providing you with a way to retain and restore recently deleted data.
+Define minimum retention periods that objects must be stored for before they’re deletable.
+Encrypt object data with encryption keys stored by the Cloud Key Management Service and managed by you.
+Encrypt object data with encryption keys created and managed by you.
+Uniformly control access to your Cloud Storage resources by disabling object ACLs.
+Require accessors of your data to include a project ID to bill for network charges, operation charges, and retrieval fees.
+Bucket Lock allows you to configure a data retention policy for a Cloud Storage bucket that governs how long objects in the bucket must be retained.
+Send notifications to Pub/Sub when objects are created, updated, or deleted.
+Maintain admin activity logs and data access logs for your Cloud Storage resources.
+Storage for data that is frequently accessed ("hot" data) and/or stored for only brief periods of time.
+"Hot" data, including websites, streaming videos, and mobile apps.
+Low cost, highly durable storage service for storing infrequently accessed data.
+A very low cost, highly durable storage service for storing infrequently accessed data.
+The lowest cost, highly durable storage service for data archiving, online backup, and disaster recovery.
+Storage for data that is frequently accessed ("hot" data) and/or stored for only brief periods of time.
+"Hot" data, including websites, streaming videos, and mobile apps.
+Low cost, highly durable storage service for storing infrequently accessed data.
+A very low cost, highly durable storage service for storing infrequently accessed data.
+The lowest cost, highly durable storage service for data archiving, online backup, and disaster recovery.
+To use Cloud Storage, you’ll first create a bucket, a basic container that holds your data in Cloud Storage. You’ll then upload objects into that bucket—where you can download, share, and manage objects.
+Use Cloud Storage for backup, archives, and recovery
+Cloud Storage's nearline storage provides fast, low-cost, highly durable storage for data accessed less than once a month, reducing the cost of backups and archives while still retaining immediate access. Backup data in Cloud Storage can be used for more than just recovery because all storage classes have ms latency and are accessed through a single API.
+Use Cloud Storage for backup, archives, and recovery
+Cloud Storage's nearline storage provides fast, low-cost, highly durable storage for data accessed less than once a month, reducing the cost of backups and archives while still retaining immediate access. Backup data in Cloud Storage can be used for more than just recovery because all storage classes have ms latency and are accessed through a single API.
+Stream audio or video directly to apps or websites with Cloud Storage’s geo-redundant capabilities. Geo-redundant storage with the highest level of availability and performance is ideal for low-latency, high-QPS content serving to users distributed across geographic regions.
+Learn how to set up a Media CDN, for planet-scale media delivery
+Google Cloud Skills Boost: Storing Image and Video Files in Cloud Storage - Python
+Learn how Vimeo uses multi-regional storage for fast, resumable uploads
+Stream audio or video directly to apps or websites with Cloud Storage’s geo-redundant capabilities. Geo-redundant storage with the highest level of availability and performance is ideal for low-latency, high-QPS content serving to users distributed across geographic regions.
+Learn how to set up a Media CDN, for planet-scale media delivery
+Google Cloud Skills Boost: Storing Image and Video Files in Cloud Storage - Python
+Learn how Vimeo uses multi-regional storage for fast, resumable uploads
+Develop and deploy data pipelines and storage to analyze large amounts of data. Cloud Storage offers high availability and performance while being strongly consistent, giving you confidence and accuracy in analytics workloads.
+Run Apache Hadoop or Apache Spark on data with data connector
+Google Cloud Skills Boost: Modernizing Data Lakes and Data Warehouses with Google Cloud
+Google Cloud Skills Boost: Google Cloud Big Data and Machine Learning Fundamentals
+Develop and deploy data pipelines and storage to analyze large amounts of data. Cloud Storage offers high availability and performance while being strongly consistent, giving you confidence and accuracy in analytics workloads.
+Run Apache Hadoop or Apache Spark on data with data connector
+Google Cloud Skills Boost: Modernizing Data Lakes and Data Warehouses with Google Cloud
+Google Cloud Skills Boost: Google Cloud Big Data and Machine Learning Fundamentals
+Deploy an AI summarization solution in the Google Cloud console
+Launch a Google-recommended, preconfigured solution that uses generative AI to quickly extract text and summarize large documents stored in Cloud Storage.
+Start using Gemini Enterprise Agent Platform with your stored data
+Nuro powers its autonomous vehicles' rapid decision-making with Cloud Storage
+Deploy an AI summarization solution in the Google Cloud console
+Launch a Google-recommended, preconfigured solution that uses generative AI to quickly extract text and summarize large documents stored in Cloud Storage.
+Start using Gemini Enterprise Agent Platform with your stored data
+Nuro powers its autonomous vehicles' rapid decision-making with Cloud Storage
+Build, host, and run dynamic websites in the Google Cloud console
+Launch a sample drop-ship retail product website that’s publicly accessible and customizable, leveraging Python and JavaScript.
+Tutorial: Configure a Cloud Storage bucket to host a static website for a domain you own
+Video: 3 ways to run scalable web apps on Google Cloud
+Build, host, and run dynamic websites in the Google Cloud console
+Launch a sample drop-ship retail product website that’s publicly accessible and customizable, leveraging Python and JavaScript.
+Tutorial: Configure a Cloud Storage bucket to host a static website for a domain you own
+Video: 3 ways to run scalable web apps on Google Cloud
+100 GiB of Data transfer from North America to each Google Cloud Data transfer destination (Australia and China excluded).
+Best for frequently accessed ("hot" data), including websites, streaming videos, and mobile apps.
+For reading data stored in Nearline, Coldline and Archive storage classes.
+For data written to dual-regions and multi-regions.
+The amount of data read from or moved between your buckets.
+When data transfer is to other Cloud Storage buckets or to Google Cloud services.
+When data transfer uses certain Google Cloud network products.
+Check your network product for pricing information.
+When data transfer is out of Google Cloud or between continents.
+An optional feature to accelerate read performance for your buckets.
+Learn more about Cloud Storage pricing. View all pricing details.
+Pricing is largely based on data storage, data processing, network usage and optional caching.
+100 GiB of Data transfer from North America to each Google Cloud Data transfer destination (Australia and China excluded).
+Best for frequently accessed ("hot" data), including websites, streaming videos, and mobile apps.
+For reading data stored in Nearline, Coldline and Archive storage classes.
+For data written to dual-regions and multi-regions.
+The amount of data read from or moved between your buckets.
+When data transfer is to other Cloud Storage buckets or to Google Cloud services.
+When data transfer uses certain Google Cloud network products.
+Check your network product for pricing information.
+When data transfer is out of Google Cloud or between continents.
+An optional feature to accelerate read performance for your buckets.
+Learn more about Cloud Storage pricing. View all pricing details.
+Vimeo is delivering more high-quality videos than ever while reducing costs.
+Vimeo replaced its servers for accepting video uploads with Cloud Storage, fronted by the Fastly edge cloud to help ensure regional routing and low-latency, high-throughput connections for Vimeo’s publishers. Multi-regional Cloud Storage offers fast, resumable upload capability that helps make for better user experience.
+Mixpanel maintains excellent performance and reliability while keeping its engineers focused on innovation
+Robust building blocks that exist on top of core data storage, computing, and network services help take away much of the backend hassle on the way to new product creation
+RedSalud meets telemedicine challenges by implementing SAP for Google Cloud
+Used by top financial institutions KeyBank, PayPal, and Commerzbank.
+Powering top autonomous vehicle companies Cruise and Nuro.
+No. For personal storage options, including photos, device backup, VPN, and more, visit Google One.
+Cloud Storage is a service for storing objects in Google Cloud. An object is an immutable piece of data consisting of a file of any format. You store objects in containers called buckets. All buckets are associated with a project, and you can group your projects under an organization. Learn more about other Google Cloud storage products, including block storage, data transfer, and file storage.
+
+
+Source: https://onedrive.live.com/
+Title: Personal File Sharing & Cloud Storage | Microsoft OneDrive
+Discover OneDrive for secure and convenient file and document sharing. Get personal cloud storage for seamless file sharing with your family and friends.
+
+
