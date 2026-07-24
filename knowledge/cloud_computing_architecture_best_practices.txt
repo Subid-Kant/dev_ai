@@ -1,0 +1,240 @@
+Source: https://www.netcomlearning.com/blog/cloud-architecture
+Title: Cloud Architecture Explained (2026): Best Practices & Examples
+Apr 14, 2026 · Cloud architecture is the design framework that defines how cloud computing components such as servers, …
+
+
+Source: https://distantjob.com/blog/cloud-computing-best-practices/
+Title: Cloud Computing Best Practices 2026: 11 Steps to a Scalable Arch…
+Building scalable cloud architecture in 2026 means designing for growth from day one (not retrofitting it later), automating everything that can be automated, and treating AI as infrastructure rather than an add-on. AI-driven predictive scaling, anomaly detection, and now AI agent governance are baseline expectations, not differentiators.
+The landscape of cloud computing has evolved with cloud-native design, AI-driven optimizations, and ever-growing user demands. Now it’s time to adopt cloud computing best practices for 2025. It will ensure your systems can grow with performance and reliability.
+Scalability in cloud computing means the technological infrastructure (servers, database, etc.) can scale up or down its resources dynamically to meet changing workload demands. Both high reliability and optimizing performance lead to efficient scalability.
+Below, we explore the eleven best practices for cloud scalability in 2025. Design principles, cutting-edge innovations… It’s all here: emerging trends for cloud scalability and efficiency.
+Bake scalability into your architecture from day one; retrofitting it later is brutal. At a high level, that usually means starting with a modular monolith and crafting microservices only as needed.
+This shouldn’t be a surprise; Martin Fowler, a British software engineer, co-author of the Agile Manifesto, and international public speaker on software development, says:
+That doesn’t mean you skip planning, it means the actual breaking-up into microservices should happen only once you genuinely need it. Plan the seams loosely from day one; when your modular monolith can’t handle the load anymore, you adjust and go.
+Break applications into independent services that scale horizontally on their own. Decouple them through APIs or messaging queues, so one high-demand area (user uploads, analytics) can grow without bottlenecking everything else. Favor horizontal scaling (more servers) over vertical (one bigger machine), you’re building to grow, not patching to survive.
+Pick a cloud platform with scalability in mind, AWS, Azure, and Google Cloud all offer global infrastructure and managed services that simplify scaling, particularly container orchestration (Kubernetes) and serverless functions. Plan your data storage with scalable solutions, cloud databases and object storage, from the start, and you’ll avoid major overhauls later.
+Auto-scaling ensures you always have “just the right amount” of computing resources running. It works like a smart thermostat for your cloud. As demand increases, an auto-scaler automatically launches new server instances; when demand drops, it safely terminates the excess.
+This dynamic scaling lets your apps handle traffic spikes while cutting costs during lulls. For example, if your web service faces a sudden surge of users, auto-scaling can spin up additional instances in real time: performance stays smooth. Has the surge finally ceased? The auto-scaling feature will scale back down to normal. It avoids paying for idle capacity. No performance bottlenecks: only efficient resource usage (and cheaper cloud bills)!
+Load balancing works similarly, distributing incoming traffic across your servers. A load balancer acts as the traffic cop, ensuring no single server gets overwhelmed.
+The load balancer feature prevents bottlenecks and single points of failure by spreading requests, allowing horizontal scaling to shine. Modern load balancers also perform health checks, boosting your application’s reliability. It automatically removes any unhealthy instance from rotation until it recovers.
+Together, auto-scaling and load balancing form a powerful duo for resilient, efficient cloud systems. Auto-scaling adds/removes capacity as needed, and load balancing keeps the workload evenly distributed. Your application will handle heavy loads without manual intervention, maintaining performance and uptime even under unpredictable demand.
+Let the cloud work for you – use automation to match resources to workload in real time.
+Using multiple cloud providers, often alongside on-premises or private infrastructure in a hybrid setup, increases flexibility and resilience. Why put all your eggs in one basket?
+Hybrid cloud adoption rose to 73% of organizations in 2026, up 3 points from last year, and multi-cloud adoption climbed too, though Flexera’s research found most companies end up multi-cloud by accident (siloed applications, mergers) rather than by deliberate strategy.
+Going multi-cloud lets you cherry-pick the best service per workload, Google Cloud’s AI tools, AWS’s analytics depth, Azure’s AD integration, optimizing cost and performance for each piece independently. It also boosts redundancy: if one provider has an outage, your application can run on another, mitigating downtime instead of going dark entirely.
+For a full breakdown of when to choose hybrid vs. multi-cloud and the tradeoffs of each, see our dedicated comparison. The short version here: multi-cloud adds real complexity, monitoring and securing multiple environments takes solid planning, but the payoff is genuine flexibility and resilience to disruption.
+A container (think Docker) packages your microservice with everything it needs to run, like a complete toy set in a box, no missing pieces wherever you open it. The microservice behaves identically whether it’s running on your laptop or a production server, which makes deploying, rolling back, and scaling it far easier.
+Containers are lightweight and portable, so scaling out a microservice to meet demand is simple. Kubernetes manages the fleet of containers, keeping your app consistent everywhere it runs.
+If a flood of users hits one specific feature, say the product page on an e-commerce site, you scale just that microservice, not the entire application. Updates to individual services get faster and safer too.
+Managing many small services does get complicated, which is exactly where AI-assisted tooling has become genuinely useful rather than a buzzword. Current research on AI techniques across the microservices lifecycle points to self-adaptive anomaly detection and automated API security hardening as real, working use cases, not just predictions.
+Scalability isn’t only about handling growth, it’s about surviving outages and recovering from disasters without major downtime. Spread critical components across multiple regions and availability zones.
+If all your servers live in one data center or one cloud region, a single failure (power outage, network issue, natural disaster) could take down your whole application for hours. According to the ITIC 2024 Hourly Cost of Downtime Report, outages might cost more than $300,000 each hour, while 41% of companies might lose between $1 million and $5 million per hour. Even brief stops can lead to bigger losses. Plus, we recently had a global IT outage in July 2024. Airlines, airports, banks, gas stations, government institutions, hotels, hospitals, manufacturing, stock markets, retail stores… The outage affected the whole economy, and the damage is estimated at around US$10 billion.
+To avoid outages as much as possible, deploy your application in at least two distinct geographic regions. In an active-active model, both (or all) regions serve live traffic – not only does this provide resilience against outages, but it can also improve performance by serving users from the region closest to them. For example, a global app might run in data centers on the East and West coasts; if one goes down, the other seamlessly handles all users, and in normal operation, each handles nearby users with lower latency.
+Alternatively, an active-passive (failover) setup keeps a secondary region on standby if the primary fails. Whichever pattern you choose, the goal is to eliminate any single point of failure.
+Use global load balancers or DNS-based routing to direct users to the healthiest region automatically. Ensure your data is replicated across regions (consider cloud databases with multi-region replication or use data lakes that sync periodically). In that way, users see up-to-date information no matter which site serves them. Distribute critical services across the cloud provider’s availability zones (isolated data centers in one region) – it guards your app against local failures.
+Public cloud environments make multi-region deployments easier than ever by offering on-demand resources. Use that flexibility to optimize latency and reliability. For example, serve European customers from an EU region and American customers from a US region to minimize latency, and both regions back each other up for disaster recovery.
+Not an easy task for sure: think about session management across regions, or higher costs of running duplicate infrastructure. The trade-off is resilience. Your app will be unlikely to be taken down. As long as your cloud engineers simulate disaster recovery, a multi-region strategy will keep your services online through adverse events and bring your app physically closer to users for speed.
+You can’t fix what you can’t see. A system without monitoring is a car with no speedometer, fuel gauge, or warning lights, you’ll find out something’s wrong when you crash.
+Embrace observability: centralized logging across application and system logs, metrics collection (CPU, memory, request rates), and distributed tracing through microservices. Set up dashboards and real-time alerts, get notified if API response time crosses a threshold or CPU usage stays above 80% for five minutes.
+A solid observability stack typically combines Prometheus/Grafana for metrics, the ELK stack or a cloud-native logging service, and OpenTelemetry for tracing, giving you full visibility across infrastructure, applications, and microservices together.
+AI genuinely helps here now: anomaly detection can flag a small, otherwise-easy-to-miss uptick in error rate before it becomes a major incident, and can scan through logs at a volume no human reasonably can to surface subtle signs of trouble. Good monitoring means catching problems early instead of waiting for a crash, you can’t scale what you can’t measure.
+Infrastructure as Code means writing your infrastructure setup down as code, Terraform, AWS CloudFormation, Azure Bicep, instead of clicking through a console and hoping you remembered every setting. It brings software development discipline to infrastructure: version control, code review, reliable rollouts.
+This approach brings software development rigor to infrastructure: you can version control your environment configurations, review changes, and roll out updates reliably. IaC ensures that whenever you need to deploy new resources – be it for scaling out, spinning up a new environment, or recovering from an outage – the process is automated and consistent every time.
+Say goodbye to “works on one server but not the other” caused by manual configuration. By automating infrastructure provisioning with IaC tools, teams can launch complex environments in minutes, consistently across developers, testers, and producers.
+Now, imagine you’ve got the blueprints of your infrastructure (IaC), but you also want to automate the building process itself. That’s where CI/CD pipelines come in. Think of them as the automated assembly lines for your software and its infrastructure.
+Embrace DevOps practices. You should automate your development and deployment, not just app builds and releases. You can also automate infrastructure updates and scaling actions.
+IaC and CI/CD automate infrastructure provisioning and deployment. These pipelines use tools like GitHub Actions, reduce errors, and accelerate changes. Scripts ensure consistent configurations even during surges
+In practice, this might mean using Terraform scripts to define an entire application stack and ArgoCD or Jenkins to deploy it in a blue-green or canary style. The result is consistent, repeatable, and scalable.
+Mastering these saves time and ensures infrastructure growth matches demand.
+AI has become standard infrastructure tooling for cloud architects, not a differentiator anymore.
+Predictive autoscaling is the clearest case: instead of reacting to current metrics, models analyze usage patterns and forecast demand ahead of a known spike, a sale event, a daily peak, so users never feel the lag. AI-driven load balancing routes requests based on predictive models of which server or region offers the lowest latency right now.
+Cloud providers have built this into their own services too, databases that auto-tune queries, storage systems that pre-cache hot data, once manual guesswork, now handled by machine learning reading telemetry continuously.
+FinOps has absorbed AI-powered cost management as a core practice: identifying usage patterns, recommending rightsizing, suggesting smaller instances overnight or moving workloads to spot instances. Some companies have cut cloud costs dramatically this way, real efficiency gains, not hypothetical ones, once you let the algorithms keep finding inefficiencies continuously instead of auditing once a quarter.
+What’s new in 2026: as companies run more AI agents in production, not just AI models, a new infrastructure layer has emerged to manage them: AI agent meshes. These mediate communication between agents, enforce governance (blocking an agent from sharing data with another it shouldn’t), filter sensitive data in transit, and route requests to the most cost-effective model available. If your cloud architecture includes multiple AI agents talking to each other or to external models, this is the layer that’s quickly becoming standard rather than optional.
+No cloud architecture is well-designed if it isn’t secure. Security has to be a priority from the ground up, the bigger your infrastructure gets, the bigger the attack surface and the stakes.
+Start with the fundamentals: Encrypt all data, in transit and at rest, so that even if data is intercepted or leaked, it remains unintelligible without the keys. Use strong encryption protocols, like TLS 1.3 for data in motion, and cloud-provider encryption services or BYO keys for data at rest in databases and storage. These measures protect sensitive information and provide a compliance requirement.
+Adopting a zero-trust architecture is also very important. It operates on the principle “never trust, always verify.” In practice, no user or system is inherently trusted – even internal traffic between microservices should be authenticated and authorized.
+For example, hackers recently attacked Golang developers by inserting malicious code inside a package via GitHub. There is no central gatekeeping in Go’s ecosystem; those who haven’t adopted zero trust policies have had their storage devices completely wiped out, and the data recovery was virtually impossible.
+Cloud Security requires strict identity verification for anyone or anything accessing resources. You must utilize Identity and Access Management (IAM) roles for services and enforce multi-factor authentication (MFA) for human users.
+IAM is guided by the principle of the least privilege, which means each user must have the minimum access necessary to work. The role of the cloud engineer here is to set up and manage policies, roles, and authentication systems. Multi-factor authentication ensures that hackers who steal passwords can’t log in with just that.
+Scaling securely also means automating security wherever possible. Integrate security checks into your CI/CD pipeline, such as:
+Don’t forget to use cloud-native security tools (AWS Security Hub, Azure Defender, etc.). These tools help your cloud environment’s continuous monitoring t  in real time. Logging is critical here, too. You should maintain detailed security logs and use AI-driven analysis to catch anomalies or intrusion attempts. Additionally, ensure cloud compliance standards are met (GDPR, HIPAA, etc. if applicable) by design, via policies as code and regular audits.
+Remember that security must scale with growth. As user counts increase, so do potential threats and the surface attack area. Web application firewalls (WAFs), DDoS protection, and API gateways help absorb and filter malicious traffic at scale. Regularly update and patch your systems (automate this via patch management tools) to reduce vulnerabilities. In summary, treat security as an integral part of your scalable architecture, not an afterthought. A breach can erode all the benefits of a scalable system in an instant. By following cloud computing best practices like zero-trust, strong encryption, rigorous IAM, and continuous security monitoring, you create a cloud environment that is not only scalable and efficient but also resilient against threats.
+Edge computing processes data and runs services closer to end users or the data source, at the network’s edge, rather than in a centralized data center.
+Most major providers offer edge options (Cloudflare Workers, AWS Greengrass, Azure IoT Edge), and offloading latency-sensitive work to edge locations, IoT devices, local gateways, distributed edge servers, cuts response time dramatically. A streaming service might cache video at edge servers across cities for instant playback; a retail chain might process in-store transactions on local edge devices, syncing aggregated data back to the cloud asynchronously.
+This isn’t a future-tense trend anymore. McDonald’s already runs Google Cloud’s edge technology to keep kiosks and mobile ordering responsive in-store, with edge nodes handling local real-time processing while the cloud handles heavy lifting like aggregate analytics and ML training.
+If you’re considering edge, identify which parts of your application genuinely benefit from physical proximity to users or data. Done well, it improves performance and reliability, offloads central servers, and adds resilience, edge devices can often keep critical functions running even if the connection to the central cloud drops. The tradeoffs are real too: data consistency between edge and cloud, securing distributed edge nodes, and managing infrastructure that isn’t centralized.
+Serverless means deploying code that runs in response to events and scales automatically, with no server management on your end. You pay only for what you use, no idle servers sitting around on your bill.
+More than 70% of AWS users now use one or more serverless solutions (Lambda, Cloud Functions, Azure Functions), driven by automatic scaling, faster development (skip server setup entirely, just ship code), and a lighter operational burden. Glassdoor
+Good fits: asynchronous processing, scheduled jobs, infrequent triggers, and managed Backend-as-a-Service offerings (auth, databases, messaging) that scale with usage without you running any instances yourself. Just stay aware of cold-start latency and make sure your serverless components are observable, not invisible.
+Scalability, performance, security, and efficiency define cloud architecture in 2026. These best practices keep systems handling both current load and whatever comes next. High availability and real security are the actual point, scalability is just the natural result of getting those right.
+But maybe you don’t know what best practice to do next. Perhaps you need to hire a cloud engineer or architect to make all these hard decisions.
+I’m glad you’re here. Instead of hiring the best in town, how about hiring the best in the world? For a fraction of the value of a local programmer, we can find you the best employee! One who fills that skill gap by a mile, far cheaper for your budget! Contact us, and let’s plan your scalable cloud!
+There isn’t one universal answer, it depends on where your architecture is weakest. But if forced to pick: design for scalability from day one. Almost every other practice on this list, auto-scaling, multi-region resilience, IaC, is far easier to implement on an architecture that was built with growth in mind than one being retrofitted under pressure.
+No. Multi-cloud is one tool among several, not a requirement. Many organizations run a single cloud provider extremely well. Flexera’s 2026 data shows most multi-cloud setups happen by accident anyway, through mergers or siloed applications, rather than deliberate strategy, so don’t adopt it just to check a box.
+AI-driven FinOps tools analyze real usage patterns and recommend specific actions: shifting workloads to spot instances, rightsizing overprovisioned instances, or shutting down idle developer environments automatically overnight. The gains come from continuous, automated analysis catching inefficiencies a quarterly manual audit would miss entirely.
+What if you could approach companies similar to yours, interview their top performers, and hire them for 50% of a North American salary?
+Subscribe to our newsletter and get exclusive content and bloopers
+What if you could approach companies similar to yours, interview their top performers, and hire them for 50% of a North American salary?
+Oracle says OCI runs up to 50% cheaper than AWS, Azure, and GCP combined. That’s a marketing number, not an audited one. And as a […]
+Oracle says OCI runs up to 50% cheaper than AWS, Azure, and GCP combined. That’s a marketing number, not an audited one. And as a […]
+Every year, someone comes along with a dumb phone — or a not-quite-dumb phone, smart enough to be useful but, supposedly, not smart enough to […]
+Every year, someone comes along with a dumb phone — or a not-quite-dumb phone, smart enough to be useful but, supposedly, not smart enough to […]
+A hybrid cloud combines private, on-premises infrastructure with at least one public cloud provider. Multi-cloud means using two or more public cloud providers, with or […]
+A hybrid cloud combines private, on-premises infrastructure with at least one public cloud provider. Multi-cloud means using two or more public cloud providers, with or […]
+When you partner with DistantJob for your next hire, you get the highest quality developers who will deliver expert work on time. We headhunt developers globally; that means you can expect candidates within two weeks or less and at a great value.
+Increase your development output within the next 30 days without sacrificing quality.
+Join our newsletter for the latest news and articles, twice a month!
+By continuing to browse the site you are agreeing to our use of cookies.
+
+
+Source: https://www.nops.io/blog/cloud-architecture-best-practices/
+Title: 6 Cloud Architecture Best Practices To Follow in 2025 - nOps
+As more and more organizations decide to move to the cloud to boost their overall ROI, there is a need to establish high-performing and secure cloud architectures that can perfectly align with business requirements.
+Cloud architecture has now become an essential part of deployments as it unifies the ecosystem for all your cloud components.
+In this article, we discuss everything there is to know about cloud architecture.
+Cloud architecture refers to how different technological components come together to build a cloud environment where you can pool and share scalable resources across a network.
+It essentially works as a blueprint for your cloud, defining how different cloud technologies, applications, workloads, and other components interact.
+The ideal cloud architecture focuses on scalability and agility while also considering the unique and complex needs of your users, applications, and workloads.
+With a public cloud, users get access to shared resources through virtual servers, allowing them to leverage more powerful servers and cloud equipment at a lesser price. Since public clouds follow the multi-tenant approach, organizations, or rather ‘cloud tenants,’ share the same storage, hardware, and network devices. Public cloud providers allow users to deploy applications which can then be accessed over the internet.
+With public cloud architecture, users can securely access and scale resources as required. Public clouds are operated through third-party providers like AWS. It’s also important to note that while public clouds offer more scalability and are more cost-effective, they don’t provide as much control over the cloud architecture as compared to private cloud.
+A private cloud is operated and owned by an organization or a third-party provider and is dedicated to only one organization. As a result, it provides more control over data and customization as compared to public clouds.
+Private clouds can limit computing and cloud storage, but that, in turn, helps provide more protection against potential attacks. Also, this very feature makes the private cloud less scalable and more expensive than the public cloud.
+A hybrid cloud combines the benefits of both private and public clouds, allowing users to take advantage of the cost-effectiveness and scalability offered by the public cloud and the security and control offered by the private cloud.
+This can especially be helpful when businesses have important workloads with sensitive data that they want to keep in the private cloud while moving the rest of the workloads to the public cloud for cost optimization.
+A multi-cloud architecture involves using multiple cloud providers to serve the different cloud needs of an organization. This, in turn, gives businesses the ability to decide where their workloads, applications, and data should be hosted.
+With a multi-cloud setup, businesses can boost redundancy and availability and improve overall performance. It becomes possible to spread workloads across different cloud providers and even switch between different providers.
+The biggest advantage of using a multi-cloud architecture is that it allows businesses to mix and match network, storage, and cloud resources from different cloud providers to find the best fit for optimum performance and minimized cloud costs.
+Operation excellence involves monitoring systems and continuously improving the cloud architecture as well as the internal processes around it.
+When it comes to making changes to the cloud architecture, you should make incremental changes instead of going all out at once to avoid failure or unexpected events. There should also be a focus on documenting the procedures for better understanding and troubleshooting.
+Cost optimization is a major concern for businesses moving to the cloud, so it cannot be an afterthought when building the cloud architecture. By incorporating the right cloud cost optimization strategies, you can greatly reduce overall cloud spending. You can also optimize costs by analyzing the expenses of every functionality and component of the cloud architecture, dropping components that have more operational costs, and replacing them with better alternatives.
+Automatically fill & act on your AWS WAFR, FTR, SOC2, HIPAA or CIS audit
+Designing your cloud architecture with the right cloud service provider in the right way can help significantly improve performance efficiency. The focus should be on structuring and streamlining computing resources by selecting the right resource sizes and types in order to optimize workloads.
+You can also use billing tools, automation and AI to identify areas of improvement and create a more effective and high-performance cloud architecture.
+The goal of reliability is to ensure your workloads are performing exactly the way they are supposed to perform. Your workloads should also have the ability to quickly recover from an outage or failure and dynamically meet the required demands.
+To achieve this, you can build an automated recovery process to effectively predict failures and respond to them before they lead to bigger problems. You can also use autoscaling to avoid overprovisioning or underprovisioning. While overprovisioning can lead to an outage, underprovisioning can lead to idle resources.
+It’s also a good practice to establish processes for making any big or small changes to the cloud architecture, which can cover everything from monitoring resources to managing changes in demand.
+Security should be one of the major factors to keep in mind when building your cloud architecture. After all, when you are running your applications and workload on the cloud, the main aim should be to keep your cloud environment secure.
+The focus should be on maintaining the integrity of data, establishing procedures to detect security breaches, and managing user permissions.
+Sustainability involves taking proactive measures to minimize your organization’s environmental impact when running applications on the cloud. Businesses need to establish a responsible model for achieving sustainability. The goal should be to maximize utilization while minimizing the number of required resources, which can also help decrease costs.
+Security for all the applications and instances should be hardened and monitored continuously. It’s also possible to automate security by setting up notifications so that you can get notified whenever someone accesses the cloud.
+nOps is an AI-driven cloud management platform that can help you decrease your cloud bills by more than 50% on auto-pilot.
+By leveraging AI and machine learning, nOps works continuously in the background to analyze and optimize your cloud costs. It unifies cost visibility and optimization for multicloud, Kubernetes, AI and Saas all in one platform.
+Book a free savings analysis to see how much you can save on your cloud bill.
+nOps manages $4 billion in cloud spend and was recently named #1 in G2’s Cloud Cost Management category.
+6 Cloud Architecture Best Practices To Follow in 2025
+AI-powered rate optimization with risk-free guarantee
+
+
+Source: https://learn.microsoft.com/en-us/azure/architecture/best-practices/index-best-practices
+Title: Best Practices in Cloud Applications - Azure Architecture …
+Upgrade to Microsoft Edge to take advantage of the latest features, security updates, and technical support.
+Access to this page requires authorization. You can try signing in or changing directories.
+Access to this page requires authorization. You can try changing directories.
+Building reliable, scalable, and secure cloud applications requires deliberate architectural decisions. The best practices in this article provide guidance for common concerns that arise in distributed systems, such as caching, data partitioning, API design, and transient fault handling. Each practice addresses one or more pillars of the Azure Well-Architected Framework, which defines the following five quality attributes for workload design:
+These practices complement other foundational guidance in the Azure Architecture Center. The design principles for Azure applications provide high-level strategies, like designing for self-healing and scaling out. The cloud design patterns offer reusable solutions to recurring architectural problems. The performance antipatterns describe common defects that cause scalability problems under load. These resources help you make informed architectural choices.
+Each practice in this table maps to one or more Well-Architected Framework pillars. Use these mappings to identify which practices are most relevant to the quality attributes that you prioritize in your workload.
+Before you address specific technical concerns, establish a strong architectural foundation. The design principles for Azure applications provide high-level strategies that apply across workloads, such as designing for self-healing, scaling out, and minimizing coordination. These principles shape decisions that the best practices listed in the previous table help you implement.
+After you establish design principles, cloud design patterns give you reusable solutions for recurring problems in distributed systems. Many of the best practices in this article rely on one or more of these patterns. For example, the transient fault handling guidance builds on the Retry pattern and Circuit Breaker pattern. The caching guidance relates to the Cache-Aside pattern. The background jobs guidance uses patterns like Competing Consumers and Queue-Based Load Leveling. Review the full catalog to identify patterns that address the architectural challenges in your workload.
+Defects can emerge under production load even when you apply sound principles, good patterns, and best practices. Performance antipatterns for cloud applications describe common designs that don't scale or shortcuts that cause problems to accumulate as you add features. To catch problems before they reach production, use these antipatterns as a checklist during design reviews and code reviews.
+Azure Well-Architected Review: Assess your workload against the Well-Architected Framework pillars.
+Cloud design patterns: Explore reusable solutions to common architectural challenges.
+Want to try using Ask Learn to clarify or guide you through this topic?
+Want to try using Ask Learn to clarify or guide you through this topic?
+
+
+Source: https://docs.cloud.google.com/architecture/framework
+Title: Google Cloud Well-Architected Framework | Cloud Architecture …
+The Well-Architected Framework provides recommendations to help
+architects, developers, administrators, and other cloud practitioners design and
+operate a cloud topology that's secure, efficient, resilient, high-performing,
+cost-effective, and sustainable.
+A cross-functional team of experts at Google validates the recommendations in
+the Well-Architected Framework. The team curates the Well-Architected Framework to
+reflect the expanding capabilities of Google Cloud, industry best practices,
+community knowledge, and feedback from you. For a summary of the significant
+changes to the Well-Architected Framework, see
+What's new.
+The Well-Architected Framework is relevant to applications built for the cloud and
+for workloads migrated from on-premises to Google Cloud, hybrid cloud
+deployments, and multi-cloud environments.
+The recommendations in the Well-Architected Framework are organized into pillars and
+cross-pillar perspectives, as shown in the following diagram.
+A pillar in the Well-Architected Framework provides
+principles and recommendations for a specific non-functional focus area:
+security, reliability, performance, cost, operations, or sustainability.
+A perspective in the Well-Architected Framework
+is a cross-pillar view of recommendations for a specific technology, domain, or
+sector. The recommendations in a perspective align with the general principles
+and recommendations in the pillars.
+For example, the financial services (FS) perspective recommends a disaster
+recovery strategy that meets regulatory requirements for data residency. This
+FS-specific recommendation aligns with the reliability pillar's principle about
+realistic targets, because the data residency requirements influence the choice
+of failover region and, consequently, the recovery objectives.
+Before you explore the recommendations in each pillar of the Well-Architected Framework,
+review the following core principles:
+No system is static. The needs of its users, the goals of the team that builds
+the system, and the system itself are constantly changing. With the need for change
+in mind, build a development and production process that enables teams to
+regularly deliver small changes and get fast feedback on those changes.
+Consistently demonstrating the ability to deploy changes helps to build trust
+with stakeholders, including the teams responsible for the system, and the users
+of the system. Using
+DORA's software delivery metrics 
+can help your team monitor the speed, ease, and safety of making changes to the
+system.
+When you start to move your workloads to the cloud or build your applications,
+lack of documentation about the system can be a major obstacle. Documentation
+is especially important for correctly visualizing the architecture of your
+current deployments.
+Quality documentation isn't achieved by producing a specific
+amount of documentation, but by how clear content is, how useful it is, and how
+it's maintained as the system changes.
+A properly documented cloud architecture establishes a common language and
+standards, which enable cross-functional teams to communicate and collaborate
+effectively. The documentation also provides the information that's necessary to
+identify and guide future design decisions. Documentation should be written with
+your use cases in mind, to provide context for the design decisions.
+Over time, your design decisions will evolve and change. The change history
+provides the context that your teams require to align initiatives, avoid
+duplication, and measure performance changes effectively over time. Change logs
+are particularly valuable when you onboard a new cloud architect who is not yet
+familiar with your current design, strategy, or history.
+Analysis by DORA 
+has found a clear link between documentation quality and organizational
+performance — the organization's ability to meet their performance and
+profitability goals.
+Simplicity is crucial for design. If your architecture is too complex to
+understand, it will be difficult to implement the design and manage it over
+time. Where feasible, use fully managed services to minimize the risks, time,
+and effort associated with managing and maintaining baseline systems.
+If you're already running your workloads in production, test with managed
+services to see how they might help to reduce operational complexities. If
+you're developing new workloads, then start simple, establish a minimal viable
+product (MVP), and resist the urge to over-engineer. You can identify
+exceptional use cases, iterate, and improve your systems incrementally over
+time.
+Research from DORA 
+shows that architecture is an important predictor for achieving continuous
+delivery. Decoupling is a technique that's used to separate your applications
+and service components into smaller components that can operate independently.
+For example, you might separate a monolithic application stack into individual
+service components. In a loosely coupled architecture, an application can run
+its functions independently, regardless of the various dependencies.
+A decoupled architecture gives you increased flexibility to do the following:
+You can start the decoupling process early in your design phase or incorporate
+it as part of your system upgrades as you scale.
+A stateless architecture can increase both the reliability and scalability of
+your applications.
+Stateful applications rely on various dependencies to perform tasks, such as
+local caching of data. Stateful applications often require additional mechanisms
+to capture progress and restart gracefully. Stateless applications can perform
+tasks without significant local dependencies by using shared storage or cached
+services. A stateless architecture enables your applications to scale up quickly
+with minimum boot dependencies. The applications can withstand hard restarts,
+have lower downtime, and provide better performance for end users.
+Except as otherwise noted, the content of this page is licensed under the Creative Commons Attribution 4.0 License, and code samples are licensed under the Apache 2.0 License. For details, see the Google Developers Site Policies. Java is a registered trademark of Oracle and/or its affiliates.
+
+
