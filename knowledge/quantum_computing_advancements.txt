@@ -6672,3 +6672,35 @@ Title: Cómo instalar AnyDesk
 AnyDesk es fácil de instalar. Nuestro vídeo tutorial le muestra cómo funciona.
 
 
+Source: https://mitsloan.mit.edu/ideas-made-to-matter/new-mit-report-captures-state-quantum-computing
+Title: New MIT report captures state of quantum computing
+Get MIT Sloan's latest expert insights in your inbox.
+Sign up for the MIT Sloan Thinking Forward newsletter.
+A two-year, dual-degree program awarding an MBA from MIT Sloan and an SM from MIT School of Engineering.
+Deferred admission program; candidates work two to five years before enrolling in the MBA program.
+A doctoral program that researches management science, economics, finance, marketing, operations, strategy, and other business disciplines.
+Undergraduate degrees offered in management, business analytics, and finance.
+Combine an international MBA with a graduate degree in management science; available to partner and affiliate school students only.
+A 20-month executive MBA program for mid-career professionals.
+A one-year, full-time MBA program for mid-career professionals.
+A master's degree program combining engineering and management for mid-career professionals.
+Non-degree programs for senior executives and high-potential managers.
+A non-degree, customizable program for mid-career professionals.
+The “Quantum Index Report” is a comprehensive assessment of the technology and the global landscape, from patents to the quantum workforce.
+Quantum computing is evolving into a tangible technology that holds significant business and commercial promise, although the exact timing of when it will impact those areas remains unclear, according to a new report led by researchers at the MIT Initiative on the Digital Economy.
+The “Quantum Index Report 2025” charts the technology’s momentum, with a comprehensive, data-driven assessment of the state of quantum technologies.
+The inaugural report aims to make quantum computing and networking technologies more accessible to entrepreneurs, investors, teachers, and business decision makers — all of whom will play a critical role in how quantum computing is developed, commercialized, and governed.
+“There are a lot of folks who are interested in what’s going on in quantum, but the field is impenetrable to them,” said Jonathan Ruane, a research scientist at MIT IDE and editor-in-chief of the “Quantum Index Report.” The report is co-authored by researchers Elif Kiesow and Johannes Galatsanos from MIT IDE, and Carl Dukatz, Edward Blomquist, and Prashant Shukla from Accenture.
+Senior business executives across industries are fast becoming what Ruane calls “quantum curious,” inspired in part by the rapid rise of artificial intelligence. “The speed at which AI is transforming industries has alerted managers to the concept that technologies that are simmering in the background can explode really quickly and have tremendous impact,” Ruane said. “They want to make sure they have competency and insights into quantum so they don’t get caught out on missing the next big thing.”
+The “Quantum Index Report” team considered activity in the quantum sector through a broad range of perspectives, from both publicly available data and novel, original data. The entire report, raw data, and data visualizations are available on an interactive website.
+While the research team acknowledges the still-nascent nature of the quantum computing field and some inherent bias in the 2025 research, including a U.S. focus, Ruane stressed that there is substantial market momentum underway.
+Insights from the “Quantum Index Report 2025” include the following:
+Quantum processor performance is improving, with the U. S. leading the field. Two-dozen manufacturers are now commercially offering more than 40 quantum processing units (QPUs), which are the processing hardware for a quantum computer. This is an indicator that the technology is becoming more accessible to business. While there have been impressive advancements in performance, QPUs do not yet meet the requirements for running large-scale commercial applications such as chemical simulations or cryptanalysis.
+Quantum technology patents are soaring, with the total number increasing fivefold from 2014 to 2024. Corporations and universities are spearheading innovation efforts, accounting for 91% of the patents filed, with corporations holding 54% and universities 37%. China held 60% of quantum patents as of 2024, followed by the U.S. and Japan.
+Venture capital funding for quantum technology reached a new high point in 2024. Quantum computing firms received the most funding ($1.6 billion in publicly announced investments), followed by quantum software companies at $621 million. The researchers note that quantum received less than 1% of total venture capital funding worldwide.
+Businesses are buzzing over quantum computing. The report tracks how often the technology was mentioned across more than 50,000 corporate communication vehicles, including press releases and earnings calls, from 2022 to 2024. There was a significant uptick in mentions each quarter in 2024, with the frequency outpacing that of previous years by a substantial margin. The researchers said that this positively correlates with the maturing of the quantum market and the growing presence of quantum technology in mainstream business discourse.
+Quantum skills and training are growing in importance as companies begin to focus on workforce development. The demand for quantum skills has nearly tripled since 2018, according to the report. In response, universities are establishing quantum hubs and standing up programs that connect business leaders with researchers.
+“What we are seeing here is rapid progress and developments across a range of vectors — not just the improvement of technology benchmarks or the performance of quantum processing units,” Ruane said. “We are also seeing impact across a wide range of areas that are important to business leaders. It sends a signal that there’s breadth and depth in development.”
+The mission of the MIT Sloan School of Management is to develop principled, innovative leaders who improve the world and to generate ideas that advance management practice.
+
+
