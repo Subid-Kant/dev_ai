@@ -6743,3 +6743,28 @@ West Virginia University provides funding as a member of The Conversation US.
 Write an article and join a growing community of more than 230,400 academics and researchers from 5,572 institutions.
 
 
+Source: https://www.msn.com/en-us/technology/quantum-computing/ibm-announces-key-quantum-computing-milestones/ar-AA29383i
+Title: IBM announces key quantum computing milestones - MSN
+IBM (IBM) on Thursday announced key advances made in the field of quantum computing in three separate collaborations with the University of Chicago, Israel-based Qedma Quantum Computing, …
+
+
+Source: https://www.msn.com/en-us/news/technology/the-quantum-computing-breakthrough-that-changes-everything/vi-AA1LNSvB
+Title: The quantum computing breakthrough that changes everything
+Sep 3, 2025 · In this video, we explore the significant advancements in quantum computing, notably Google's achievement where their computer solved a problem in 5 minutes that would take the best...
+
+
+Source: https://www.msn.com/en-us/news/technology/new-quantum-hardware-finally-puts-mechanics-to-work/ar-AA1Q5yzI
+Title: New quantum hardware finally puts mechanics to work - MSN
+Recent advancements in quantum computing hardware have ushered in a new era of practical quantum mechanics applications.
+
+
+Source: https://www.msn.com/en-us/news/technology/inside-the-science-and-progress-of-quantum-computing/ss-AA26iWII
+Title: Inside the science and progress of quantum computing - MSN
+Ongoing research addresses challenges in scaling, stability, and real-world performance, shaping the path toward practical, large-scale quantum machines.
+
+
+Source: https://www.msn.com/en-us/news/technology/the-quantum-leap-q-ai-and-the-future-of-computing/ar-AA1NFBWo
+Title: Quantum’s Tipping Point: Inside the Commercial Era of Computing
+Together, these breakthroughs confirm what investors like me have suspected: quantum computing’s commercial era has begun. After decades of theory and lab-bound prototypes, the technology is ...
+
+
