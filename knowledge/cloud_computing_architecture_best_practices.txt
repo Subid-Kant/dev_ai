@@ -593,3 +593,8 @@ Title: iCloud Mail - Apple iCloud
 View and send mail from your iCloud email address on the web. Sign in or create a new account to get started.
 
 
+Source: https://www.icloud.com/iclouddrive
+Title: iCloud Drive - Apple iCloud
+Store, organize and collaborate on files and folders with iCloud Drive. Easily upload, delete or recover files. Changes will sync …
+
+
