@@ -6768,3 +6768,13 @@ Title: Quantum’s Tipping Point: Inside the Commercial Era of Computing
 Together, these breakthroughs confirm what investors like me have suspected: quantum computing’s commercial era has begun. After decades of theory and lab-bound prototypes, the technology is ...
 
 
+Source: https://www.msn.com/en-us/news/technology/quantum-computing-may-need-far-more-than-power-as-future-data-centers-scale-up/ar-AA24d2on
+Title: Quantum computing may need far more than power as future data
+As quantum computing moves closer to large-scale deployment, new research is examining its future energy, water, and material demands.
+
+
+Source: https://www.msn.com/en-us/technology/quantum-computing/new-quantum-algorithm-could-unlock-faster-ai-and-scientific-computing/ar-AA27RIHs
+Title: New quantum algorithm could unlock faster AI and scientific computing
+While significant advances have been made in quantum hardware, researchers say the software ecosystem still lacks a diverse set of …
+
+
