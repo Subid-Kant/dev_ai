@@ -573,3 +573,366 @@ Title: NBC Bay Area – San Francisco news, weather, breaking news
 Find the latest Bay Area news out of San Francisco, San Jose, Oakland and beyond. NBC Bay Area brings you weather forecasts, …
 
 
+Source: https://arxiv.org/html/2511.14139v1
+Title: FlexiCup: Wireless Multimodal Suction Cup with Dual-Zone ...
+Conventional suction cups lack sensing capabilities for contact-aware manipulation in unstructured environments.
+This paper presents FlexiCup, a fully wireless multimodal suction cup that integrates dual-zone vision-tactile sensing.
+The central zone dynamically switches between vision and tactile modalities via illumination control for contact detection, while the peripheral zone provides continuous spatial awareness for approach planning.
+FlexiCup supports both vacuum and Bernoulli suction modes through modular mechanical configurations, achieving complete wireless autonomy with onboard computation and power.
+We validate hardware versatility through dual control paradigms.
+Modular perception-driven grasping across structured surfaces with varying obstacle densities demonstrates comparable performance between vacuum (90.0% mean success) and Bernoulli (86.7% mean success) modes.
+Diffusion-based end-to-end learning achieves 73.3% success on inclined transport and 66.7% on orange extraction tasks.
+Ablation studies confirm that multi-head attention coordinating dual-zone observations provides 13% improvements for contact-aware manipulation.
+Hardware designs and firmware are available at https://anonymous.4open.science/api/repo/FlexiCup-DA7D/file/index.html?v=8f531b44.
+Suction cups have been widely adopted as versatile end effectors in robotic systems [1, 2] due to their ability to handle objects with diverse geometries and surface properties.
+Suction cups create adhesive forces through pressure differentials, enabling effective manipulation of flat, curved, and irregular surfaces across various operational scenarios.
+Both vacuum and Bernoulli suction cups [3, 4] are commonly used in industrial automation, packaging systems, and material handling applications where reliable object acquisition is required.
+However, despite their mechanical effectiveness, traditional suction systems lack the sensing capabilities required for contact-aware manipulation [5, 6].
+This limitation reduces their effectiveness in tasks requiring precise contact feedback and surface adaptation.
+The integration of sensing capabilities into suction end effectors has emerged as a research direction for advanced robotic manipulation.
+Traditional suction cups operate as passive actuators with limited environmental awareness, relying on preprogrammed trajectories and fixed suction parameters without the ability to perceive contact conditions, surface properties, or object characteristics [5, 6].
+This sensing deficit limits their effectiveness in complex manipulation scenarios where adaptive behavior is required.
+Modern robotic applications demand intelligent end effectors capable of perceiving object properties, responding to surface variations, and making realtime decisions about adhesion strategies [1, 2].
+Recent advances in tactile sensing [7, 8, 9, 10], multimodal perception [11, 12, 13, 14], and visuomotor policy learning [15] have created opportunities for developing advanced contact-aware suction systems that can bridge this sensing gap.
+We present FlexiCup, a multimodal wireless suction cup that addresses these limitations through integrated hardware design and learning-based control (Fig. 1).
+The hardware enables vision and tactile switching within a single optical framework and supports both vacuum and Bernoulli suction mechanisms through wireless operation.
+The learning framework coordinates multimodal observations through diffusion policies for contact-aware manipulation.
+Wireless reconfigurable suction system: A fully wireless suction cup supporting both vacuum and Bernoulli mechanisms through modular bottom housing configurations, with integrated battery power and wireless image streaming.
+Dual-zone vision-tactile sensing: Illumination-controlled dynamic switching between vision and tactile modalities through a single optical system, where the central zone enables real-time contact detection during manipulation and the peripheral zone provides continuous spatial awareness for approach planning.
+Dual-paradigm control validation: Hardware versatility demonstrated through both modular perception-driven grasping (achieving comparable performance between vacuum 90.0% and Bernoulli 86.7% modes across varying obstacle densities) and end-to-end learning based on diffusion policies (achieving 73.3% and 66.7% success on contact-aware manipulation tasks), with novel multi-head attention mechanism coordinating dual-zone observations.
+Research in suction manipulation has evolved from passive cups to sensorized systems (Table I).
+Early approaches relied on basic contact detection [5, 6] with limited spatial resolution or mechanical compliance for passive error compensation [16].
+Advanced systems have emerged with multichamber designs [1], model based haptic search [2], and embedded force sensing [17], employing vacuum-only mechanisms with tactile resolutions from 0.312–1.76 channels⋅\cdotcm-2 (strain-based) to 57,600 pixels⋅\cdotcm-2 (camera-based visuotactile sensors) and force capabilities up to 19 N.
+Recent camera-based tactile suction cups [18, 19] achieve high-resolution perception for texture classification and orientation estimation but remain wired, vacuum-only systems providing static tactile sensing without dynamic vision-tactile switching.
+Bernoulli grippers [3, 4] offer noncontact alternatives yet lack integrated sensing.
+In parallel, visuotactile sensing has progressed from the GelSight sensor [7] and its derivatives [8, 9] to recent multimodal systems that integrate visual and tactile feedback for manipulation tasks [11, 12, 20, 21]. Learning-based manipulation approaches, particularly imitation learning [22, 23] and tactile reinforcement learning [24, 15], have shown improved adaptability compared to traditional methods [25].
+Despite these advances, existing suction systems face key limitations: single-modality sensing restricts manipulation versatility, wired dependencies constrain workspace mobility and complicate pneumatic sealing, and vacuum-only operation limits applicability to specific surfaces.
+While modular perception-driven approaches [2] and learning-based diffusion policies [26, 27, 28] have advanced robotic manipulation, their application to suction systems [29] remains limited, particularly in integrating reconfigurable dual-mode mechanisms with active vision-tactile switching.
+FlexiCup addresses these gaps through a unified wireless architecture that combines reconfigurable suction mechanisms supporting both Vacuum and Bernoulli principles, active vision-tactile switching within a single optical system, and diffusion policy learning for end-to-end contact-aware control.
+Traditional suction end effectors typically separate sensing modalities, requiring complex wiring and processing pipelines that constrain manipulation flexibility.
+FlexiCup addresses these limitations through integrated optical sensing and modular mechanical design.
+FlexiCup is designed with three principles that guide its technical implementation.
+First, a unified sensing architecture integrates both vision and tactile modalities within an optical framework, eliminating the need for separate sensing systems.
+Second, complete wireless autonomy removes all tethered connections, enabling unconstrained manipulation through onboard power management and wireless communication.
+Third, mechanical compatibility with both vacuum and Bernoulli suction principles is achieved through modular configurations sharing identical core electronics and sensing systems.
+The system adopts a modular layered architecture that integrates pneumatic actuation, electronic control, and optical sensing within a compact form factor, as illustrated in Fig. 2(a).
+The modular design separates task-specific pneumatic actuation in the bottom housing from shared electronic control and optical sensing in the top layer, enabling rapid reconfiguration between suction modes.
+The bottom housing, which varies by suction modality, provides the pneumatic interface and contact surface.
+A central groove accommodates the PDMS tactile membrane, which serves as both the compliant sealing surface and the tactile sensing medium for the overhead optical system.
+Pneumatic airways route around the perimeter of the membrane region, physically separating actuation from the central sensing area without obstructing the optical path.
+The specific airway geometry and sealing structure differ between Vacuum and Bernoulli configurations, while the membrane mounting interface remains consistent.
+The bottom housing engages with the top through threaded connection, using a fluoroelastomer O-ring seal to maintain airtightness.
+The top housing mounts a PCB assembly centered on an ESP32S3 microcontroller.
+The battery pack (3.7 V, 300 mAh) and charging coil (12.5 μ\muH) attach directly to the PCB and secure to the housing via threaded fasteners.
+The microcontroller handles camera data acquisition through DVP interface and manages wireless communication, streaming 1024×768 resolution images at 30 Hz over Wi-Fi.
+Wireless charging capability enables untethered operation without external power connections, as demonstrated in Fig. 2(b) showing the complete system charging configuration and Fig. 2(c) presenting the modular core components extracted for standalone charging.
+This electronic module remains identical across both suction modes, ensuring consistent computational performance and eliminating the need for reconfiguration during mode switching.
+The top housing also integrates the optical sensing system positioned below the electronic module.
+An OV5640 camera with 180° fisheye lens mounts beneath a laser-cut light diffuser, surrounded by side-emitting LED arrays for controllable illumination.
+This optical assembly images through the tactile membrane interface, enabling dual-zone perception capabilities detailed in Section III-D.
+This modular architecture achieves a maximum suction force of 34.3 N while maintaining real-time wireless image streaming.
+The standardized top-bottom interface enables rapid reconfiguration between suction modes by exchanging the bottom housing and connecting to the corresponding pneumatic source, providing flexibility for diverse manipulation scenarios.
+The FlexiCup system implements reconfigurable suction mechanisms through modular bottom housing configurations, as illustrated in Fig. 3.
+In vacuum mode (left), the system generates adhesion by drawing air inward through the air channel, where it accelerates through progressively narrowing gaps, first between the diffuser plate and top housing, then between the PCB and housing, before exiting through the central nozzle, creating negative pressure that adheres the cup to irregular surfaces and delicate objects.
+In Bernoulli mode (right), the airflow reverses direction, exiting outward where the photocured bottom shell forcibly redirects it parallel to the surface in all directions, generating a low-pressure region below atmospheric pressure Pa​t​mP_{atm} that lifts flat objects without contact, ideal for handling sensitive electronics or polished surfaces.
+This reconfigurable capability shares the same core electronic, optical, and pneumatic subsystems across both modes, ensuring consistent multimodal sensing while adapting the suction mechanism to specific task requirements.
+The modular design employs different sealing components for each mode. Vacuum operation uses laser-cut rubber skirts for flexible surface conformity, while Bernoulli mode utilizes rigid photocured resin structures optimized for controlled airflow patterns.
+All bottom housings maintain optical clarity for the internal vision system through transparent resin-based 3D-printed construction.
+Vacuum mode operation is demonstrated using Configuration I during orange extraction, illustrating the inward airflow mechanism and vision-tactile modality switching capability (Fig. 3(b)).
+The operation images show the manipulation sequence with the orange as a representative deformable object, while the bottom panels compare tactile mode (left, LED illumination active revealing contact deformation patterns) and vision mode (right, LED off capturing object surface features).
+Bernoulli mode operation is presented using Configuration III during rigid planar object manipulation, illustrating the outward airflow mechanism (Fig. 3(b)).
+The bottom panels demonstrate consistent vision-tactile switching functionality, with tactile mode capturing contact geometry and vision mode revealing surface details.
+These demonstrations confirm that the LED-controlled modality switching mechanism operates reliably across both suction principles and diverse object types.
+The 180° fisheye camera captures two functional zones (Fig. 4(a)).
+Within these zones, the central zone enables switchable vision-tactile sensing, while the peripheral zone provides continuous visual awareness.
+The sensing system achieves instantaneous modality switching through illumination control, as demonstrated in Fig. 4(b).
+In vision mode, the system keeps internal LEDs inactive, allowing ambient light to penetrate the semitransparent membrane.
+The system then captures external objects through the membrane for pre-contact positioning and approach.
+In tactile mode, the system activates the LEDs to illuminate the membrane internally, creating strong reflected light that dominates the optical path and suppresses ambient light transmission.
+The system then primarily images membrane deformations induced by contact forces, revealing surface textures and contact geometry.
+The illumination is controlled in realtime through the ESP32S3 microcontroller, while camera exposure and gain are dynamically adjusted to ensure clear imaging under both modalities.
+The PDMS membrane provides both tactile sensing and reliable sealing through contact-induced deformation, enabling precise tactile imaging while enhancing adhesion by conforming to surface irregularities (Fig. 5(a)).
+The dual layer system (Fig. 5(b)) employs a PDMS base layer (30:1 mass ratio, cured at 70°C for 4 hours) achieving compliance that captures surface details, and a semitransparent layer (Ag:PDMS 100:1, cured at 70°C for 0.5 hours) providing the reflective surface for photometric tactile imaging.
+Four modular bottom configurations (I-IV, shown in Fig. 5(c)) are implemented with varying membrane diameters, where I-II support vacuum operation and III-IV support Bernoulli operation.
+Adhesion force is characterized by lifting calibrated weights, achieving ranges from sub-Newton to over 30N across configurations.
+Configuration I achieves a tactile resolution of 60,248 pixels⋅\cdotcm-2 calculated from the effective pixel count within the central sensing region.
+Configuration selection requires only bottom housing replacement while all sensing and processing components remain unchanged.
+To validate the dual-zone sensing architecture, we conducted object recognition experiments across thirteen distinct objects including soft fruits, rigid geometric objects, and textured surfaces (Fig. 6).
+The experimental setup compared three sensing modalities using ImageNet-pretrained ResNet-18 [32] where vision-only achieves 82.5% accuracy, tactile-only achieves 46.7% accuracy, and multi-head attention fusion achieves 100% accuracy.
+Results demonstrate that multimodal integration provides complementary information where vision captures global object features and tactile reveals local contact details.
+The confusion matrix confirms perfect classification across all thirteen objects when both modalities are coordinated, validating the sensing architecture’s effectiveness for subsequent manipulation tasks.
+To validate FlexiCup’s reconfigurability and manipulation capabilities, we conduct experiments using two control paradigms: modular perception-driven approach (this section) and learning-based policies (Section V).
+The modular approach operates autonomously using only FlexiCup’s onboard dual-zone camera, demonstrating self-sufficient perception for dual-mode grasping without external sensors.
+All experiments use FlexiCup mounted on a UR3 robot arm (Fig. 7(a)).
+FlexiCup’s unified sensing architecture supports classical planning methods, demonstrating hardware versatility across control paradigms.
+The modular perception pipeline leverages three neural network modules operating on distinct sensory streams from the dual-zone camera.
+A YOLOv8n detector processes peripheral vision from the peripheral zone for target localization and workspace boundary detection.
+When LED illumination is activated, a ResNet-34 segmentation model (pretrained on ImageNet) analyzes the central tactile imprint to identify contact regions and verify surface flatness.
+With LED off, a YOLOv8n-seg model performs edge detection on the central visual stream to guide obstacle avoidance during spatial search.
+As illustrated in Fig. 7(b), the control pipeline integrates these modules with iterative feedback.
+The system first employs peripheral vision to detect the target object and guide the robot to approach.
+Upon arrival, the robot descends with LED illumination, where the tactile segmentation module verifies contact detection and surface flatness.
+If unsuitable, the system ascends with LED off, transitions to vision mode, and uses the edge detection module to guide spatial stepping.
+When reaching workspace boundaries, it adjusts search direction and moves to the next position, repeating tactile verification until a suitable region is identified.
+Finally, valve activation initiates suction followed by transport to placement.
+The validation employs identical sensing and control pipelines across both modes, with only bottom housing and pneumatic parameters varying.
+The three perception modules were trained offline on task-specific datasets.
+The peripheral vision detector achieved 87.7% mAP50 on 226 images, the tactile segmentation model achieved 98.3% IoU on 18,929 contact samples, and the edge detection module achieved 99.5% mAP50 on 1,954 images.
+All models support real-time inference for closed-loop control.
+Test materials include custom LEGO boards (1)-(3) with varying obstacle coverage (25%, 50%, 75%).
+For each test material, we conduct 30 grasping experiments in vacuum mode and 30 experiments in Bernoulli mode, with a total of 180 trials.
+Success criteria include: navigation to target, obstacle-free region identification, stable attachment verified by tactile feedback, and transport without object loss.
+Table II presents success rates across both modes, achieving comparable performance with mean rates of 90.0% (vacuum) and 86.7% (Bernoulli).
+The consistently high success rates across both mechanical principles validate the architecture’s universality.
+The dual-zone sensing system and modular perception pipeline operate effectively regardless of the underlying pneumatic mechanism (vacuum negative pressure or Bernoulli positive pressure).
+Despite this overall comparability, vacuum mode exhibits a 3.3% advantage over Bernoulli mode.
+This difference primarily stems from mechanical design trade-offs between the two configurations.
+Vacuum mode’s compliant silicone skirt provides consistent tactile sensitivity across the contact perimeter, while Bernoulli mode’s structural requirements for controlled airflow generation prioritize aerodynamic performance.
+Beyond these mechanical design differences, both modes encounter failure cases attributable to the discrete search strategy.
+The 1 cm step size, while enabling efficient coverage, occasionally results in exhaustive traversal without identifying suitable attachment regions, particularly when obstacle layouts exhibit unfavorable spatial frequencies.
+Reducing step size to 5 mm could mitigate this issue but would increase task completion time by approximately 4 folds, presenting a fundamental trade-off between success rate and operational efficiency.
+Success rates peak at moderate obstacle density ((2): 91.7% mean) compared to low and high densities ((1): 88.4%, (3): 85.0%), indicating that randomly scattered obstacles can fragment surfaces into regions smaller than the suction cup footprint despite low overall coverage.
+The modular perception-driven approach validates hardware reconfigurability but relies on discrete state transitions and manual threshold tuning for each task.
+To enable continuous contact-aware control across diverse manipulation scenarios, we develop a suction-specific learning framework based on diffusion policies [26], which directly maps multimodal observations to action trajectories, learning implicit coordination between dual-zone sensing and contact dynamics from demonstrations.
+Using the experimental setup shown in Fig. 7(a), we adopt the diffusion policy framework for its inherent action chunking mechanism that naturally accommodates sequential suction operations (approach, contact detection, valve control, and attachment) while handling dynamic vision-tactile modality transitions.
+To address the key challenge of fusing colocated but heterogeneous sensory streams during vision-tactile switching, we extend the framework with a multi-head attention mechanism specifically designed to coordinate observations from workspace and dual-zone suction cameras.
+The overall framework architecture is illustrated in Fig. 8, which shows the processing pipeline from multimodal observations to contact-aware actions.
+The attention mechanism enables effective integration of the dual-zone architecture’s complementary information streams.
+The system processes observations through specialized encoders handling visual and proprioceptive information.
+The workspace view Itw​o​r​k​s​p​a​c​eI_{t}^{workspace} from the D435 camera provides global scene context, encoded via ImageNet pre-trained ResNet-18 to ftw​o​r​k​s​p​a​c​e∈ℝ512f_{t}^{workspace}\in\mathbb{R}^{512}.
+The dual-zone suction camera captures complementary local observations, where the central view Itc​e​n​t​r​a​lI_{t}^{central} dynamically switches between visual and tactile modes for contact sensing, and the peripheral view Itp​e​r​i​p​h​e​r​a​lI_{t}^{peripheral} maintains spatial awareness for approach planning, both encoded through ResNet-18 to ftc​e​n​t​r​a​l,ftp​e​r​i​p​h​e​r​a​l∈ℝ512f_{t}^{central},f_{t}^{peripheral}\in\mathbb{R}^{512}.
+The system state st∈ℝ8s_{t}\in\mathbb{R}^{8} comprising robot joints, valve, and illumination control is processed through a 2-layer MLP to fts​t​a​t​ef_{t}^{state}.
+The multi-head attention module (8 heads, 512 dimensions) coordinates the central and peripheral views, enabling the policy to correlate contact details with spatial context during approach-to-manipulation transitions.
+Integration proceeds through two stages, where workspace features (ftw​o​r​k​s​p​a​c​ef_{t}^{workspace}) combine with attended suction features, then concatenate with system state (fts​t​a​t​ef_{t}^{state}) to form the complete observation representation.
+The diffusion policy generates action trajectories at=[qt,it,ut]a_{t}=[q_{t},i_{t},u_{t}] controlling robot joints (qt∈ℝ6q_{t}\in\mathbb{R}^{6}), illumination switching (iti_{t}), and pneumatic valve (utu_{t}).
+The action chunking mechanism (8-step history, 48-step prediction horizon) generates coordinated sequences for multi-phase operations from learned demonstrations.
+We evaluate two manipulation tasks using vacuum mode (Configuration I) for its superior force and surface adaptability.
+Inclined transport, trained with 150 demonstrations, involves a six-stage process where the system first positions above the surface, searches for suitable contact regions, aligns to the target location, adjusts tilt angle guided by tactile feedback to match the 5°-15° inclined surface, verifies contact through deformation sensing with LED-enabled tactile mode, and performs secure lifting after pneumatic valve activation.
+Orange extraction, trained with 100 demonstrations, consists of transparent cover removal in vision mode with LED off, realignment above the orange, then tactile-guided grasping with LED-enabled contact detection for the deformable fruit.
+Fig. 9 illustrates representative execution sequences for both tasks.
+Five configurations (Ours, w/o Multi-Head Attention, w/o Peripheral View, w/o Central View, Workspace Camera Only) were trained for 500 epochs with batch size 16 on RTX4090 GPU, with each configuration undergoing 30 trials per task totaling 300 experiments.
+Table III demonstrates that the full system achieves 73.3% success for inclined transport and 66.7% for orange extraction.
+Ablation analysis reveals the central view as critical for contact detection, where its removal reduces performance to 46.7% and 33.3% due to loss of tactile sensing and deformation detection.
+The peripheral view contributes spatial context essential for approach planning, with its absence degrading performance to 43.3% and 36.7%.
+Multi-head attention provides 13% improvements by coordinating dual-zone information during vision-tactile transitions.
+Workspace camera alone achieves only 23.3% and 0.0% success, confirming that intimate sensing is necessary for contact-critical manipulation.
+This paper presented FlexiCup, a multimodal wireless suction cup that integrates dual-zone vision-tactile sensing through illumination-controlled modality switching within a single optical system.
+The hardware achieves complete wireless autonomy while supporting both vacuum and Bernoulli suction mechanisms through modular bottom housing configurations.
+Hardware versatility was validated through dual control paradigms.
+Modular perception-driven grasping demonstrates comparable reconfigurability between vacuum (90.0%) and Bernoulli (86.7%) modes across varying obstacle densities.
+End-to-end learning based on diffusion policies achieves 73.3% and 66.7% success on contact-aware manipulation tasks, with ablation studies confirming 13% improvements from multi-head attention coordinating dual-zone observations.
+The integration of dual-zone sensing (central contact detection and peripheral spatial awareness) with learned control policies enables continuous contact-aware manipulation that adapts to surface variations and contact dynamics without manual threshold engineering.
+Current limitations include single-contact operation constraints and computational requirements that necessitate off-board processing, which may affect deployment in latency-sensitive applications.
+By open-sourcing the hardware designs and firmware, we provide a foundation for advancing research in multimodal suction manipulation.
+Future work will focus on three directions: (1) extending the framework to multi-contact scenarios for handling larger objects, (2) investigating computational optimization to enable real-time policy inference on embedded hardware, and (3) exploring adaptive suction strategies that dynamically adjust vacuum/Bernoulli modes based on learned surface properties.
+
+
+Source: https://www.journaldemontreal.com/nos-recos/cuisine/meilleure-cafetiere-filtre/
+Title: Les 5 meilleures cafetières à filtre (2026) | Nos Recos
+Téléviseurs, casques d'écoute, robots aspirateurs, profitez de conseils avisés et soyez à la pointe de la technologie grâce à nos guides d'achats.
+Mis à jour le
+                                                    05/08/2026
+Forfaits cellulaires pas chers : 3 options à considérer (2026)
+Mis à jour le
+                                                    03/08/2026
+Test MacBook Neo : le meilleur ordinateur pour la rentrée 2026?
+Mis à jour le
+                                                    31/07/2026
+Mis à jour le
+                                                    17/07/2026
+Mis à jour le
+                                                    23/06/2026
+Mis à jour le
+                                                    01/06/2026
+Purificateurs d'air, diffuseurs d'huiles essentielles, déshumidificateurs, découvrez nos guides des meilleurs produits pour votre maison et votre bien-être.
+Mis à jour le
+                                                    04/08/2026
+Mis à jour le
+                                                    03/08/2026
+Base de lit à rangement : le guide complet et mon avis sur le lit Ara de Cozey
+Mis à jour le
+                                                    24/07/2026
+Mis à jour le
+                                                    21/07/2026
+Les 5 meilleurs fusils à peinture électriques (2026)
+Mis à jour le
+                                                    21/07/2026
+Mis à jour le
+                                                    03/07/2026
+Mélangeurs à main, extracteurs à jus, machines à pain, friteuses à air, voici nos conseils afin de vous équiper efficacement dans votre cuisine.
+Mis à jour le
+                                                    04/08/2026
+Mis à jour le
+                                                    03/08/2026
+Voici la nouvelle collection de Sanpellegrino : CIAO!
+Mis à jour le
+                                                    31/07/2026
+Mis à jour le
+                                                    30/07/2026
+Mis à jour le
+                                                    20/07/2026
+Mis à jour le
+                                                    07/07/2026
+Fer plat, lampes à UV pour ongles, tondeuses à cheveux, découvrez tous nos guides d'achat des meilleurs produits et beauté pour tous budgets.
+Les 5 meilleures teintures à cheveux de pharmacie (2026)
+Mis à jour le
+                                                    30/07/2026
+Mis à jour le
+                                                    28/07/2026
+Voici la nouveauté de cette marque de shampooings iconique qui fait jaser tout le monde
+Mis à jour le
+                                                    15/07/2026
+Mis à jour le
+                                                    13/07/2026
+Mis à jour le
+                                                    07/06/2026
+Mis à jour le
+                                                    03/06/2026
+Trouvez des idées originales qui donneront une nouvelle dimension à vos temps libres avec nos guides d'achats pour les meilleurs produits de loisirs.
+Mis à jour le
+                                                    05/08/2026
+Mis à jour le
+                                                    29/07/2026
+J'ai testé ce matelas de camping à 40$ et voici mon avis
+Mis à jour le
+                                                    27/07/2026
+Mis à jour le
+                                                    20/07/2026
+Mis à jour le
+                                                    16/07/2026
+6 jeux amusants pour passer le temps en voiture (2026)
+Mis à jour le
+                                                    16/07/2026
+Plus les prix sont bas, mieux c'est ! Achetez vos cadeaux maintenant avec les différents rabais disponibles. Faites vite, ces aubaines ne dureront pas!
+Soldes d'été Best Buy (Jour 6) : Les meilleures offres à saisir cette semaine
+Mis à jour le
+                                                    05/08/2026
+Encore chaud dehors ? 10 climatiseurs en solde pour être au frais
+Mis à jour le
+                                                    05/08/2026
+Savon à linge en spécial : les aubaines du 04 août 2026
+Mis à jour le
+                                                    04/08/2026
+Best Buy arrive avec ses meilleurs rabais de la saison
+Mis à jour le
+                                                    31/07/2026
+Mis à jour le
+                                                    31/07/2026
+Soundcore Boom 2 : cette enceinte 80W est à -40 % en ce moment
+Mis à jour le
+                                                    29/07/2026
+Découvrez les meilleurs chalets à louer pour une escapade grâce à nos recommandations, pour s'évader et profiter pleinement de la nature, été comme hiver.
+Mis à jour le
+                                                    03/08/2026
+Mis à jour le
+                                                    09/07/2026
+10 petits chalets à louer pour 2 personnes avec spa (2026)
+Mis à jour le
+                                                    05/06/2026
+Les 10 meilleurs tout inclus pour la plongée en apnée (2026)
+Mis à jour le
+                                                    05/03/2026
+Les 10 meilleurs tout-inclus au Mexique pour adultes (2026)
+Mis à jour le
+                                                    30/04/2026
+Mis à jour le
+                                                    09/01/2026
+Nous pouvons percevoir une commission d’affiliation lorsque vous achetez un produit par le biais de notre site. Les prix indiqués sont susceptibles d'évoluer. La rédaction du Journal de Montréal n’a pas participé à la rédaction des contenus.
+Pour beaucoup d’entre nous, commencer la journée rime avec prendre un bon café. Ce n’est donc pas étonnant que les cafetières à filtre soient parmi les petits électroménagers les plus prisés et les plus commentés sur le marché.
+Inutile de vous dire que les modèles se déclinent en une variété de design et de fonctionnalités infinie. Pour faciliter votre choix et vous aider à orienter votre décision vers la machine qui vous conviendra le mieux, nous avons dressé un classement des meilleures cafetières à filtre.
+Quels sont les critères à prendre en compte pour vous procurer la meilleure cafetière à filtre pour vos besoins ? Suivez nos conseils.
+Pour mettre en place cette sélection, nous nous sommes basés sur les critères suivants :
+En combinant ces critères à vos habitudes matinales, vous trouverez l'équilibre parfait entre performance et style pour votre cuisine.
+Derniers articles
+
+Meilleurs produits
+
+Meilleurs rabais
+Lorsqu’un modèle a vraiment plus d’avantages que d’inconvénients, c’est bon signe! C’est exactement ce qu’il se passe avec la Braun BrewSense KF7150BK, qui récolte des honneurs dans toutes les catégories : un design élégant en acier inoxydable, une utilisation intuitive grâce à son large écran ACL, un réglage de l'intensité (régulier ou corsé) et bien sûr, un café savoureux à chaque infusion.
+Ce n'est pas le modèle d'entrée de gamme, mais avec sa technologie PureFlavor et son système de mise en marche programmable sur 24 heures, c’est un appareil de haute qualité que vous apprécierez dès la première tasse.
+- Facile à utiliser- Plusieurs réglages- Minuterie automatique
+- Capacité: 12 tasses- Programmable: 24 heures- Puissance: 1000 watts- Garantie: 3 ans- Dimensions: 20,1P x 20,1La x 36,1H cm
+Voici la reine de la durabilité. Avec son excellente capacité de 14 tasses, elle est la machine à café toute désignée pour les grandes tablées et les matins exigeants. Elle possède une technologie PerfecTemp, qui garantit un café très chaud sans jamais en altérer le goût. C’est une valeur sûre, robuste et intuitive, qui s'adapte à vos envies grâce à son contrôle de l'intensité.
+Son mode « 1 à 4 tasses » est un véritable atout : il permet de préparer une petite quantité sans sacrifier la richesse des arômes. C'est un petit investissement, mais qui perdurera dans votre cuisine pendant des années.
+- Excellente capacité- Durable- Boutons intuitifs et bien éclairés- Bonne qualité
+- Capacité: 14 tasses- Programmabilité: 24 heures- Puissance: 1800 watts- Dimensions: 22,9P x 19,8La x 35,6H cm- Écran LCD rétroéclairé bleu
+La marque Black + Decker revient très souvent dans nos palmarès, et ça ne semble pas être un hasard. Ce modèle de 12 tasses sembre est la solution idéale pour ceux qui veulent un appareil efficace sans se casser la tête.
+Comme la majorité des cafetières à filtre, elle est simple à utiliser et va droit à l’essentiel.
+Sa fonction Sneak-A-Cup, qui prétend être parfaite pour voler une tasse de café avant même que l'infusion soit terminée, n'est cependant pas aussi efficace que le voudrait la marque. Mais, comme on ne parle pas ici d'un gros investissement, la plupart des utilisateurs décident de fermer les yeux sur ce petit défaut.
+- Rapport qualité-prix- Simple à utiliser- Élégante
+- Fonction Sneak-A-Cup qui fonctionne plus ou moins bien.
+- Capacité: 12 tasses- Dimensions: 8,3P x 13,8La x 14,2H cm- Commandes numériques- Puissance: 800 watts- Garantie: 30 jours
+Bien que le look classique de cette cafetière à goutte soit l'aspect qui frappe au premier coup d'œil, c'est sa polyvalence qui finit par convaincre. Sous ses airs de machine traditionnelle se cache un appareil tout à fait au goût du jour qui permet de personnaliser chaque infusion selon vos préférences.
+Sa programmation sur 24 heures et son option pour ajuster l’intensité du café offrent une personnalisation surprenante pour un modèle aussi abordable. Malgré un format compact qui se glisse sous toutes les armoires, sa carafe en verre généreuse assure que personne ne manquera de café au moment du déjeuner.
+- Infusion rapide- Intuitive- Garde le café chaud longtemps
+- Capacité: 12 tasses- Dimensions: 23,6P x 16,5La x 34,3H cm- Minuterie programmable- Garantie: 2 ans
+Finissons avec ce qui a de meilleur dans les cafetières à filtre, pour nos passionnés de torréfaction : la Technivorm Moccamaster. Véritable institution dans l’industrie, ce modèle fabriqué à la main aux Pays-Bas se distingue par sa capacité à maintenir une température d'extraction constante entre 92°C et 96°C, le seuil critique pour révéler la complexité aromatique des grains sans amertume. Les avis d'experts et d'utilisateurs chevronnés s'entendent pour dire qu'elle offre une clarté de saveur que peu de machines automatiques peuvent égaler, rivalisant sans peine avec les méthodes manuelles les plus pointues.
+Au-delà de sa performance technique, la KBGV Select séduit par son design industriel iconique et sa conception durable en aluminium recyclable, pensée pour durer des décennies. Son nouveau sélecteur de volume permet désormais d'ajuster le temps d'infusion pour une demi-carafe sans compromettre la richesse du corps, corrigeant ainsi le principal reproche fait aux versions précédentes. Certes, son prix reflète son statut haut de gamme, mais pour celui qui considère le café comme un rituel plutôt qu’une simple routine, elle représente l'aboutissement ultime de la cafetière à filtre.
+- Qualité d'extraction exceptionnelle- Durabilité- Rapidité d'exécution - Interrupteur qui permet d'ajuster le débit- Design iconique
+- Capacité: 10 tasses- Puissance: 1475 watts- Arrêt automatique après 100 minutes- Dimensions: 16,5P x 32,4La x 35,6H cm- Garantie: 5 ans
+Pour assurer la longévité de votre appareil et surtout préserver le goût de votre café, un détartrage régulier est essentiel. La méthode la plus simple et écologique consiste à remplir le réservoir d'un mélange à parts égales d'eau et de vinaigre blanc, puis à lancer un cycle d'infusion à vide.
+Une fois le cycle terminé, effectuez deux ou trois rinçages complets à l'eau claire pour éliminer toute trace d'odeur. Si vous possédez un modèle haut de gamme comme la Moccamaster, privilégiez les produits détartrants recommandés par le fabricant afin de protéger les composants internes sans les agresser.
+Pour transcender la simple tasse matinale et atteindre une qualité digne d'un barista, tout se joue bien avant que l'eau ne touche le filtre. Le secret des experts réside dans la fraîcheur :
+Mis à jour le
+                            04/08/2026
+Mis à jour le
+                            03/08/2026
+Mis à jour le
+                            31/07/2026
+Mis à jour le
+                            30/07/2026
+Mis à jour le
+                            20/07/2026
+Mis à jour le
+                            02/06/2026
+Mis à jour le
+                            24/06/2026
+Mis à jour le
+                            14/04/2026
+Charleyne possède différentes compétences dans des secteurs variés, ce qui lui permet de créer des articles, des billets de blogues, des descriptions de produits, et de répondre à des mandats de traduction, de réécriture et de révision. Très à l’écoute de tout ce qui se rapporte aux sciences, à la cuisine et à la détente, elle est souvent amenée à effectuer des entrevues et donc des rencontres instructives! Enfin, passionnée par la culture sous toutes ses formes, c’est avec joie qu’elle combine ce grand intérêt avec son expertise professionnelle, en revêtant également le chapeau de journaliste Culture.
+Mis à jour le
+                            04/08/2026
+Mis à jour le
+                            03/08/2026
+Mis à jour le
+                            31/07/2026
+Mis à jour le
+                            30/07/2026
+Mis à jour le
+                            20/07/2026
+Mis à jour le
+                            02/06/2026
+Mis à jour le
+                            24/06/2026
+Mis à jour le
+                            14/04/2026
+Nos Recos a pour but de vous orienter dans votre magasinage en ligne en vous fournissant des avis éclairés et 100% gratuits afin de vous faire gagner du temps dans votre processus d’achat. Nous pouvons percevoir une commission d’affiliation lorsque vous achetez un produit par le biais de Nos Recos. La rédaction du Journal de Montréal n’a pas participé à la rédaction des contenus.
+				En savoir plus
+Les meilleures trouvailles pour votre cuisine dans votre boîte courriel. Une fois par semaine.
+Maison |
+                                Les meilleurs fusils à peinture
+Roadtrip |
+                                6 jeux amusants pour la voiture
+Été |
+                                Les meilleurs après-soleil
+Maison |
+                                Guide base de lit à rangement
+Avis |
+                                MacBook Neo 2026
+
+
+Source: https://www.manualslib.fr/manual/475433/Caffitaly-System-Flexicup-M29H.html
+Title: Caffitaly System Flexicup M29H Mode D'emploi - ManualsLib
+Voir et télécharger Caffitaly System Flexicup M29H mode d'emploi en ligne. Flexicup M29H cafetières téléchargement de …
+
+
+Source: https://www.ebay.com/itm/197990095273
+Title: FlexiCup Kåsa - Swedish military folding cup - Great for ...
+Mar 16, 2026 · In the Nordic countries coffee is a serious thing. So no member of the Swedish armed forces goes far in the …
+
+
+Source: https://www.sainsburys.co.uk/webapp/wcs/stores/servlet/gb/groceries/mugs--cafetieres---teapots-281865-44/mugs--cafetieres---teapots-281865-44?storeId=10151&langId=44&krypto=wYHgfQMm1iN2BxG0AbsY0tt4wBysJXmpvf0V55AAxbFRrJ02PgRdyDYM/nX74TiDFBZuRniDJIPP3l0z3F0QgrdBtd9WRl32sfMQu4DiEHdKE+xB2lnYiM1e+9KjwYkjuyjB2cke1ADy0glBHMTPpA/71SyDgQ498vgarjflli8=&ddkey=https:gb/groceries/mugs--cafetieres---teapots-281865-44/mugs--cafetieres---teapots-281865-44
+Title: Mugs, Teapots & Cafetieres | Tableware | Sainsbury's
+Discover Sainsbury's choice of mugs, teapots and cafetieres. Select from patterned or plain mugs, stylish and …
+
+

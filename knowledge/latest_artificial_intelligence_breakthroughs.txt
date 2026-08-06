@@ -664,3 +664,89 @@ Title: 如何评价 OpenAI 凌晨发布的 GPT-5？ - 知乎
 ChatGPT 中的非推理模型以 gpt-5-chat-latest API的形式提供。 GPT-5 是一个统一系统，内置一个智能高效、可回答大多数问 …
 
 
+Source: https://www.mayoclinic.org/diseases-conditions/diabetes/symptoms-causes/syc-20371444
+Title: Diabetes - Symptoms and causes - Mayo Clinic
+Jan 21, 2026 · Symptoms Diabetes symptoms depend on how high your blood sugar is. Some people, especially if they …
+
+
+Source: https://www.who.int/news-room/fact-sheets/detail/diabetes
+Title: Diabetes - World Health Organization (WHO)
+In 2022, 14% of adults aged 18 years and older were living with diabetes, an increase from 7% in 1990. More than half (59%) of adults aged 30 years and over living with diabetes were not taking medication for their diabetes in 2022. Diabetes treatment coverage was lowest in low- and middle-income countries.
+In 2021, diabetes was the direct cause of 1.6 million deaths and 47% of all deaths due to diabetes occurred before the age of 70 years. Another 530 000 kidney disease deaths were caused by diabetes, and high blood glucose causes around 11% of cardiovascular deaths (1).
+Since 2000, mortality rates from diabetes have been increasing. By contrast, the probability of dying from any one of the four main noncommunicable diseases (cardiovascular diseases, cancer, chronic respiratory diseases or diabetes) between the ages of 30 and 70 decreased by 20% globally between 2000 and 2019.
+Symptoms of diabetes may occur suddenly. In type 2 diabetes, the symptoms can be mild and may take many years to be noticed.
+Over time, diabetes can damage blood vessels in the heart, eyes, kidneys and nerves.
+People with diabetes have a higher risk of health problems including heart attack, stroke and kidney failure.
+Diabetes can cause permanent vision loss by damaging blood vessels in the eyes.
+Many people with diabetes develop problems with their feet from nerve damage and poor blood flow. This can cause foot ulcers and may lead to amputation.
+Type 1 diabetes (previously known as insulin-dependent, juvenile or childhood-onset) is characterized by deficient insulin production and requires daily administration of insulin. In 2017 there were 9 million people with type 1 diabetes; the majority of them live in high-income countries. Neither its cause nor the means to prevent it are known.
+Type 2 diabetes affects how your body uses sugar (glucose) for energy. It stops the body from using insulin properly, which can lead to high levels of blood sugar if not treated.
+Over time, type 2 diabetes can cause serious damage to the body, especially nerves and blood vessels.
+Type 2 diabetes is often preventable. Factors that contribute to developing type 2 diabetes include being overweight, not getting enough exercise, and genetics.
+Early diagnosis is important to prevent the worst effects of type 2 diabetes. The best way to detect diabetes early is to get regular check-ups and blood tests with a healthcare provider.
+Symptoms of type 2 diabetes can be mild. They may take several years to be noticed.  Symptoms may be similar to those of type 1 diabetes but are often less marked. As a result, the disease may be diagnosed several years after onset, after complications have already arisen.
+More than 95% of people with diabetes have type 2 diabetes. Type 2 diabetes was formerly called non-insulin dependent, or adult onset. Until recently, this type of diabetes was seen only in adults but it is now also occurring increasingly frequently in children.
+Gestational diabetes is hyperglycaemia with blood glucose values above normal but below those diagnostic of diabetes. Gestational diabetes occurs during pregnancy.
+Women with gestational diabetes are at an increased risk of complications during pregnancy and at delivery. These women and possibly their children are also at increased risk of type 2 diabetes in the future.
+Gestational diabetes is diagnosed through prenatal screening, rather than through reported symptoms.
+Impaired glucose tolerance (IGT) and impaired fasting glycaemia (IFG) are intermediate conditions in the transition between normality and diabetes. People with IGT or IFG are at high risk of progressing to type 2 diabetes, although this is not inevitable.
+Lifestyle changes are the best way to prevent or delay the onset of type 2 diabetes.
+To help prevent type 2 diabetes and its complications, people should:
+Early diagnosis can be accomplished through relatively inexpensive testing of blood glucose. People with type 1 diabetes need insulin injections for survival.
+One of the most important ways to treat diabetes is to keep a healthy lifestyle.
+Some people with type 2 diabetes will need to take medicines to help manage their blood sugar levels. These can include insulin injections or other medicines. Some examples include:
+Along with medicines to lower blood sugar, people with diabetes often need medications to lower their blood pressure and statins to reduce the risk of complications.
+Additional medical care may be needed to treat the effects of diabetes:
+WHO aims to stimulate and support the adoption of effective measures for the surveillance, prevention and control of diabetes and its complications, particularly in low- and middle-income countries. To this end, WHO:
+In April 2021 WHO launched the Global Diabetes Compact, a global initiative aiming for sustained improvements in diabetes prevention and care, with a particular focus on supporting low- and middle-income countries.
+In May 2021, the World Health Assembly agreed a Resolution on strengthening prevention and control of diabetes. In May 2022 the World Health Assembly endorsed five global diabetes coverage targets to be achieved by 2030.
+To learn more about the Global Diabetes Compact, to access diabetes-related technical publications to get involved in upcoming initiatives, visit the Global Diabetes Compact webpage.
+1. Global Burden of Disease Collaborative Network. Global Burden of Disease Study 2021. Results. Institute for Health Metrics and Evaluation. 2024 (https://vizhub.healthdata.org/gbd-results/).
+
+
+Source: https://www.who.int/es/news-room/fact-sheets/detail/diabetes
+Title: Diabetes - World Health Organization (WHO)
+La diabetes es una enfermedad crónica que se presenta cuando el páncreas no secreta suficiente insulina o cuando el organismo no logra utilizar eficazmente la insulina que produce. La insulina es una hormona que regula la concentración de glucosa en la sangre. Un efecto común de la diabetes no controlada es la hiperglucemia (es decir, la glucemia elevada) que, con el tiempo, daña gravemente muchos órganos y sistemas del organismo, sobre todo los nervios y los vasos sanguíneos.
+En 2022, el 14% de los mayores de 18 años vivían con diabetes, lo que supone un aumento con respecto al porcentaje en 1990, que era del 7%. En 2022, más de la mitad (59%) de los adultos de 30 años o más que vivían con diabetes no tomaban medicación alguna contra esta afección. El porcentaje más bajo desde el punto de vista de la cobertura del tratamiento contra la diabetes se registró en los países de ingreso mediano bajo.
+En 2021, la diabetes fue la causa directa de 1,6 millones de defunciones y, de todos los fallecidos por diabetes, el 47% tenía menos de 70 años. Además, otras 530 000 personas fallecieron a causa de una nefropatía diabética, y la hiperglucemia ocasiona alrededor del 11% de las defunciones por causa cardiovascular (1).
+Desde el año 2000, las tasas de mortalidad por diabetes han ido en aumento. En cambio, entre 2000 y 2019, la probabilidad de fallecer entre los 30 y los 70 años de edad por alguna de las cuatro principales enfermedades no transmisibles (enfermedades cardiovasculares, cáncer, enfermedades respiratorias crónicas o diabetes) se redujo en un 20% a escala mundial.
+Los síntomas de la diabetes pueden manifestarse repentinamente. En la diabetes de tipo 2, los síntomas pueden ser leves, y pueden transcurrir muchos años antes de que sean evidentes.
+Con el tiempo, la diabetes puede dañar los vasos sanguíneos del corazón, los ojos, los riñones y los nervios.
+Las personas con diabetes corren más riesgo de sufrir problemas de salud, como infartos de miocardio, derrames cerebrales e insuficiencia renal.
+La diabetes puede causar pérdida permanente de la visión por daño de los vasos sanguíneos de los ojos.
+Muchas personas con diabetes presentan problemas en los pies debido a los daños causados a los nervios y a un flujo sanguíneo insuficiente. Esto puede provocar úlceras en los pies y la amputación de esas extremidades.
+La diabetes de tipo 1 (denominada anteriormente diabetes insulinodependiente, juvenil o de inicio en la infancia) se caracteriza por una producción deficiente de insulina y requiere la administración diaria de esta hormona. En 2017 había 9 millones de personas con diabetes de tipo 1, la mayoría de ellas en países de ingreso alto. Todavía no se conoce la causa de este tipo de diabetes, ni se sabe cómo prevenirla.
+La diabetes de tipo 2 afecta a la forma en que el cuerpo usa el azúcar (glucosa) para obtener energía, impidiendo que utilice adecuadamente la insulina, lo que puede aumentar las concentraciones de azúcar en la sangre si no se trata.
+Con el tiempo, la diabetes de tipo 2 puede causar daños graves al organismo, sobre todo a los nervios y los vasos sanguíneos.
+La diabetes de tipo 2 se puede prevenir en muchos casos. Hay factores que contribuyen a su aparición, como el sobrepeso, no hacer suficiente ejercicio y la herencia genética.
+El diagnóstico precoz es importante para prevenir los peores efectos de la diabetes de tipo 2. La mejor vía para detectarla de manera temprana es acudir a un proveedor de atención médica para hacerse exámenes regulares y análisis de sangre.
+Los síntomas de la diabetes de tipo 2 pueden ser leves y pueden pasar varios años antes de que sean evidentes. Pueden ser similares a los de la variante de tipo 1 pero, a menudo, menos intensos. En consecuencia, es posible que la enfermedad se diagnostique años después de que los primeros síntomas se hayan manifestado, cuando ya han aparecido complicaciones.
+Más del 95% de las personas con diabetes tienen el tipo 2. Esta variedad de diabetes era conocida como «no insulinodependiente» o «de inicio en la edad adulta» porque, hasta hace poco, solo se observaba en los adultos. Sin embargo, en la actualidad se da cada vez más a menudo en los niños.
+La diabetes gestacional aparece durante el embarazo y se caracteriza por una hiperglucemia cuyos valores, pese a ser superiores a los normales, son inferiores a los establecidos para diagnosticar diabetes.
+Quienes la presentan tienen más riesgo de sufrir complicaciones durante el embarazo y el parto. Además, tanto la madre como, posiblemente, sus hijos corren más riesgo de presentar diabetes de tipo 2 en el futuro.
+La diabetes gestacional se diagnostica mediante pruebas diagnósticas prenatales, y no tanto porque la gestante refiera síntomas.
+El deterioro de la tolerancia a la glucosa (comúnmente denominado «intolerancia a la glucosa») y la alteración de la glucemia basal (es decir, en ayunas) son estados de transición entre la normalidad y la diabetes. Aunque el riesgo de que ambos estados desemboquen en una diabetes de tipo 2 es elevado, esta evolución es evitable.
+La mejor manera de prevenir o retrasar eficazmente la aparición de la diabetes de tipo 2 es cambiar de hábitos.
+Para ayudar a prevenir este tipo de diabetes y sus complicaciones, conviene:
+Se puede hacer un diagnóstico temprano determinando la glucemia mediante pruebas relativamente baratas. Las personas con diabetes de tipo 1 necesitan insulina para vivir.
+Una de las formas más eficaces de tratar la diabetes es mantener unos hábitos saludables.
+Algunas personas con diabetes de tipo 2 deben tomar medicamentos, como inyecciones de insulina o fármacos de otro tipo, para ayudar a controlar los niveles de azúcar en la sangre. Algunos de estos medicamentos son:
+Además de los medicamentos para reducir el nivel de azúcar en la sangre, las personas con diabetes a menudo necesitan fármacos para bajar la tensión arterial y estatinas para reducir el riesgo de complicaciones.
+A veces son necesarias otras intervenciones para tratar los efectos de la diabetes, por ejemplo:
+La OMS trabaja para estimular y apoyar la adopción de medidas eficaces de vigilancia, prevención y control de la diabetes y sus complicaciones, sobre todo en los países de ingreso mediano bajo. Con ese fin, la Organización:
+En abril de 2021, la OMS puso en marcha el Pacto Mundial contra la Diabetes, una iniciativa mundial destinada a lograr mejoras sostenidas en la prevención y la atención de la diabetes, especialmente en los países de ingreso mediano bajo.
+En mayo de 2021, la Asamblea Mundial de la Salud acordó una resolución relativa al fortalecimiento de la prevención y el control de la diabetes y, en mayo de 2022, aprobó cinco metas mundiales relativas a la diabetes y la cobertura de la atención a los afectados que se deben alcanzar de aquí a 2030.
+En la página web del Pacto Mundial contra la Diabetes encontrará más información acerca del pacto y podrá consultar las publicaciones técnicas relativas a esta afección para implicarse en iniciativas futuras.
+1. Red de Colaboración sobre la Carga Mundial de Morbilidad. Global Burden of Disease Study 2021. Results. Instituto de Sanimetría y Evaluación Sanitaria. 2024 (https://vizhub.healthdata.org/gbd-results/).
+
+
+Source: https://www.mayoclinic.org/es/diseases-conditions/diabetes/symptoms-causes/syc-20371444
+Title: Diabetes - Síntomas y causas - Mayo Clinic
+Jan 21, 2026 · La diabetes mellitus se refiere a un grupo de enfermedades que afecta la forma en que el cuerpo utiliza la …
+
+
+Source: https://www.zhihu.com/question/38104777
+Title: 为什么糖尿病叫diabetes mellitus？ - 知乎
+The word diabetes comes from Latin diabētēs, which in turn comes from Ancient Greek διαβήτης (diabētēs) which literally …
+
+

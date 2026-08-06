@@ -598,3 +598,8 @@ Title: iCloud Drive - Apple iCloud
 Store, organize and collaborate on files and folders with iCloud Drive. Easily upload, delete or recover files. Changes will sync …
 
 
+Source: https://www.icloud.com/photos
+Title: iCloud Photos - Apple iCloud
+View, organize, and share photos and videos with iCloud Photos on the web. Changes will sync across your devices …
+
+
