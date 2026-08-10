@@ -705,3 +705,28 @@ The US Tech Job Market Is Evolving, Are Your Skills Evolving Too? The US Tech Jo
 The Future of Careers Is Changing: Are Your Skills Ready for 2026? A few years ago, having a college degree and basic…
 
 
+Source: https://www.msn.com/en-xl/technology/general/the-ultimate-guide-to-passing-aws-solutions-architect-certifications-with-smart-preparation/ar-AA20RMdj
+Title: The ultimate guide to passing AWS solutions architect ... - MSN
+The Professional exam requires deeper knowledge of AWS services and architecture. Focus on designing complex systems, …
+
+
+Source: https://www.msn.com/en-xl/news/other/achieving-aws-certification-success-with-reliable-study-tools-and-smart-learning-techniques/ar-AA20yItO
+Title: Achieving AWS certification success with reliable study tools and ... - MSN
+Cloud computing has revolutionized the IT industry, and AWS certifications have become a benchmark for professionals aiming to excel …
+
+
+Source: https://www.msn.com/en-us/money/general/it-job-watch-cloud-infrastructure-architect/ar-AA25GIux
+Title: IT job watch: Cloud infrastructure architect - MSN
+A cloud infrastructure architect is increasingly recognized as one of the most critical positions in cloud computing. Spiceworks asked …
+
+
+Source: https://www.msn.com/en-us/technology/cloud-computing/israeli-startup-is-using-ai-to-shorten-cloud-architecture-timeline/ar-AA28r3bf
+Title: Israeli startup is using AI to shorten cloud architecture timeline - MSN
+In an industry that is only increasing in cloud complexity, a three-person Israeli start-up is trying to rewrite how infrastructure is designed.
+
+
+Source: https://www.msn.com/en-gb/technology/cloud-computing/how-cloud-architecture-is-reinventing-primary-storage-for-the-ai-era/ar-AA28Y9Bw
+Title: How cloud architecture is reinventing primary storage for the AI era
+In modern cloud environments, primary storage is no longer simply where data lives. It has become one of the technologies that …
+
+
