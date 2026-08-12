@@ -730,3 +730,13 @@ Title: How cloud architecture is reinventing primary storage for the AI era
 In modern cloud environments, primary storage is no longer simply where data lives. It has become one of the technologies that …
 
 
+Source: https://www.msn.com/en-us/news/technology/how-cloud-architecture-is-reinventing-primary-storage-for-the-ai-era/ar-AA28Yevh
+Title: How cloud architecture is reinventing primary storage for the AI era
+Cloud providers responded by redesigning storage around software-defined architectures that separate how data is managed from …
+
+
+Source: https://www.msn.com/en-in/money/technology/ai-workloads-are-changing-cloud-architecture-what-comes-next/ar-AA26XHue
+Title: AI workloads are changing cloud architecture, what comes next
+What Comes Next: The AI-Native Cloud Era The development in cloud computing's next stage will very likely come from the evolution of …
+
+
