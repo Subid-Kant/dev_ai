@@ -740,3 +740,8 @@ Title: AI workloads are changing cloud architecture, what comes next
 What Comes Next: The AI-Native Cloud Era The development in cloud computing's next stage will very likely come from the evolution of …
 
 
+Source: https://onedrive.live.com/login/
+Title: Microsoft OneDrive
+Sign in to Microsoft OneDrive to access your files and collaborate with others securely.
+
+
