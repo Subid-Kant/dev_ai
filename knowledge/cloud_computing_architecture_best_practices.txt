@@ -852,3 +852,8 @@ The Internet has always been made up of servers, clients, and the infrastructure
 Like virtual machines, containers are a cloud virtualization technology. They are part of the PaaS (Platform-as-a-Service) cloud model. Virtualization for containers occurs one abstraction layer up from where it occurs for virtual machines, at the operating system level instead of at the kernel level (the kernel is the foundation of the operating system, and it interacts with the computer's hardware). Each virtual machine has its own operating system kernel, but containers on the same machine share the same kernel.
 
 
+Source: https://docs.cloud.google.com/architecture/
+Title: Cloud Architecture Center
+Cloud Architecture Center Discover reference architectures, design guidance, and best practices for building, migrating, and managing …
+
+
