@@ -857,3 +857,8 @@ Title: Cloud Architecture Center
 Cloud Architecture Center Discover reference architectures, design guidance, and best practices for building, migrating, and managing …
 
 
+Source: https://storage.cloud.google.com/
+Title: Sign in - Google Accounts
+Not your computer? Use a private browsing window to sign in. Learn more about using Guest mode
+
+
