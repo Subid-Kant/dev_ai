@@ -7984,3 +7984,8 @@ P
 ; that is, it is believed that some efficiently checkable problems are not efficiently solvable by a quantum computer. A direct consequence is that BQP is disjoint from the class of NP-complete problems (if an NP-complete problem were in BQP, then it would follow from NP-hardness that all problems in NP are in BQP).[168]
 
 
+Source: https://www.msn.com/en-us/technology/quantum-computing/quantum-computing-just-got-real/vi-AA2bim5W
+Title: Quantum computing just got real | Watch - MSN
+3 days ago · This video explores advancements and competition in the field of quantum computing, discussing various technologies and …
+
+
