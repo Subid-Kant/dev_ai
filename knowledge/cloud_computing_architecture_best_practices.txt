@@ -1674,3 +1674,15 @@ Title: Sign in - Microsoft OneDrive
 Sign in No account? Create one!
 
 
+Source: https://aws.amazon.com/architecture/
+Title: Reference Architecture Examples and Best Practices
+AWS is the world's most comprehensive cloud, enabling organizations to accelerate innovation, reduce costs, and scale more efficiently
+Get started with one of these featured services or browse all
+Transform your industry with AWS cloud solutions. Access proven architectures, compliance guides, and success stories of customers using AWS products tailored to your sector. Explore AWS solutions for your industry.
+If you're new to AWS, or just want to brush up on best practices, start with these resources.
+AWS Well-Architected provides a framework to help cloud architects build secure, high-performing, resilient, and efficient architectures.AWS Well-Architected helps cloud architects build secure, high-performing, resilient, and efficient infrastructure for a variety of applications and workloads. Built around six pillars—operational excellence, security, reliability, performance efficiency, cost optimization, and sustainability—AWS Well-Architected provides a consistent approach for customers and partners to evaluate architectures and implement scalable designs.
+AWS decision guides provide an overview of our services with guidance to help you choose the services that fit your use case.
+Decision guides are now available for a range of service categories including machine learning, analytics, containers, storage, networking services, and more.
+Let us know so we can improve the quality of the content on our pages
+
+
