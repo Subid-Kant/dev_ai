@@ -1158,3 +1158,8 @@ Title: OpenAI unveils GPT-6 Astra with major advances in AI capabilities
 OpenAI on Thursday unveiled GPT-6 Astra, a new artificial intelligence(AI) model the tech company says features major improvements in …
 
 
+Source: https://www.msn.com/en-us/technology/artificial-intelligence/google-ai-breakthrough-shows-why-we-don-t-need-more-data-centers/ar-AA1ZyHx4
+Title: Google AI breakthrough shows why we don't need more data centers
+We have seen the future of AI via Large Language Models. And it's smaller than you think. That much was clear in 2025, when we first …
+
+
