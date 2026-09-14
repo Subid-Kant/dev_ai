@@ -1257,3 +1257,28 @@ This material may not be published, broadcast, rewritten, or redistributed.
         provided by LSEG.
 
 
+Source: https://blog.fabric.microsoft.com/en-us/blog/fabric-june-2025-feature-summary?ft=Sean+Mirabile:author
+Title: Fabric June 2025 Feature Summary | Microsoft Fabric Blog …
+Jun 25, 2025 · The latest round of updates makes AI functions easier to use, more powerful, and more cost-effective. We’ve …
+
+
+Source: https://asia.blog.fabric.microsoft.com/en-us/blog/unlocking-seamless-data-integration-with-the-latest-fabric-data-factory-connector-innovations?ft=Databases:category
+Title: Unlocking Seamless Data Integration with the Latest Fabric …
+Oct 2, 2025 · That’s why Microsoft Fabric has been doubling down on Data Factory connectors—expanding coverage, …
+
+
+Source: https://asia.blog.fabric.microsoft.com/en-US/blog/?page=19
+Title: Microsoft Fabric Blog
+Jul 23, 2025 · Keep up with the latest Microsoft Fabric updates, announcements, information, & new features on the …
+
+
+Source: https://blog.fabric.microsoft.com/en-us/blog/new-improvements-coming-to-the-ai-skill?ft=Data-factory:category
+Title: New improvements coming to the AI Skill | Microsoft Fabric Blog ...
+Feb 25, 2025 · The latest AI Skill capabilities are now rolling out and are expected to be fully available by the end of the week. …
+
+
+Source: https://asia.blog.fabric.microsoft.com/en-us/blog/feed/
+Title: Microsoft Fabric Blog
+Keep up with the latest Microsoft Fabric updates, announcements, information, & new features on the Microsoft Fabric …
+
+
