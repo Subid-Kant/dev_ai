@@ -943,3 +943,96 @@ Title: www.gmglobalconnect.com
 We would like to show you a description here but the site won’t allow us.
 
 
+Source: https://support.microsoft.com/en-us/support/index
+Title: Contact Microsoft customer support | Microsoft Support
+The type of support Microsoft provides depends on the product you're calling about and if you have a product for home or for business use. It can also depend on if you want help for an issue with a service like OneDrive or Outlook.com, or help with Windows, but you don't have an existing Microsoft 365 subscription.
+Learn more about which products are included for home or for business.
+If you can't sign into your Microsoft account, most issues can be identified by our sign-in helper tool.
+The tool will ask you to enter the email address or mobile phone number you're trying to sign in with and check the details you provide. If we detect a problem with your account, we'll tell you what you need to do to solve the problem. If we don't detect any problem, we'll guide you through how you can help yourself.
+To protect your account and its contents, our support agents and advocates are not allowed to send password reset links or access and change account details.
+If you need help downloading, installing, or activating Windows or Office, need technical support or have any account & billing related questions, select a Get help button below. Describe your problem, and we'll provide self-help or connect you to the most appropriate support, which may include chat.
+Get Help in Windows has troubleshooters you can run for many common scenarios. These often help resolve issues without the need to contact support. See available troubleshooters.
+If you need help with a purchase, go to www.microsoft.com/store for live chat options or select a contact number below. If your country/region is not listed, use Get Help above.
+If you're an admin for a business subscription, start by checking the current health of your services. You can view detailed information about current and past issues on the Service health dashboard. If you're experiencing an issue that isn't listed, contact us below.
+For volume licensing support, open your Microsoft 365 admin center, select Help & support and search for "manage volume licensing". If you can't access the admin center, submit a volume licensing support request. Always include your volume licensing agreement number, phone number and email address so we can contact you.
+For Unified/Premier, you may create a ticket online or contact our support by signing in to Engage Center.
+Please note that support cases for Surface business devices may only be initiated online.
+Please note that numbers marked as Toll   Free below are accessible for local calls only. Numbers marked as Toll are accessible for both local and long-distance calls.
+Select a region below to find a customer service phone number in your country/territory.
+
+
+Source: https://learn.microsoft.com/en-us/answers/questions/4302737/what-is-global-accounts-in-the-task-manager
+Title: What is Global.Accounts in the task manager - Microsoft Q&A
+Upgrade to Microsoft Edge to take advantage of the latest features, security updates, and technical support.
+There is a thing called "Global.Accounts (4)" in task manager, I am on windows 11, and it seems to be taking up a fair amount of my memory. What is this, and what does it do?
+Locked Question.
+This question was migrated from the Microsoft Support Community. You can vote on whether it's helpful, but you can't add comments or replies or follow the question.
+Thank you for the screenshots, that is just a genuine Windows process to aid user input, I do not see that using any major system resources, Windows Input Experience is using the expected resources.
+if you expand that column, you will see that is 'Suspended', Windows will suspend processes that are currently not being used to preserve system resources and make your PC more responsive.
+Just found it again and it is in this section  
+ 
+does this change anything?
+Right click that 'Global Accounts' process, is there an option to 'Open Folder Location?
+if there is, select that option and please provide a screenshot of the resulting folder.
+If there is no option to see that folder, in Task Manager, right click any column header on the Processes tab and turn on the Command Line column, and expand that column, please provide a screenshot of that Task Manager window showing that process and the Command Line column.
+this is the file directory(any personal information blurred)
+
+
+Source: https://learn.microsoft.com/en-us/answers/questions/3988795/what-is-global-desktop-spotlight-and-why-it-always
+Title: What is Global.Desktop.Spotlight and why it always come back?
+Upgrade to Microsoft Edge to take advantage of the latest features, security updates, and technical support.
+Few months ago I notice a new process running on Windows 10 Pro:
+backgroundTaskHost | ID: 9616 | C:\Windows\system32\backgroundTaskHost.exe | Command Line: "C:\Windows\system32*backgroundTaskHost.exe" -ServerName:Global.DesktopSpotlight.AppXz2j21w56bgxkgsjhtn7zkjsepq96erz2.mca*
+At first I thought it was from Microsoft, because a new update has just dropped out.
+After a few days, the process started to annoying me and then I disabled all the Microsoft Windows Spotlight features, and when I mean "all", I really mean "all": Settings, Group Policy, Registry, Folders and more
+The point is: even after all of my hard work to disable it, the process still runs on my pc and, I really wanted to know what is it.
+I scanned my PC a lot of times with malwarebytes, avast and even windows defender, all clean.
+Locked Question.
+This question was migrated from the Microsoft Support Community. You can vote on whether it's helpful, but you can't add comments or replies or follow the question.
+Sounds like a combo of spyware and malware. See, this is my computer. I built it. I bought a license to use Windows. I did not give Windows permission to plant unwanted and undesirable JUNK deep into the system. I am so sick and tired of MircoSoft's tyrannical tactics. First, you people disabled my ability to control most things on my computer with Windows 7, 8, 10, and now 11 is an ABSOLUTE NIGHTMARE!! I cannot even choose WHERE I want my taskbar, and you force absolute **** between the right-click and the sensible and useful context menu.
+Now, you say you will not still be supporting Windows 10, except to plant spyware and malware into the system.
+I DO NOT WANT YOUR TIPS. I DO NOT WANT YOUR PICTURES. I DO NOT WANT YOU IN MY LOCK SCREEN. I WANT YOU TO GO AWAY AND LEAVE ME ALONE.
+Trusted Installer is code for "We are force-inserting things into your system that are neither useful nor desirable, but we're afraid you'll say no if we ask". Sounds like the definition of rape.
+Unbelievably annoying that Microsoft pushes this junk in updates and turns it on. I have to then go and disable it if I don't want it.
+How about focusing on things that actually matter, MS, like your broken update system or the fact that ring isolation still isn't perfected and a "rogue" program can still yield "system not responding" for 3 minutes straight. No, instead, you focus on this.
+The Global.DesktopSpotlight.App process is indeed related to Windows Spotlight, a feature in Windows that displays different background images and occasionally offers suggestions on the lock screen. This process is part of the background tasks that manage these features.
+Even though youâve disabled Windows Spotlight through various settings, group policies, and registry tweaks, some background processes might still run due to how deeply integrated they are into the system. This can be particularly true if there are updates or other system processes that re-enable or trigger these tasks.
+Itâs unlikely that this process is malware. However, if it continues to bother you, you might want to send feedback to the developers. Just hit the Start menu, search for Feedback Hub, and submit your feedback there.
+
+
+Source: https://support.microsoft.com/en-us/worldwide
+Title: Microsoft.com Worldwide
+Microsoft.com is available in a variety of countries/regions. Choose your language preference below.
+
+
+Source: https://learn.microsoft.com/en-us/microsoft-365/admin/add-users/about-admin-roles?view=o365-worldwide
+Title: About administrator roles in the Microsoft 365 admin center
+Upgrade to Microsoft Edge to take advantage of the latest features, security updates, and technical support.
+Access to this page requires authorization. You can try signing in or changing directories.
+Access to this page requires authorization. You can try changing directories.
+Check out Microsoft 365 small business help on YouTube. These resources are especially helpful for small business admins who are new to Microsoft 365.
+To perform tasks like adding users, assigning licenses, or configuring services, you need an administrator role in Microsoft 365 for business. Your Microsoft 365 or Office 365 subscription includes a set of administrator roles that you can assign in the Microsoft 365 admin center. Each administrator role corresponds to common business functions and enables people in your organization to complete specific tasks in the admin centers. This article provides an overview of administrator roles, security guidelines to keep in mind, and links to related content.
+Check out this video and others on our YouTube channel.
+Go to the Microsoft 365 admin center and sign in. If you can access the Microsoft 365 admin center, you're an administrator, and you can proceed to the next step.
+In the left navigation pane, select Users > Active users. (Or go directly to the Active users page.)
+Select the user account for the person who you want to make an administrator. The user's details appear in the right dialog box.
+The Microsoft 365 admin center lets you manage Microsoft Entra roles and Microsoft Intune roles. However, these roles are a subset of the roles available in the Microsoft Entra admin center and the Microsoft Intune admin center.
+For more information on assigning roles in the Microsoft 365 admin center, see Assign admin roles.
+Microsoft recommends that you use roles with the fewest permissions, and that you limit the number of users who have administrative permissions. See Least privileged roles by task in Microsoft Entra ID.
+Because administrators have access to sensitive data and files, follow these guidelines to keep your organization's data more secure.
+If you get a message in the Microsoft 365 admin center that indicates you don't have permission to edit a setting or page, it's because you're assigned to a role that doesn't have that permission. In this case, take one or more of the following actions:
+In the Microsoft 365 admin center, go to Role assignments.
+Select the Permissions tab to view the detailed list of what administrators assigned that role have permissions to do.
+Select the Assigned or Assigned admins tab to add users to roles.
+To view the full list of roles, go to the bottom of the list and select Show all by Category. For detailed information, including the cmdlets associated with a role, see Microsoft Entra built-in roles.
+The following table lists administrator roles and information about who should be assigned these roles. To see the full list of roles, visit Microsoft Entra built-in roles.
+If you're working with a Microsoft partner, you can assign them administrator roles. They can assign users in your company, or their company, administrator roles. Assign administrator roles to partners if they're setting up and managing your online organization for you.
+Before the partner can assign these roles to users, you must add the partner as a delegated administrator to your account. The partner has to be an authorized partner. The partner sends you an email to ask if you want to give them permission to act as a delegated admin. For instructions, see Authorize or remove partner relationships.
+Volume licensing (VL) agreement administrators access their volume licenses in the Microsoft 365 admin center.
+For more information, see Manage volume licensing user roles or contact the Volume Licensing Support team.
+Manage user authentication methods for Microsoft Entra multifactor authentication
+Microsoft Entra roles in the Microsoft 365 administrator center
+Want to try using Ask Learn to clarify or guide you through this topic?
+Want to try using Ask Learn to clarify or guide you through this topic?
+
+
