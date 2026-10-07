@@ -1661,3 +1661,13 @@ Title: MSN
 MSN
 
 
+Source: https://www.npmjs.com/package/braces/v/3.0.3
+Title: braces - npm
+Bash-like brace expansion, implemented in JavaScript. Safer than other brace expansion libs, with complete support for the Bash 4.3 …
+
+
+Source: https://www.npmjs.com/package/braces/v/3.0.2?activeTab=readme
+Title: braces - npm
+Bash-like brace expansion, implemented in JavaScript. Safer than other brace expansion libs, with complete support for the Bash 4.3 …
+
+
