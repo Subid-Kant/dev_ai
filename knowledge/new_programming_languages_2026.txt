@@ -2241,3 +2241,8 @@ Title: Google News
 Comprehensive up-to-date news coverage, aggregated from sources all over the world by Google News.
 
 
+Source: https://www.techrepublic.com/article/news-tiobe-index-language-rankings/
+Title: TIOBE Index for October 2026: Top 10 Most Popular Programming Languages
+Oct 13, 2026 · See the TIOBE Index for October 2026, with Python still No. 1, Rust holding the top 10, and Julia returning to the top 20.
+
+

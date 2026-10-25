@@ -1902,3 +1902,28 @@ Rise and shine with news updates, delightful stories and a hit of nostalgia.
 By signing up, you agree to our Terms and Privacy Policy.
 
 
+Source: https://openai.com/news/
+Title: OpenAI News | OpenAI
+2 days ago · Stay up to speed on the rapid advancement of AI technology and the benefits it offers to humanity.
+
+
+Source: https://openai.com/news/company-announcements/
+Title: OpenAI Newsroom | Recent news
+Oct 7, 2026 · Stay up to speed on the rapid advancement of AI technology and the benefits it offers to humanity.
+
+
+Source: https://platform.openai.com/news/product-releases/new-tools-and-features-in-the-responses-api
+Title: OpenAI Platform
+Build on the OpenAI API Platform Sign up or login with an OpenAI account to build with the OpenAI API.
+
+
+Source: https://openai.com/news/product-releases/
+Title: Product News and Updates | OpenAI
+4 days ago · Read the latest OpenAI product news, including releases, announcements, and updates across ChatGPT, Codex, AI …
+
+
+Source: https://openai.com/news/research/
+Title: OpenAI Newsroom | Research
+4 days ago · Stay up to speed on the rapid advancement of AI technology and the benefits it offers to humanity.
+
+
