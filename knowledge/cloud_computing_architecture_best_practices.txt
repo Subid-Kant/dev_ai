@@ -1869,3 +1869,25 @@ Title: Personal File Sharing & Cloud Storage | Microsoft OneDrive
 Discover OneDrive for secure and convenient file and document sharing. Get personal cloud storage for seamless file sharing with …
 
 
+Source: https://cloud.google.com/gcp
+Title: Cloud Computing, Hosting, AI, and APIs | Google Cloud
+Accesss Gemini and third-party models like Anthropic's Claude
+Easily integrate with Google Cloud's AppDev, Data, and AI services
+Get $300 in free credits towards your app and free monthly usage
+New customers get $300 in free credits to protoype AI apps, deploy agents, or enhance existing applications with AI features.
+Get out-of-the-box services to deploy and scale applications on one platform. Google Cloud offers services for everything from apps to data to AI.
+Get free usage of AI APIs, Compute Engine, BigQuery, and other popular products up to monthly limits.
+Build, scale, govern and optimize agents and ML models.
+Create and run virtual machines with Compute Engine.
+Store any amount of data across classes with Cloud Storage.
+Run analytics and democratize insights with BigQuery.
+Run fully managed PostgreSQL-compatible database services with AlloyDB
+Gain image insights with ML models using Vision AI.
+Manage containerized applications with Google Kubernetes Engine.
+Get libraries and tools for Google Cloud services with Cloud SDK.
+Deliver video and web content at global scale with Cloud CDN.
+Unify stream and batch data processing with Dataflow.
+New customers get $300 to spend on prototyping and testing. Developers can spend their credits on everything from apps to data pipelines to agents.
+Start building on Google Cloud with $300 in free credits and 20+ always free products.
+
+
