@@ -2031,3 +2031,61 @@ This material may not be published, broadcast, rewritten, or redistributed.
         provided by LSEG.
 
 
+Source: https://www.pcmag.com/news/categories/ai
+Title: The Latest AI News and Analysis | PCMag
+Teammates, available for Perplexity Max subscribers, can build productivity-focused agents.
+The model can create GIFs from just text prompts, or a combination of text and reference images. You can also modify frames and adjust speed before sharing it with others.
+'I actually do want the world to have tons of memory,' Sam Altman says after facing backlash for suggesting that PCs capable of running AI locally are a waste.
+Ballot measures to block or restrict the construction of new AI data centers received strong support from US voters. Elon Musk suggested it could be good news for data centers in space.
+Brandon Thomas created PhotoCraft, a Photoshop look-alike, in a day using AI. I spoke with him, other developers, and a lawyer about what the rise of AI coding means for the future of software.
+OpenAI will also end support for the ChatGPT Classic app on macOS early next year.
+Anthropic’s Claude Code and Opus 5.5 model are reportedly blocking attempts at reverse-engineering, including via the popular open-source Reverse Engineer Anything (REA) tool.
+The streamer is reportedly in negotiations for licensing agreements with Sony Music and Warner Music and has already struck deals with Universal Music Group
+Starbucks is ‘exploring experiences that recognize participating customers as they arrive,' CEO Brian Niccol said on an earnings call.
+OpenAI's CEO isn't a fan of the growing trend of running AI models locally on PC hardware, calling it a waste of precious DRAM. 'You want maximum utilization,' he says.
+Nvidia is rumored to be preparing a bulked-up 24GB memory version slated to launch in January. However, we suspect the pricing will be absurd, given the RAM shortage.
+CEO Steve Huffman says the vast majority of unauthorized web scraping of Reddit pages occurs through the logged-out experience.
+It has no trouble reporting who won the 2024 election, however. Google blames its AI's suspiciously vague non-answers on 'a technical gap' that it’s 'working to fix.'
+Carbon will initially be available to 'a subset of cyber defenders' at $2 per million input tokens and $10 per million output tokens.
+A change to the company's commercial terms had raised fears that Meta would have legal cover to grab content from third-party sites. It's now delayed until after it confers with affected parties.
+LG TVs are displaying a notice about the 'Microsoft Copilot Service Termination,' months after the app's arrival sparked user complaints about intrusive AI.
+Revenue per employee is up at the top tech firms, but it's a different story outside Silicon Valley.
+Siri AI can now remember conversations and draw info from more areas. Apple is also making the revamped assistant available in five new languages.
+Left to their own devices, the agents played catch, spelled their names in cubes, and built sailboats with what was lying around on the virtual island.
+OpenAI acknowledged that while internet access can help models learn useful skills, it also 'gives a capable, misaligned agent opportunities to affect systems beyond our control.'
+PCMag.com is a leading authority on technology, delivering lab-based, independent reviews of the
+                    latest
+                    products and services. Our expert industry analysis and practical solutions help you make better
+                    buying
+                    decisions and get more from technology.
+© 1996-2026 Ziff Davis, LLC., a Ziff Davis company.
+                    All Rights Reserved.
+PCMag, PCMag.com and PC Magazine are among the federally registered trademarks of
+                    Ziff Davis and may not be used by third parties without explicit permission. The display of
+                    third-party trademarks and trade names on this site does not necessarily indicate any
+                    affiliation or the endorsement of PCMag. If you click an affiliate link and buy a product or
+                    service, we may be paid a fee by that merchant.
+
+
+Source: https://news.mit.edu/topic/artificial-intelligence2
+Title: Artificial intelligence | MIT News | Massachusetts Institute of …
+Download RSS feed: News Articles / In the Media / Audio
+A new system identifies and corrects unreliable object descriptions stored in a robot’s memory, improving the robot’s ability to interact with its environment.
+MIT.nano and the Northeast Microelectronics Coalition gathered facility leaders and technology professionals from across the nation to explore ways to make shared-access facilities more connected.
+From a nuclear revival to qubits, the MIT Energy Initiative’s annual research conference tracked deployment of today’s technologies to discovery of tomorrow’s breakthroughs.
+The MIT professors collaborated to identify the first AI-discovered antibiotic, a scientific breakthrough that is widely recognized as a milestone in AI-driven drug discovery.
+Five MIT faculty members and two additional alumni are honored with fellowships to advance research on beneficial AI.
+MIT professors Adam Berinsky and Chara Podimata discuss a new project to track how AI chatbots are responding to questions about the 2026 U.S. midterm elections.
+Professor Ali Jadbabaie describes how AI, digital transformation, climate change, and complex geopolitics are forcing engineers and policymakers to rethink how infrastructure is designed, built, and managed.
+Professor Paris Smaragdis develops computers with superhuman hearing for applications like speech recognition, music understanding, and environmental monitoring.
+Prabha Jha used her experience with MIT Open Learning’s program for senior executives to develop AI solutions for her employer, Verizon, and to write a book.
+A cross-section of the MIT community convened discussions on topics ranging from data centers and super pollutants to agriculture and education.
+In Compton Lecture, the distinguished legal scholar warns of potential “loss of the Enlightenment” while suggesting ways innovations can meet our civic and cultural needs.
+During the School of Humanities, Arts, and Social Sciences’ 75th Anniversary Symposium, President Sally Kornbluth said “MIT has never needed your particular insight and guidance more than we do now.”
+Assistant Professor Benjamin Lindquist studies how engineers deliberately injected randomness into early AI, giving rise to deep-learning models that sometimes hallucinate.
+“X-Hinges” helps design and 3D print items like lamps and gloves with an interactive twist: automatically embedded sensors that perceive and adaptively respond to human contact.
+A model developed by researchers at MIT and Boston Children's Hospital adjusts scans on the fly to track fetal movement, potentially sparing families repeat hospital visits.
+This website is managed by the MIT News Office, part of the Institute Office of Communications.
+Massachusetts Institute of Technology77 Massachusetts Avenue, Cambridge, MA, USA
+
+

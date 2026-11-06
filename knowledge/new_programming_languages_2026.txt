@@ -2253,3 +2253,35 @@ Change only what's wrong and keep the rest as it was. A source lets Grok verify 
 Your edit is saved on this device. Sign in and it'll be right here when you're back.
 
 
+Source: https://www.foxnews.com/?msockid=3489b34226806a0a156bab4b27c16b39
+Title: Fox News - Breaking News Updates | Latest News Headlines ...
+This material may not be published, broadcast, rewritten, or redistributed.
+                ©2026 FOX News Network, LLC. All rights reserved. Quotes displayed in real-time or
+                delayed
+                by at least 15 minutes. Market data provided by Factset. Powered
+                and implemented by FactSet
+                  Digital Solutions. Legal Statement. Mutual Fund and
+                ETF data provided by LSEG.
+Fox Business Channel
+                                    
+Pay TV Login Required
+Fox Nation
+                                    
+Subscription Required
+FOX Weather
+                                    
+Free to Watch
+Fox Radio
+                                    
+Free to Listen
+OutKick
+                                    
+Free to Watch
+This material may not be published, broadcast, rewritten, or redistributed.
+        ©2026 FOX News Network, LLC. All rights reserved. Quotes displayed in real-time or delayed by
+        at least 15 minutes. Market data provided by Factset. Powered and
+        implemented by FactSet Digital
+          Solutions. Legal Statement. Mutual Fund and ETF data
+        provided by LSEG.
+
+
