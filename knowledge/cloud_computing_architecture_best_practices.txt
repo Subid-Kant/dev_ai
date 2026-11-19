@@ -2162,3 +2162,63 @@ Title: Personal File Sharing & Cloud Storage | Microsoft OneDrive
 Discover OneDrive for secure and convenient file and document sharing. Get personal cloud storage for seamless file sharing with …
 
 
+Source: https://www.microsoft.com/en-us/microsoft-365/onedrive/online-cloud-storage?msockid=3e2d1d8adbff627c1e6e059cda546374
+Title: Personal File Sharing & Cloud Storage | Microsoft OneDrive
+Discover OneDrive for secure and convenient file and document sharing. Get personal cloud storage for seamless file sharing with …
+
+
+Source: https://cloud.google.com/cloud-console
+Title: Cloud Management Console
+Build a free proof of concept with $300 in free credit and try over 150 products in the Google Cloud console.
+Get up and running quickly with our easy-to-use, intuitive console UI. Plus, get free usage of over 20 products, up to monthly limits.
+Provide granular access by resources, roles, and service accounts, reducing potential security risks through tailored permissions.
+Create customized network configurations with global VPCs backed by a full suite of integrated security features.
+Cloud Hub provides a centralized and unified view of information and data across Google Cloud, delivering contextualized, application-centric insights organized by your business needs.
+No more console hopping. Get unified insights into your Google Cloud deployments, application and infrastructure health, costs, maintenance, quotas, support tickets—all in one place.
+Cloud Hub presents information within business context for relevance and easy understanding. It also lets you enable the application-centric view to manage all your applications efficiently.
+Cloud Hub does more than inform. It guides you towards meaningful actions to optimize performance and cost, address issues, and improve efficiency.
+Create and manage virtual machines (VMs) for running custom applications and workloads with Compute Engine.
+Create and manage virtual machines (VMs) for running custom applications and workloads with Compute Engine.
+Spin up new instances and experiment with different configurations
+Get one non-preemptible e2-micro VM instance free per month
+Store any amount of data, integrate it with other Google Cloud services, and retrieve it as often as you like with Cloud Storage.
+Store any amount of data, integrate it with other Google Cloud services, and retrieve it as often as you like with Cloud Storage.
+Reliable and cost-effective standard, nearline, coldline, and archival storage
+Get 5 GB-months of regional storage (US regions only) free per month
+Run containers on a fully managed platform with Cloud Run—only pay when your code is running.
+Run containers on a fully managed platform with Cloud Run—only pay when your code is running.
+Deploy web applications and APIs that scale automatically with traffic fluctuations
+Run batch jobs and scheduled tasks without managing infrastructure
+Run your code in the cloud with no servers or containers to manage with Cloud Run functions.
+Run your code in the cloud with no servers or containers to manage with Cloud Run functions.
+Deploy sample prebuilt solutions that use AI and Cloud Run functions to analyze and annotate images and summarize large documents
+Build event-driven applications, webhooks, and APIs
+Manage and analyze large datasets across cloud environments in BigQuery, a fully managed data warehouse.
+Manage and analyze large datasets across cloud environments in BigQuery, a fully managed data warehouse.
+Leverage built-in machine learning for surfacing predictions and insights
+Get up and running quickly with an intuitive, SQL interface
+Store 10 GiB of data and run up to 1 TiB of queries for free per month
+Create and manage virtual machines (VMs) for running custom applications and workloads with Compute Engine.
+Create and manage virtual machines (VMs) for running custom applications and workloads with Compute Engine.
+Spin up new instances and experiment with different configurations
+Get one non-preemptible e2-micro VM instance free per month
+Store any amount of data, integrate it with other Google Cloud services, and retrieve it as often as you like with Cloud Storage.
+Store any amount of data, integrate it with other Google Cloud services, and retrieve it as often as you like with Cloud Storage.
+Reliable and cost-effective standard, nearline, coldline, and archival storage
+Get 5 GB-months of regional storage (US regions only) free per month
+Run containers on a fully managed platform with Cloud Run—only pay when your code is running.
+Run containers on a fully managed platform with Cloud Run—only pay when your code is running.
+Deploy web applications and APIs that scale automatically with traffic fluctuations
+Run batch jobs and scheduled tasks without managing infrastructure
+Run your code in the cloud with no servers or containers to manage with Cloud Run functions.
+Run your code in the cloud with no servers or containers to manage with Cloud Run functions.
+Deploy sample prebuilt solutions that use AI and Cloud Run functions to analyze and annotate images and summarize large documents
+Build event-driven applications, webhooks, and APIs
+Manage and analyze large datasets across cloud environments in BigQuery, a fully managed data warehouse.
+Manage and analyze large datasets across cloud environments in BigQuery, a fully managed data warehouse.
+Leverage built-in machine learning for surfacing predictions and insights
+Get up and running quickly with an intuitive, SQL interface
+Store 10 GiB of data and run up to 1 TiB of queries for free per month
+Start building on Google Cloud with $300 in free credits and 20+ always free products.
+
+
