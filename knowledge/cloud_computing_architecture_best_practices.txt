@@ -2222,3 +2222,8 @@ Store 10 GiB of data and run up to 1 TiB of queries for free per month
 Start building on Google Cloud with $300 in free credits and 20+ always free products.
 
 
+Source: https://www.microsoft.com/en-us/microsoft-365/onedrive/online-cloud-storage?msockid=2a270146e499631e02a3195ee5c662cd
+Title: Personal File Sharing & Cloud Storage | Microsoft OneDrive
+Discover OneDrive for secure and convenient file and document sharing. Get personal cloud storage for seamless file sharing with your …Read more
+
+
