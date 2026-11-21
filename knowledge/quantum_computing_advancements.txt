@@ -8419,3 +8419,43 @@ Fresh perspectives on the technologies shaping tomorrow. In your inbox.
 News, analysis and explainers at the intersection of science, technology and business.
 
 
+Source: https://ide.mit.edu/insights/2026-quantum-index-report/
+Title: 2026 Quantum Index Report: Quantum Computing Today
+Artificial Intelligence, Quantum and Beyond | January 10, 2023
+Director, MIT IDE; Professor, MIT Sloan School of Management
+Get the latest from MIT IDE delivered weekly to your inbox.
+Decisions made today on quantum computing funding, training and infrastructure will shape what quantum can do, and who benefits. Here’s where researchers say the technology stands today.
+Quantum computing is an emerging technology with immense potential. The 2026 MIT Quantum Index Report—a comprehensive look at quantum funding, research and patents across the globe—reveals that investment in this technology keeps growing.
+To help business leaders, scientists and policy makers understand the state of quantum computing, researchers from the MIT Initiative on the Digital Economy and Accenture compiled the 2026 Quantum Index Report. For the second year, this report reveals not only data on quantum computing, but insights on where things are going.
+The research team includes Jonathan Ruane, Principal Investigator and Editor-in-Chief, and Elif Kiesow, Senior Researcher and Project Manager, both of the MIT IDE, along with Carl Dukatz and Laura Converso of Accenture. The analysis is based on 2025 data with select 2026 updates.
+According to Ruane, “The second quantum revolution is no longer only a scientific project. It is also becoming an industrial, economic and geopolitical one.”
+In this post, you’ll find highlights from the report on global investment, how both governments and private entities are getting involved, and insights on new advancements in the technology.
+Commercially available processors grew from 40 to 56 in a year, as of August 2026, from 24 manufacturers in 11 countries. The U.S. leads with 23, and China is second with 6. No hardware type is a clear frontrunner.
+The Quantum Index Report notes that “most experts agree that quantum computers remain below the capabilities of classical computers for all useful tasks today.”
+To see when quantum may pay off, read Is Quantum Computing Worth the Wait?
+Quantum investment is increasing fast, and established companies are capturing most of it. Nearly all of 2025’s jump came from financing for already-public companies ($5.7 billion) and late-stage venture rounds ($2.3 billion).
+“Capital is now concentrating in relatively mature quantum players rather than new entrants,” according to the report.
+Quantum computing is also finding a new customer: AI data centers. Quantinuum’s Helios quantum computer is headed for an Oracle Cloud data center, and a 200-qubit Pasqal processor is running in Aramco’s data center in Dhahran, Saudi Arabia.
+Quantum funding nearly quadrupled to a record $10.9 billion in 2025, driven mainly by post-IPO financing. Source: MIT Initiative on the Digital Economy, Quantum Index Report 2026, Fig. 3.a (p. 60).
+While the U.S. and China are heavily invested in quantum computing, neither the U.S. nor China leads on every measure. China filed 9,790 quantum computing patents in 2025, roughly four times the U.S. total of 2,423. Those are filings, not a measure of quality, however, and the U.S. holds the edge in influence. The U.S. H-index, a measure of how widely a country’s research is cited, is 93 versus 56 for China.
+China filed 9,790 quantum technology patents in 2025, roughly four times the U.S. total of 2,423. Source: MIT Initiative on the Digital Economy, Quantum Index Report 2026, Fig. 1.c (p. 25).
+The U.S. leads in research influence, with an H-index of 93 versus 56 for China. Source: MIT Initiative on the Digital Economy, Quantum Index Report 2026, Fig. 2.b (p. 40).
+In quantum communications, China leads on output, influence and citation impact. China produced 35.8% of the research from 2021 to 2025, nearly triple the U.S. share of 12.2%.
+For more on the race, read The Quantum Computing Race Is on, but Who’s in the Lead?
+Governments now treat quantum as a national security priority.
+Americans are more nervous about quantum technology and trust government oversight less, but most still back funding the research. In a December 2025 survey, agreement that the government can be trusted to control quantum companies fell from 63% in 2024 to 44% in 2025, among those who took a side.
+Support for funding held up, though down slightly: 69% back government funding of research (down from 77%) and 79% back company funding (down from 82%).
+Agreement that the government can be trusted to control quantum companies fell from 63% to 44%, while majorities still back funding. Source: MIT Initiative on the Digital Economy, Quantum Index Report 2026, Fig. 8.h (p. 143).
+Demand for quantum skills is at an all-time high. The share of U.S. job postings requiring quantum skills is up more than fivefold since 2011 and hit a record in early 2026. Unlike general “quantum” mentions, which boom and bust, this climb suggests employers are moving from buzzword interest to skill-specific hiring.
+Quantum education is expanding too. Dedicated quantum master’s programs grew from 68 to 83 worldwide, with Austria, the Czech Republic, Hong Kong, Hungary and India launching their first in 2026.
+The Quantum Index Report team brings together data from academic, industry and policy sources, including:
+View the 2026 Quantum Index Report, try the interactive tools and download the data at qir.mit.edu.
+The Quantum Index Report is a nonpartisan, data-driven look at the quantum ecosystem from the MIT Initiative on the Digital Economy, produced with Accenture. The 2026 edition is the second.
+Researchers from MIT IDE and Accenture produced the report under the MIT and Accenture Convergence Initiative for Industry and Technology, with support from the National Science Foundation.
+It depends on the measure. China leads in patent filings and publication volume. The U.S. leads in research influence and in commercially available quantum processors.
+Not yet. According to the Quantum Index Report, quantum computers still fall short of classical computers on all useful tasks today.
+Early business cases center on optimization, simulation and secure communications. The Quantum Index Report points to materials and pharmaceutical discovery, logistics and operations planning, and secure communications. Companies are testing quantum processors alongside AI and conventional computing. JPMorganChase researchers are using a London quantum-AI data center to explore portfolio optimization, and Aramco is exploring optimization, simulation, and energy and industrial uses. Most of this work is still experimental.
+Ruane, J., Kiesow, E., Dukatz, C., and Converso, L., “The Quantum Index Report 2026,” MIT Initiative on the Digital Economy, Massachusetts Institute of Technology, Cambridge, MA, October 2026.
+Get the latest from the MIT IDE delivered weekly to your inbox.
+
+
