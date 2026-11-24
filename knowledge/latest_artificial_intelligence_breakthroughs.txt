@@ -2532,3 +2532,98 @@ This material may not be published, broadcast, rewritten, or redistributed.
         provided by LSEG.
 
 
+Source: https://www.pluralsight.com/newsroom/press-releases/-pluralsight-launches-new-ai-sandbox--guided-learning--and-enter
+Title: Pluralsight Launches New AI Sandbox, Guided Learning, and Ente…
+1,500+ tech insiders, business leaders, and Pluralsight Authors share their predictions on what’s shifting fastest and how to stay ahead.
+1,500+ tech insiders, business leaders, and Pluralsight Authors share their predictions on what’s shifting fastest and how to stay ahead.
+Expanded hands-on AI experiences, instructor-led training, and workflow integrations help organizations turn technical learning into measurable business outcomes
+Westlake, Texas – April 15, 2026 – Pluralsight, the leading technology skills development company, today announced new platform capabilities designed to help organizations build and apply critical AI and technology skills more effectively. The release includes expanded AI sandbox experiences, new guided learning support, accelerated instructor-led training, and deeper integrations with leading enterprise systems including Workday, Cornerstone, SuccessFactors, and Edcast.
+As companies increase investment in AI and cloud transformation, many still struggle to connect learning programs to day-to-day execution. Pluralsight’s latest platform updates are designed to close that gap by embedding skill development into the flow of work, expanding opportunities for hands-on experimentation, and helping organizations validate skills in the systems teams already use.
+“Organizations today often find that putting learning into practice is like trying to hit a constantly shifting target,” said Erin Gajdalo, Chief Executive Officer at Pluralsight. “This release of new features provides organizations with a focused direction to close that gap. By integrating directly into the systems that teams already use and expanding safe environments for AI experimentation, we’re enabling teams and enterprises to move from skill development to measurable impact faster, with greater confidence and assuredness.”
+Expanded hands-on AI learning and expert-led support
+To help organizations build practical AI capability, Pluralsight is expanding its AI learning environment with more opportunities for safe, hands-on experimentation, giving learners the confidence to use modern AI tools before applying them on the job. This approach aligns with broader industry trends: 67% of global CISOs report their organizations have already implemented guidelines for AI use within data protection policies, and 64% say enabling AI tools is a top priority over the next two years.
+Pluralsight is also expanding its Instructor-Led Training offerings for organizations that need to close critical skill gaps quickly. These high-touch, expert-led experiences include the AI Builder Series and virtual AWS Authorized Training, helping teams gain focused support on urgent transformation initiatives when self-paced learning alone may not be enough.
+Deeper integrations to embed skill development into the flow of work
+Pluralsight is also expanding its ecosystem connectivity to help organizations make skill development more visible, connected, and actionable across the enterprise. By integrating with the platforms teams already use, these updates help reduce friction between learning, validation, and execution.
+With a more connected, hands-on approach to learning and workforce development, these newly available platform updates help organizations build critical technology skills. Learn more about the updates here.
+For more information about how Pluralsight helps individuals and organizations close critical technology skill gaps, visit Pluralsight.com.
+Pluralsight helps organizations build the technology workforce capabilities they need to execute their most critical priorities. Thousands of companies and government organizations around the world rely on Pluralsight to assess workforce readiness, close critical skill gaps, and build the capabilities needed to deliver business outcomes in areas crucial to innovation, including artificial intelligence, cloud computing, cybersecurity, software development, and machine learning. Through expert-led learning, industry-leading skill assessments, hands-on practice, and workforce insights, Pluralsight helps technology teams keep pace with changing technology and business needs. For more information, visit http://pluralsight.com.
+
+
+Source: https://www.pluralsight.com/newsroom/press-releases
+Title: Company announcements - Pluralsight
+1,500+ tech insiders, business leaders, and Pluralsight Authors share their predictions on what’s shifting fastest and how to stay ahead.
+1,500+ tech insiders, business leaders, and Pluralsight Authors share their predictions on what’s shifting fastest and how to stay ahead.
+
+
+Source: https://www.udacity.com/blog/udacity-to-become-a-part-of-accenture/
+Title: Letter from the CEO: Udacity to become part of Accenture
+By now, you might have heard the big news that Udacity will become part of Accenture! 🚀
+Together we will reshape technology learning and training, and impact millions of lives for the better. At Udacity, this marks a significant milestone in our journey to forge futures in tech. To learn more about this exciting announcement, you can view the full press release.
+Please note that the transaction is not yet completed, and both companies will remain independent until closing. Completion of this acquisition is subject to customary closing conditions, including required antitrust clearances.
+This will be an exceptional combination of two companies that deeply understand and create value for customers and partners. Since day one, Udacity has been singularly obsessed with driving meaningful outcomes for our learners. I’ve seen firsthand how our impactful and cutting-edge tech education unlocks the vast potential of individuals, companies – even countries – in a matter of months.
+With this announcement, we embark on a new chapter in forging the future of tech. Joining forces with Accenture will allow us to amplify our mission on a global scale and reach even more learners to help them acquire the skills they need to thrive in the digital economy.
+By combining Udacity’s innovative learning platform with Accenture’s deep industry expertise and extensive network, we expect to accelerate the development of new programs and initiatives that address evolving client needs.
+I want to express my gratitude to our incredible team, whose dedication and passion have made this possible. We will continue to push the boundaries of online education.
+To our learners: thank you for your ongoing commitment and trust. We will continue to earn that trust – putting essential skills into the hands of people who create new productivity, innovation, and economic opportunity across the globe – at even greater scale, with Accenture.
+I’d also like to address what this means for Udacity’s valued customers and partners, who played such a big role in getting us to this milestone. I’ve had many customers ask what this announcement means for them, so I’ve summarized the details into these four key points:
+To our customers, I’d like to add that we look forward to continuing our journey together and to delivering even greater outcomes to you in the future.
+For anyone who is not a Udacity customer yet, please contact us and we’ll schedule some time to talk about your upskilling needs. Our team is ready to learn more about how our learning solution can drive real business outcomes for you.
+By clicking “Subscribe,” you agree to our Terms of Use and Privacy Policy.
+Build in-demand AI and tech skills through hands-on projects. Lock in the lowest price before it’s gone!
+Web Developer Career Guide Cloud Career Guide Data Career Guide Robotics Career Guide
+
+
+Source: https://www.udacity.com/blog/
+Title: Udacity Blog
+By clicking “Subscribe,” you agree to our Terms of Use and Privacy Policy.
+Build in-demand AI and tech skills through hands-on projects. Lock in the lowest price before it’s gone!
+Web Developer Career Guide Cloud Career Guide Data Career Guide Robotics Career Guide
+
+
+Source: https://press.edx.org/new-microsoft-ai-program-for-global-executives-launching-soon-on-edx
+Title: New Microsoft AI Program for Global Executives Launching Soon on edX
+edX and its Members use cookies and other tracking technologies for performance, analytics, and marketing purposes. By using this website, you accept this use. Learn more about these technologies in the Privacy Policy.
+A new online executive education program from Microsoft is launching on edX in early 2026, designed for business leaders who want to move beyond AI experimentation to measurable enterprise performance. CxO Edge: Run your business on AI was introduced on November 19 at Microsoft's Ignite conference.
+While AI adoption has accelerated dramatically across industries, many organizations are still struggling to translate investment into impact. CxO Edge aims to help leaders close that gap. In three weeks, executives will learn how to identify where AI drives values, align strategy with measurable outcomes, and design a 90-day proof of value they can put into action immediately.
+Created for C-suite leaders, founders, and senior partners across industries, the program combines:
+Each module emphasizes action over theory, producing tangible, board-ready artifacts and role-specific decisions.
+The program will be available to individual learners through edX.org and to enterprise teams through edX's Enterprise Catalogue, making it possible for organizations to upskill leadership at scale.
+"The pace of AI adoption means every executive needs to learn—and lead—faster," said Andy Morgan, Chief Partnerships Officer at 2U, the company behind edX. "Through edX, we can take Microsoft's deep enterprise AI expertise and make it accessible to executives around the world, right when they're under pressure to translate experimentation into transformation."
+Ignite attendees and the first 100 learners who register outside the conference will receive a significant early-access discount.
+According to Microsoft’s 2025 Work Trend Index, 82% of leaders say this is a pivotal year to rethink strategy and operations as companies evolve into “Frontier Firms”—organizations that integrate human-AI collaboration to drive innovation.
+edX survey data shows the same urgency: 58% of workers see a lack of AI expertise in their industry, and nearly two-thirds of managers plan to upskill to keep pace.
+“AI is reshaping how every business operates, and executives need practical frameworks they
+can apply immediately,” said Geoff Hirsch, Head of Training Partner Channel at Microsoft. “CxO Edge brings together what we’ve learned helping thousands of organizations transform with AI. By bringing the course to edX, we can scale this program online to reach C-suite leaders globally, giving them the specific tools and frameworks they need to lead AI transformation in their organizations.”
+Microsoft and edX have a long history of expanding access to education together. Over a decade ago, Microsoft became the first company to offer professional certificate programs on edX—opening new pathways for learners around the world to build in-demand digital skills.
+Since then, the collaboration has continued to grow. edX has driven more than 10 million enrollments in Microsoft courses, and earlier this year, edX helped Microsoft break a Guinness World Record for the largest online AI lesson during Microsoft’s AI Skills Fest .
+The momentum hasn’t slowed. Over just the past six months, Microsoft has launched 56 new courses across 18 programs on edX, welcoming more than 40,000 new learners. The launch of CxO Edge marks the next step: bringing Microsoft’s enterprise AI expertise to leaders who want to drive real transformation inside their organizations.
+For more information, visit https://microsoft.getsmarter.com/presentations/lp/cxo-edge-short-course/.
+Related Content: 
+news,
+edX News & Announcements,
+edX News,
+Future of Learning and Work
+A new online executive education program from Microsoft is launching on edX in early 2026, designed for business leaders who want to move beyond AI experimentation to measurable enterprise performance. CxO Edge: Run your business on AI was introduced on November 19 at Microsoft's Ignite conference.
+While AI adoption has accelerated dramatically across industries, many organizations are still struggling to translate investment into impact. CxO Edge aims to help leaders close that gap. In three weeks, executives will learn how to identify where AI drives values, align strategy with measurable outcomes, and design a 90-day proof of value they can put into action immediately.
+Created for C-suite leaders, founders, and senior partners across industries, the program combines:
+Each module emphasizes action over theory, producing tangible, board-ready artifacts and role-specific decisions.
+The program will be available to individual learners through edX.org and to enterprise teams through edX's Enterprise Catalogue, making it possible for organizations to upskill leadership at scale.
+"The pace of AI adoption means every executive needs to learn—and lead—faster," said Andy Morgan, Chief Partnerships Officer at 2U, the company behind edX. "Through edX, we can take Microsoft's deep enterprise AI expertise and make it accessible to executives around the world, right when they're under pressure to translate experimentation into transformation."
+Ignite attendees and the first 100 learners who register outside the conference will receive a significant early-access discount.
+According to Microsoft’s 2025 Work Trend Index, 82% of leaders say this is a pivotal year to rethink strategy and operations as companies evolve into “Frontier Firms”—organizations that integrate human-AI collaboration to drive innovation.
+edX survey data shows the same urgency: 58% of workers see a lack of AI expertise in their industry, and nearly two-thirds of managers plan to upskill to keep pace.
+“AI is reshaping how every business operates, and executives need practical frameworks they
+can apply immediately,” said Geoff Hirsch, Head of Training Partner Channel at Microsoft. “CxO Edge brings together what we’ve learned helping thousands of organizations transform with AI. By bringing the course to edX, we can scale this program online to reach C-suite leaders globally, giving them the specific tools and frameworks they need to lead AI transformation in their organizations.”
+Microsoft and edX have a long history of expanding access to education together. Over a decade ago, Microsoft became the first company to offer professional certificate programs on edX—opening new pathways for learners around the world to build in-demand digital skills.
+Since then, the collaboration has continued to grow. edX has driven more than 10 million enrollments in Microsoft courses, and earlier this year, edX helped Microsoft break a Guinness World Record for the largest online AI lesson during Microsoft’s AI Skills Fest .
+The momentum hasn’t slowed. Over just the past six months, Microsoft has launched 56 new courses across 18 programs on edX, welcoming more than 40,000 new learners. The launch of CxO Edge marks the next step: bringing Microsoft’s enterprise AI expertise to leaders who want to drive real transformation inside their organizations.
+For more information, visit https://microsoft.getsmarter.com/presentations/lp/cxo-edge-short-course/.
+Related Content: 
+news,
+edX News & Announcements,
+edX News,
+Future of Learning and Work
+© 2024 edX LLC All rights reserved. | 深圳市恒宇博科技有限公司 粤ICP备17044299号-2
+
+
